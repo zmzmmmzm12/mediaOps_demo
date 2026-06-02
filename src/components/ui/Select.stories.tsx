@@ -5,14 +5,14 @@ const meta = {
   title: 'UI/Select',
   component: Select,
   args: {
-    label: 'Status',
+    label: '상태',
     defaultValue: 'all',
     children: (
       <>
-        <SelectOption value="all">All statuses</SelectOption>
-        <SelectOption value="active">Active</SelectOption>
-        <SelectOption value="paused">Paused</SelectOption>
-        <SelectOption value="ended">Ended</SelectOption>
+        <SelectOption value="all">전체 상태</SelectOption>
+        <SelectOption value="active">운영 중</SelectOption>
+        <SelectOption value="paused">일시중지</SelectOption>
+        <SelectOption value="ended">종료</SelectOption>
       </>
     ),
   },

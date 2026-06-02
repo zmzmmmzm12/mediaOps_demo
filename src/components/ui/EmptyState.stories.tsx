@@ -20,9 +20,9 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
-    title: 'No campaigns match these filters',
+    title: '조건에 맞는 캠페인이 없습니다',
     description:
-      'Try broadening the status filter or loading a previously saved preset.',
-    action: <Button variant="secondary">Reset filters</Button>,
+      '상태 필터를 넓히거나 저장해 둔 프리셋을 불러와 다시 확인해 보세요.',
+    action: <Button variant="secondary">필터 초기화</Button>,
   },
 }

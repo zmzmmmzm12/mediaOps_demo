@@ -14,8 +14,8 @@ export function DateRangePicker({
   endDate,
   onStartDateChange,
   onEndDateChange,
-  startLabel = 'Start date',
-  endLabel = 'End date',
+  startLabel = '시작일',
+  endLabel = '종료일',
 }: DateRangePickerProps) {
   return (
     <>

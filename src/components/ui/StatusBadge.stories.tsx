@@ -5,7 +5,7 @@ const meta = {
   title: 'UI/StatusBadge',
   component: StatusBadge,
   args: {
-    label: 'Active',
+    label: '운영 중',
     tone: 'positive',
   },
   decorators: [
@@ -25,14 +25,14 @@ export const Positive: Story = {}
 
 export const Warning: Story = {
   args: {
-    label: 'At risk',
+    label: '주의 필요',
     tone: 'warning',
   },
 }
 
 export const Neutral: Story = {
   args: {
-    label: 'Summary only',
+    label: '요약 전용',
     tone: 'neutral',
   },
 }

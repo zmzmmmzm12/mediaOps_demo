@@ -9,14 +9,14 @@ interface CampaignRow {
 }
 
 const rows: CampaignRow[] = [
-  { id: 'row-1', name: 'Orbit Q3 Growth', channel: 'google', revenue: '$122K' },
-  { id: 'row-2', name: 'Halo Creator Push', channel: 'meta', revenue: '$94K' },
+  { id: 'row-1', name: '오르빗 3분기 성장', channel: '구글', revenue: '12.2만 달러' },
+  { id: 'row-2', name: '헤일로 크리에이터 확대', channel: '메타', revenue: '9.4만 달러' },
 ]
 
 const columns: Array<DataTableColumn<CampaignRow>> = [
-  { id: 'name', header: 'Campaign', cell: (row) => row.name },
-  { id: 'channel', header: 'Channel', cell: (row) => row.channel },
-  { id: 'revenue', header: 'Revenue', cell: (row) => row.revenue },
+  { id: 'name', header: '캠페인', cell: (row) => row.name },
+  { id: 'channel', header: '채널', cell: (row) => row.channel },
+  { id: 'revenue', header: '매출', cell: (row) => row.revenue },
 ]
 
 const meta = {

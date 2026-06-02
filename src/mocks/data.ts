@@ -5,6 +5,7 @@ import {
   formatCurrency,
   formatPercent,
 } from '../lib/format'
+import { campaignChannelTextMap } from '../lib/labels'
 import type {
   ActivityItem,
   Campaign,
@@ -22,14 +23,14 @@ import type {
 
 const profiles: SessionUser[] = [
   { id: 'user-admin', name: 'Mina Park', email: 'mina.park@mediaops.local', role: 'admin' },
-  { id: 'user-manager', name: 'Daniel Kim', email: 'daniel.kim@mediaops.local', role: 'manager' },
+  { id: 'user-manager', name: 'Jumi Lee', email: 'jumi.lee@mediaops.local', role: 'manager' },
   { id: 'user-viewer', name: 'Sora Lee', email: 'sora.lee@mediaops.local', role: 'viewer' },
 ]
 
 const seedCampaigns: Campaign[] = [
   {
     id: 'camp-orbit-q3',
-    name: 'Orbit Q3 Growth',
+    name: '오르빗 3분기 성장',
     status: 'active',
     channel: 'meta',
     budget: 180000,
@@ -42,13 +43,13 @@ const seedCampaigns: Campaign[] = [
     conversions: 2678,
     startDate: '2026-05-08',
     endDate: '2026-07-12',
-    managerName: 'Daniel Kim',
-    memo: 'Creative rotation every 5 days. Prospecting is outperforming retargeting.',
+    managerName: 'Jumi Lee',
+    memo: '소재는 5일 단위로 교체 중이며, 잠재 고객 타깃이 리타게팅보다 높은 효율을 보이고 있습니다.',
     priority: 'critical',
   },
   {
     id: 'camp-cascade-b2b',
-    name: 'Cascade B2B Demand',
+    name: '캐스케이드 B2B 수요 확대',
     status: 'active',
     channel: 'google',
     budget: 142000,
@@ -62,12 +63,12 @@ const seedCampaigns: Campaign[] = [
     startDate: '2026-04-24',
     endDate: '2026-06-30',
     managerName: 'Mina Park',
-    memo: 'Lead quality dipped slightly; bid caps were tightened on lower intent terms.',
+    memo: '리드 품질이 소폭 하락해 저의도 키워드 구간의 입찰 상한을 조정했습니다.',
     priority: 'critical',
   },
   {
     id: 'camp-lumen-retail',
-    name: 'Lumen Retail Recovery',
+    name: '루멘 리테일 회복',
     status: 'paused',
     channel: 'naver',
     budget: 98000,
@@ -81,12 +82,12 @@ const seedCampaigns: Campaign[] = [
     startDate: '2026-05-15',
     endDate: '2026-06-20',
     managerName: 'Nadia Cho',
-    memo: 'Paused due to underperforming local placements; investigating landing page mismatch.',
+    memo: '지역 지면 성과 저하로 일시중지했으며, 랜딩 페이지 정합성을 점검 중입니다.',
     priority: 'steady',
   },
   {
     id: 'camp-halo-stream',
-    name: 'Halo Streaming Launch',
+    name: '헤일로 스트리밍 런칭',
     status: 'active',
     channel: 'kakao',
     budget: 76000,
@@ -99,13 +100,13 @@ const seedCampaigns: Campaign[] = [
     conversions: 348,
     startDate: '2026-06-01',
     endDate: '2026-07-22',
-    managerName: 'Daniel Kim',
-    memo: 'Launch phase stable. Audience expansion planned after first full week.',
+    managerName: 'Jumi Lee',
+    memo: '런칭 초기 구간은 안정적이며, 첫 주 종료 후 타깃 확장을 검토할 예정입니다.',
     priority: 'planned',
   },
   {
     id: 'camp-verdant-renewal',
-    name: 'Verdant Renewal Push',
+    name: '버던트 재구매 확대',
     status: 'ended',
     channel: 'meta',
     budget: 42000,
@@ -119,12 +120,12 @@ const seedCampaigns: Campaign[] = [
     startDate: '2026-03-10',
     endDate: '2026-05-22',
     managerName: 'Avery Stone',
-    memo: 'Completed. Final cohort retained above benchmark.',
+    memo: '운영 종료 완료. 최종 코호트 유지율이 벤치마크를 상회했습니다.',
     priority: 'steady',
   },
   {
     id: 'camp-nova-subscription',
-    name: 'Nova Subscription Lift',
+    name: '노바 구독 전환 증대',
     status: 'active',
     channel: 'google',
     budget: 124000,
@@ -138,12 +139,12 @@ const seedCampaigns: Campaign[] = [
     startDate: '2026-05-28',
     endDate: '2026-07-05',
     managerName: 'Mina Park',
-    memo: 'Search and YouTube are balanced. Trial starts are pacing above target.',
+    memo: '검색과 유튜브 성과가 균형적이며, 체험 시작 수는 목표보다 빠르게 증가하고 있습니다.',
     priority: 'steady',
   },
   {
     id: 'camp-pulse-commerce',
-    name: 'Pulse Commerce Weekend',
+    name: '펄스 커머스 주말 특가',
     status: 'paused',
     channel: 'kakao',
     budget: 56000,
@@ -157,7 +158,7 @@ const seedCampaigns: Campaign[] = [
     startDate: '2026-05-12',
     endDate: '2026-06-14',
     managerName: 'Nadia Cho',
-    memo: 'Paused after weekend decay. Creative and offer need refresh.',
+    memo: '주말 성과 하락 이후 일시중지했으며, 소재와 프로모션 메시지 보완이 필요합니다.',
     priority: 'critical',
   },
 ]
@@ -167,7 +168,7 @@ const campaignStore = seedCampaigns.map((campaign) => ({ ...campaign }))
 let filterPresetStore: FilterPreset[] = [
   {
     id: 'preset-active-google',
-    name: 'Active Google',
+    name: '구글 운영 중',
     filters: {
       search: '',
       status: 'active',
@@ -202,21 +203,21 @@ function average(items: number[]) {
 function getRoleHeadline(role: UserRole) {
   if (role === 'admin') {
     return {
-      headline: 'Revenue is up while two campaign lanes still need recovery.',
-      subheadline: 'Admin view combines portfolio health, channel pacing, and risk signals.',
+      headline: '매출은 상승 중이지만 일부 캠페인은 추가 점검이 필요합니다.',
+      subheadline: '관리자 화면에서는 포트폴리오 전체 성과, 채널 운영 속도, 리스크 신호를 함께 확인합니다.',
     }
   }
 
   if (role === 'manager') {
     return {
-      headline: 'Core campaigns are on plan with one paused recovery lane.',
-      subheadline: 'Manager view focuses on quick action across delivery and revenue.',
+      headline: '핵심 캠페인은 계획대로 운영 중이며 일부 회복 구간만 점검하면 됩니다.',
+      subheadline: '매니저 화면은 운영 실행과 매출 흐름을 빠르게 확인하는 데 초점을 둡니다.',
     }
   }
 
   return {
-    headline: 'Read-only performance views are current for the latest refresh.',
-    subheadline: 'Viewer access keeps reporting visible while editing actions stay locked.',
+    headline: '최신 기준의 성과 현황을 읽기 전용으로 확인할 수 있습니다.',
+    subheadline: '조회 전용 계정은 리포트와 운영 현황을 확인할 수 있지만 수정 기능은 잠겨 있습니다.',
   }
 }
 
@@ -228,12 +229,12 @@ function buildDashboardAlerts(campaigns: Campaign[]): DashboardAlert[] {
       id: `alert-${campaign.id}`,
       title:
         campaign.status === 'paused'
-          ? `${campaign.name} is paused`
-          : `${campaign.name} is below target ROAS`,
+          ? `${campaign.name} 캠페인이 일시중지 상태입니다`
+          : `${campaign.name} 캠페인의 ROAS가 목표보다 낮습니다`,
       detail:
         campaign.status === 'paused'
-          ? 'Review channel mix and creative readiness before restarting delivery.'
-          : `Current ROAS is ${campaign.roas.toFixed(2)} with ${formatCurrency(campaign.spend)} spent.`,
+          ? '재집행 전 채널 믹스와 소재 준비 상태를 다시 확인해 주세요.'
+          : `현재 ROAS는 ${campaign.roas.toFixed(2)}이며, 누적 광고비는 ${formatCurrency(campaign.spend)}입니다.`,
       tone: campaign.status === 'paused' || campaign.roas < 2 ? 'warning' : 'neutral',
     }))
 }
@@ -269,37 +270,37 @@ function buildDashboard(role: UserRole): DashboardSnapshot {
     metrics: [
       {
         id: 'total-revenue',
-        label: 'Total revenue',
+        label: '총 매출',
         value: formatCompactCurrency(totalRevenue),
-        delta: '+12.4% vs last month',
+        delta: '전월 대비 +12.4%',
         tone: 'positive',
       },
       {
         id: 'total-spend',
-        label: 'Total ad spend',
+        label: '총 광고비',
         value: formatCompactCurrency(totalSpend),
-        delta: '+5.7% vs last month',
+        delta: '전월 대비 +5.7%',
         tone: 'neutral',
       },
       {
         id: 'avg-roas',
-        label: 'Average ROAS',
+        label: '평균 ROAS',
         value: `${avgRoas.toFixed(2)}x`,
-        delta: '+0.18 vs last month',
+        delta: '전월 대비 +0.18',
         tone: 'positive',
       },
       {
         id: 'avg-conversion-rate',
-        label: 'Average conversion rate',
+        label: '평균 전환율',
         value: formatPercent(avgConversionRate),
-        delta: '+0.24pt vs last month',
+        delta: '전월 대비 +0.24%p',
         tone: 'positive',
       },
       {
         id: 'active-campaigns',
-        label: 'Active campaigns',
+        label: '운영 중 캠페인',
         value: String(activeCampaigns),
-        delta: `${campaigns.length - activeCampaigns} inactive`,
+        delta: `비활성 ${campaigns.length - activeCampaigns}개`,
         tone: activeCampaigns > 0 ? 'neutral' : 'warning',
       },
     ],
@@ -324,7 +325,7 @@ function buildCreatives(campaign: Campaign): CreativePerformance[] {
   return [
     {
       id: `${campaign.id}-creative-1`,
-      creativeName: `${campaign.name} Hero Cut`,
+      creativeName: `${campaign.name} 메인 영상`,
       impressions: Math.round(campaign.impressions * 0.42),
       clicks: Math.round(campaign.clicks * 0.4),
       conversions: Math.round(campaign.conversions * 0.38),
@@ -335,7 +336,7 @@ function buildCreatives(campaign: Campaign): CreativePerformance[] {
     },
     {
       id: `${campaign.id}-creative-2`,
-      creativeName: `${campaign.name} Product Carousel`,
+      creativeName: `${campaign.name} 상품 캐러셀`,
       impressions: Math.round(campaign.impressions * 0.33),
       clicks: Math.round(campaign.clicks * 0.34),
       conversions: Math.round(campaign.conversions * 0.35),
@@ -346,7 +347,7 @@ function buildCreatives(campaign: Campaign): CreativePerformance[] {
     },
     {
       id: `${campaign.id}-creative-3`,
-      creativeName: `${campaign.name} Short Video`,
+      creativeName: `${campaign.name} 숏폼 영상`,
       impressions: Math.round(campaign.impressions * 0.25),
       clicks: Math.round(campaign.clicks * 0.26),
       conversions: Math.round(campaign.conversions * 0.27),
@@ -383,21 +384,21 @@ function buildActivity(campaign: Campaign): ActivityItem[] {
   return [
     {
       id: `${campaign.id}-act-1`,
-      timeLabel: 'Today',
+      timeLabel: '오늘',
       actor: campaign.managerName,
-      message: `Reviewed ${campaign.channel} pacing and confirmed current budget guardrails.`,
+      message: `${campaignChannelTextMap[campaign.channel]} 채널 집행 속도를 점검하고 현재 예산 가드레일을 확인했습니다.`,
     },
     {
       id: `${campaign.id}-act-2`,
-      timeLabel: 'Yesterday',
-      actor: 'Creative Ops',
-      message: `Updated landing page alignment notes for ${campaign.name}.`,
+      timeLabel: '어제',
+      actor: '크리에이티브 운영',
+      message: `${campaign.name} 캠페인의 랜딩 페이지 정합성 메모를 업데이트했습니다.`,
     },
     {
       id: `${campaign.id}-act-3`,
-      timeLabel: 'May 30',
-      actor: 'Analytics',
-      message: `Published weekly ROAS summary and channel efficiency comparison.`,
+      timeLabel: '5월 30일',
+      actor: '데이터 분석',
+      message: '주간 ROAS 요약과 채널 효율 비교 리포트를 공유했습니다.',
     },
   ]
 }
@@ -561,7 +562,7 @@ export function createFilterPreset(input: {
 }) {
   const preset: FilterPreset = {
     id: `preset-${Math.random().toString(36).slice(2, 10)}`,
-    name: input.name.trim() || 'Untitled preset',
+    name: input.name.trim() || '이름 없는 프리셋',
     filters: input.filters,
     createdAt: new Date().toISOString(),
   }

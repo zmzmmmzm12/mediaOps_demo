@@ -51,13 +51,13 @@ export function CampaignFilters({
             htmlFor="campaign-search"
             className="text-sm font-medium text-white"
           >
-            Search campaigns
+            캠페인 검색
           </label>
           <input
             id="campaign-search"
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
-            placeholder="Search by campaign or client"
+            placeholder="캠페인명 또는 담당자로 검색"
             className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-teal-300"
           />
         </div>
@@ -67,7 +67,7 @@ export function CampaignFilters({
             htmlFor="campaign-status"
             className="text-sm font-medium text-white"
           >
-            Status
+            상태
           </label>
           <select
             id="campaign-status"
@@ -79,7 +79,13 @@ export function CampaignFilters({
           >
             {statusOptions.map((option) => (
               <option key={option} value={option} className="text-slate-900">
-                {option === 'all' ? 'All statuses' : option}
+                {option === 'all'
+                  ? '전체 상태'
+                  : option === 'active'
+                    ? '운영 중'
+                    : option === 'paused'
+                      ? '일시중지'
+                      : '종료'}
               </option>
             ))}
           </select>
@@ -92,13 +98,13 @@ export function CampaignFilters({
             htmlFor="campaign-preset-name"
             className="text-sm font-medium text-white"
           >
-            Preset name
+            프리셋 이름
           </label>
           <input
             id="campaign-preset-name"
             value={presetName}
             onChange={(event) => onPresetNameChange(event.target.value)}
-            placeholder="Save current filters"
+            placeholder="현재 필터 조건 저장"
             className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-teal-300"
           />
         </div>
@@ -108,7 +114,7 @@ export function CampaignFilters({
             htmlFor="campaign-preset-select"
             className="text-sm font-medium text-white"
           >
-            Saved presets
+            저장된 프리셋
           </label>
           <select
             id="campaign-preset-select"
@@ -117,7 +123,7 @@ export function CampaignFilters({
             className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none focus:border-teal-300"
           >
             <option value="" className="text-slate-900">
-              {presets.length === 0 ? 'No presets saved' : 'Choose a preset'}
+              {presets.length === 0 ? '저장된 프리셋이 없습니다' : '프리셋 선택'}
             </option>
             {presets.map((preset) => (
               <option
@@ -137,7 +143,7 @@ export function CampaignFilters({
           onClick={onSavePreset}
           data-testid="save-preset-button"
         >
-          Save preset
+          프리셋 저장
         </Button>
         <Button
           variant="secondary"
@@ -146,7 +152,7 @@ export function CampaignFilters({
           disabled={!selectedPresetId}
           data-testid="load-preset-button"
         >
-          Load preset
+          불러오기
         </Button>
         <Button
           variant="secondary"
@@ -155,18 +161,18 @@ export function CampaignFilters({
           disabled={!selectedPresetId}
           data-testid="delete-preset-button"
         >
-          Delete preset
+          삭제
         </Button>
         <div className="flex flex-wrap items-end gap-3">
           <Button variant="secondary" onClick={onReset} data-testid="reset-filters-button">
-            Reset
+            초기화
           </Button>
           <Button
             variant="secondary"
             onClick={onDownloadCsv}
             data-testid="download-csv-button"
           >
-            Download CSV
+            CSV 다운로드
           </Button>
         </div>
       </div>
@@ -176,7 +182,7 @@ export function CampaignFilters({
         aria-live="polite"
         data-testid="campaign-results-count"
       >
-        {resultCount} campaigns match the current filters.
+        현재 조건에 맞는 캠페인 {resultCount}개
       </p>
     </div>
   )

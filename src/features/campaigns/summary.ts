@@ -9,17 +9,17 @@ export function deriveCampaignSummary(campaign: Campaign) {
     budgetUtilization: Number(budgetUtilization.toFixed(1)),
     pacing:
       budgetGap > 0
-        ? `${formatCurrency(budgetGap)} remaining against budget`
-        : 'Budget fully consumed',
+        ? `예산 대비 ${formatCurrency(budgetGap)} 남음`
+        : '예산을 모두 소진했습니다',
     health:
       campaign.status === 'paused'
-        ? 'Paused for review'
+        ? '점검을 위해 일시중지됨'
         : campaign.roas < 2
-          ? 'Recovery plan required'
-          : 'On track',
+          ? '성과 회복 액션 필요'
+          : '안정적으로 운영 중',
     nextMilestone:
       campaign.status === 'ended'
-        ? 'Archive and export final report'
-        : 'Next optimization checkpoint in 48 hours',
+        ? '최종 리포트 정리 및 아카이브 진행'
+        : '다음 최적화 체크포인트까지 48시간',
   }
 }

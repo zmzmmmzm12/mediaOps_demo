@@ -6,10 +6,10 @@ const meta = {
   title: 'UI/PageHeader',
   component: PageHeader,
   args: {
-    eyebrow: 'Campaigns',
-    title: 'Campaign explorer',
-    description: 'Search, filter, sort, and export campaign performance.',
-    actions: <Button variant="secondary">Download CSV</Button>,
+    eyebrow: '캠페인',
+    title: '캠페인 탐색',
+    description: '검색, 필터, 정렬, 내보내기로 캠페인 성과를 빠르게 확인합니다.',
+    actions: <Button variant="secondary">CSV 다운로드</Button>,
   },
 } satisfies Meta<typeof PageHeader>
 

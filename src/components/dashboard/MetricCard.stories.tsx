@@ -5,9 +5,9 @@ const meta = {
   title: 'Dashboard/MetricCard',
   component: MetricCard,
   args: {
-    label: 'Total spend',
-    value: '$302K',
-    delta: 'Across current permissions',
+    label: '총 광고비',
+    value: '30.2만 달러',
+    delta: '현재 권한 기준 집계',
     tone: 'positive',
   },
   decorators: [

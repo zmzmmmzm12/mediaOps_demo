@@ -8,9 +8,9 @@ const meta = {
   args: {
     campaign: {
       id: 'camp-orbit-q3',
-      name: 'Orbit Q3 Growth',
+      name: '오르빗 3분기 성장',
       channel: 'meta',
-      managerName: 'Daniel Kim',
+      managerName: 'Jumi Lee',
       status: 'active',
       priority: 'critical',
       budget: 180000,
@@ -23,7 +23,7 @@ const meta = {
       conversions: 4210,
       startDate: '2026-05-06',
       endDate: '2026-07-01',
-      memo: 'Creative rotation is active.',
+      memo: '소재 로테이션을 운영 중입니다.',
     },
   },
   decorators: [

@@ -15,12 +15,12 @@ import type { FilterPreset } from '../types/mediaops'
 const presetColumns: Array<DataTableColumn<FilterPreset>> = [
   {
     id: 'name',
-    header: 'Preset',
+    header: '프리셋 이름',
     cell: (preset) => preset.name,
   },
   {
     id: 'createdAt',
-    header: 'Created',
+    header: '저장 일시',
     cell: (preset) => new Date(preset.createdAt).toLocaleString(),
   },
 ]
@@ -29,9 +29,7 @@ export function SettingsPage() {
   const session = useAuthStore((state) => state.session)
   const queryClient = useQueryClient()
   const theme = usePreferencesStore((state) => state.theme)
-  const sidebarCollapsed = usePreferencesStore((state) => state.sidebarCollapsed)
-  const toggleTheme = usePreferencesStore((state) => state.toggleTheme)
-  const toggleSidebar = usePreferencesStore((state) => state.toggleSidebar)
+  const setTheme = usePreferencesStore((state) => state.setTheme)
   const showToast = useToastStore((state) => state.showToast)
   const canManagePresets = hasPermission(session?.role ?? 'viewer', 'campaigns:edit')
 
@@ -46,7 +44,7 @@ export function SettingsPage() {
       void queryClient.invalidateQueries({ queryKey: ['filter-presets'] })
       showToast({
         tone: 'info',
-        title: 'Deleted preset.',
+        title: '프리셋을 삭제했습니다.',
       })
     },
   })
@@ -65,7 +63,7 @@ export function SettingsPage() {
         message={presetsQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => presetsQuery.refetch()}>
-            Retry
+            다시 시도
           </Button>
         }
       />
@@ -77,65 +75,115 @@ export function SettingsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Settings"
-        title="Profile and preferences"
-        description="Persisted UI preferences, saved filter presets, and role-based access notes."
+        eyebrow="설정"
+        title="프로필과 개인화 설정"
+        description="프로필, 테마, 프리셋, 권한 범위를 한 화면에서 정리합니다."
       />
 
-      <section className="grid gap-6 xl:grid-cols-[0.8fr_1.2fr]">
-        <article className="rounded-[28px] border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">Current user</p>
-          <h3 className="mt-2 text-2xl font-semibold text-slate-950">{session.name}</h3>
-          <p className="mt-1 text-sm text-slate-500">{session.email}</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
-              {roleLabels[session.role]}
+      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+        <article className={`rounded-[28px] border p-6 ${theme === 'dark' ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'}`}>
+          <div className="flex items-start gap-4">
+            <span className={`inline-flex h-14 w-14 items-center justify-center rounded-[20px] text-lg font-semibold ${theme === 'dark' ? 'bg-slate-800 text-slate-100' : 'bg-slate-100 text-slate-700'}`}>
+              {session.name.slice(0, 1)}
             </span>
+            <div className="min-w-0">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>현재 사용자</p>
+              <h3 className={`mt-1 text-2xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{session.name}</h3>
+              <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{session.email}</p>
+              <span className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold ${theme === 'dark' ? 'bg-slate-800 text-slate-200 ring-1 ring-slate-700' : 'bg-slate-100 text-slate-700'}`}>
+                {roleLabels[session.role]}
+              </span>
+            </div>
           </div>
-          <div className="mt-6 space-y-3">
-            <Button variant="secondary" onClick={toggleTheme} className="w-full">
-              Theme: {theme}
-            </Button>
-            <Button variant="secondary" onClick={toggleSidebar} className="w-full">
-              Sidebar: {sidebarCollapsed ? 'Collapsed' : 'Expanded'}
-            </Button>
+          <div className="mt-6 grid gap-3">
+            <div className={`rounded-[24px] border p-4 ${theme === 'dark' ? 'border-slate-800 bg-slate-800/60' : 'border-slate-200 bg-slate-50'}`}>
+              <p className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>화면 테마</p>
+              <p className={`mt-1 text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
+                선호하는 시각 스타일을 선택하세요.
+              </p>
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setTheme('light')}
+                  className={`rounded-[20px] border px-4 py-4 text-left transition ${
+                    theme === 'light'
+                      ? 'border-teal-500 bg-teal-50 text-slate-900'
+                      : theme === 'dark'
+                        ? 'border-slate-700 bg-slate-900 text-slate-300 hover:border-slate-600'
+                        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  <p className="text-sm font-semibold">라이트</p>
+                  <p className={`mt-1 text-xs ${theme === 'light' ? 'text-slate-600' : theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
+                    밝고 선명한 기본 화면
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTheme('dark')}
+                  className={`rounded-[20px] border px-4 py-4 text-left transition ${
+                    theme === 'dark'
+                      ? 'border-teal-500 bg-slate-900 text-slate-100'
+                      : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
+                  }`}
+                >
+                  <p className="text-sm font-semibold">다크</p>
+                  <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                    낮은 대비로 차분한 화면
+                  </p>
+                </button>
+              </div>
+            </div>
           </div>
         </article>
 
-        <article className="rounded-[28px] border border-slate-200 bg-white p-5">
-          <p className="text-sm text-slate-500">Role access</p>
+        <article className={`rounded-[28px] border p-6 ${theme === 'dark' ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'}`}>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>권한별 접근 범위</p>
+              <h3 className={`mt-1 text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>역할별 사용 범위</h3>
+            </div>
+          </div>
           <div className="mt-4 grid gap-3 md:grid-cols-3">
             {(['admin', 'manager', 'viewer'] as const).map((role) => (
-              <div key={role} className="rounded-3xl bg-slate-50 p-4">
-                <p className="font-semibold text-slate-950">{roleLabels[role]}</p>
-                <p className="mt-2 text-sm text-slate-500">
+              <div key={role} className={`rounded-[24px] border p-4 ${theme === 'dark' ? 'border-slate-800 bg-slate-800/70' : 'border-slate-200 bg-slate-50'}`}>
+                <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{roleLabels[role]}</p>
+                <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
                   {role === 'admin'
-                    ? 'All menus, edits, and settings user-management access.'
+                    ? '모든 메뉴 접근과 수정 기능, 설정의 관리자 영역까지 접근 가능합니다.'
                     : role === 'manager'
-                      ? 'Campaign edits, reports, and preference management.'
-                      : 'Read-only access across campaign and report views.'}
+                      ? '캠페인 수정, 리포트 확인, 개인 설정 관리가 가능합니다.'
+                      : '캠페인과 리포트 화면을 읽기 전용으로 확인할 수 있습니다.'}
                 </p>
               </div>
             ))}
           </div>
           {hasPermission(session.role, 'settings:manage-users') ? (
-            <div className="mt-6 rounded-3xl border border-dashed border-slate-300 p-4">
-              <p className="font-semibold text-slate-950">Admin-only user management</p>
-              <p className="mt-2 text-sm text-slate-500">
-                This placeholder section is visible only to admins, matching the permission policy.
+            <div className={`mt-6 rounded-[24px] border p-4 ${theme === 'dark' ? 'border-slate-700 bg-slate-800/50' : 'border-slate-200 bg-slate-50'}`}>
+              <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>관리자 전용 영역</p>
+              <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                사용자 관리나 운영 정책 확장 기능을 붙이기 좋은 자리입니다.
               </p>
             </div>
           ) : null}
         </article>
       </section>
 
-      <section className="rounded-[28px] border border-slate-200 bg-white p-5">
-        <p className="text-sm text-slate-500">Saved filter presets</p>
+      <section className={`rounded-[28px] border p-6 ${theme === 'dark' ? 'border-slate-800 bg-slate-900' : 'border-slate-200 bg-white'}`}>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>저장된 필터 프리셋</p>
+            <h3 className={`text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>프리셋 보관함</h3>
+          </div>
+          <p className={`text-sm ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
+            자주 쓰는 검색 조건을 여기서 관리합니다.
+          </p>
+        </div>
         {presets.length === 0 ? (
           <div className="mt-4">
             <EmptyState
-              title="No saved presets"
-              description="Create presets from the campaigns page to manage them here."
+              title="저장된 프리셋이 없습니다"
+              description="캠페인 화면에서 프리셋을 저장하면 여기서 관리할 수 있습니다."
             />
           </div>
         ) : (
@@ -146,20 +194,20 @@ export function SettingsPage() {
               getRowKey={(preset) => preset.id}
             />
             {canManagePresets ? (
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2">
                 {presets.map((preset) => (
                   <Button
                     key={preset.id}
                     variant="secondary"
                     onClick={() => deletePresetMutation.mutate(preset.id)}
                   >
-                    Delete {preset.name}
+                    {preset.name} 삭제
                   </Button>
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-slate-500">
-                Viewer access can review presets here, but deletion is disabled.
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                조회 전용 계정은 프리셋을 확인할 수 있지만 삭제는 할 수 없습니다.
               </p>
             )}
           </div>

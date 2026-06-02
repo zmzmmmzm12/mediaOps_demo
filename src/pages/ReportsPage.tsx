@@ -11,27 +11,28 @@ import { getReports } from '../lib/api/mediaops'
 import { buildCampaignCsv } from '../features/campaigns/csv'
 import { downloadTextFile } from '../lib/download'
 import { formatCompactCurrency, formatRatio } from '../lib/format'
+import { campaignChannelTextMap } from '../lib/labels'
 import type { Campaign } from '../types/mediaops'
 
 const rankingColumns: Array<DataTableColumn<Campaign>> = [
   {
     id: 'name',
-    header: 'Campaign',
+    header: '캠페인',
     cell: (campaign) => campaign.name,
   },
   {
     id: 'channel',
-    header: 'Channel',
-    cell: (campaign) => campaign.channel,
+    header: '채널',
+    cell: (campaign) => campaignChannelTextMap[campaign.channel],
   },
   {
     id: 'revenue',
-    header: 'Revenue',
+    header: '매출',
     cell: (campaign) => formatCompactCurrency(campaign.revenue),
   },
   {
     id: 'spend',
-    header: 'Spend',
+    header: '광고비',
     cell: (campaign) => formatCompactCurrency(campaign.spend),
   },
   {
@@ -57,7 +58,7 @@ export function ReportsPage() {
         message={reportsQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => reportsQuery.refetch()}>
-            Retry
+            다시 시도
           </Button>
         }
       />
@@ -67,7 +68,7 @@ export function ReportsPage() {
   const reports = reportsQuery.data?.reports
 
   if (!reports) {
-    return <ErrorStatePanel message="Reports data is unavailable." />
+    return <ErrorStatePanel message="리포트 데이터를 표시할 수 없습니다." />
   }
 
   if (
@@ -77,8 +78,8 @@ export function ReportsPage() {
   ) {
     return (
       <EmptyState
-        title="No reports data"
-        description="Try a wider date range or another report source."
+        title="표시할 리포트 데이터가 없습니다"
+        description="기간을 넓히거나 다른 데이터 소스를 확인해 주세요."
       />
     )
   }
@@ -86,9 +87,9 @@ export function ReportsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Reports"
-        title="Revenue and efficiency reports"
-        description="Reusable chart and table patterns for revenue, spend, and ROAS reporting."
+        eyebrow="리포트"
+        title="매출과 효율 리포트"
+        description="매출, 광고비, ROAS를 공통 차트와 테이블 패턴으로 확인할 수 있습니다."
         actions={
           <Button
             variant="secondary"
@@ -100,13 +101,13 @@ export function ReportsPage() {
               )
             }
           >
-            Download CSV
+            CSV 다운로드
           </Button>
         }
       />
 
       <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <ChartCard title="Revenue by period" description="Recent revenue trend by month.">
+        <ChartCard title="기간별 매출 추이" description="최근 기간의 매출 흐름입니다.">
           <RevenueSpendTrendChart
             data={reports.revenueByPeriod.map((item) => ({
               date: item.period,
@@ -115,16 +116,16 @@ export function ReportsPage() {
             }))}
           />
         </ChartCard>
-        <ChartCard title="Channel revenue vs spend" description="Top-line financial comparison by channel.">
+        <ChartCard title="채널별 매출 대비 광고비" description="채널 단위의 매출과 광고비를 비교합니다.">
           <ChannelComparisonChart data={reports.channelRevenueVsSpend} />
         </ChartCard>
       </section>
 
       <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-        <ChartCard title="ROAS ranking" description="Highest-return campaigns first.">
+        <ChartCard title="ROAS 순위" description="효율이 높은 캠페인 순으로 정렬했습니다.">
           <RoasRankingChart data={reports.roasRanking} />
         </ChartCard>
-        <ChartCard title="Campaign ROAS table" description="Table view paired with the ranking chart.">
+        <ChartCard title="캠페인 ROAS 표" description="차트와 함께 확인할 수 있는 표 형식 데이터입니다.">
           <DataTable
             columns={rankingColumns}
             rows={reports.roasRanking.slice(0, 8)}

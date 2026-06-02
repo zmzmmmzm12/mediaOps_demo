@@ -11,14 +11,14 @@ function TabsStory() {
         value={value}
         onChange={setValue}
         options={[
-          { id: 'overview', label: 'Overview' },
-          { id: 'creatives', label: 'Creatives' },
-          { id: 'revenue', label: 'Revenue' },
-          { id: 'memo', label: 'Memo' },
+          { id: 'overview', label: '개요' },
+          { id: 'creatives', label: '소재 성과' },
+          { id: 'revenue', label: '매출 분석' },
+          { id: 'memo', label: '메모' },
         ]}
       />
       <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-600">
-        Active tab: {value}
+        현재 탭: {value}
       </div>
     </div>
   )
@@ -38,10 +38,10 @@ export const Default: Story = {
     value: 'overview',
     onChange: () => undefined,
     options: [
-      { id: 'overview', label: 'Overview' },
-      { id: 'creatives', label: 'Creatives' },
-      { id: 'revenue', label: 'Revenue' },
-      { id: 'memo', label: 'Memo' },
+      { id: 'overview', label: '개요' },
+      { id: 'creatives', label: '소재 성과' },
+      { id: 'revenue', label: '매출 분석' },
+      { id: 'memo', label: '메모' },
     ],
   },
   render: () => <TabsStory />,

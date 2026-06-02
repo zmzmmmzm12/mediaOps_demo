@@ -1,14 +1,24 @@
 import { useToastStore } from '../../features/ui/toast-store'
-
-const toneClassMap = {
-  success: 'border-emerald-200 bg-emerald-50 text-emerald-900',
-  error: 'border-red-200 bg-red-50 text-red-900',
-  info: 'border-slate-200 bg-white text-slate-900',
-}
+import { usePreferencesStore } from '../../features/ui/preferences-store'
 
 export function ToastRegion() {
   const toasts = useToastStore((state) => state.toasts)
   const dismissToast = useToastStore((state) => state.dismissToast)
+  const theme = usePreferencesStore((state) => state.theme)
+  const toneClassMap = {
+    success:
+      theme === 'dark'
+        ? 'border-emerald-900 bg-emerald-950/70 text-emerald-100'
+        : 'border-emerald-200 bg-emerald-50 text-emerald-900',
+    error:
+      theme === 'dark'
+        ? 'border-red-900 bg-red-950/70 text-red-100'
+        : 'border-red-200 bg-red-50 text-red-900',
+    info:
+      theme === 'dark'
+        ? 'border-slate-800 bg-slate-900 text-slate-100'
+        : 'border-slate-200 bg-white text-slate-900',
+  }
 
   return (
     <div
@@ -32,7 +42,7 @@ export function ToastRegion() {
             <button
               type="button"
               onClick={() => dismissToast(toast.id)}
-              aria-label="Dismiss notification"
+              aria-label="알림 닫기"
               className="rounded-full p-1 text-current/70 transition hover:bg-black/5 hover:text-current"
             >
               ×

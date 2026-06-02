@@ -1,4 +1,5 @@
 import type { Priority } from '../../types/mediaops'
+import { priorityTextMap } from '../../lib/labels'
 
 const priorityOptions: Priority[] = ['critical', 'steady', 'planned']
 
@@ -16,7 +17,7 @@ export function PrioritySelector({
   return (
     <div
       role="radiogroup"
-      aria-label="Campaign priority"
+      aria-label="캠페인 우선순위"
       className="flex flex-wrap gap-2"
     >
       {priorityOptions.map((option) => {
@@ -37,7 +38,7 @@ export function PrioritySelector({
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
-            {option}
+            {priorityTextMap[option]}
           </button>
         )
       })}

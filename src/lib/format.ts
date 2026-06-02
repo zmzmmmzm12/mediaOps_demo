@@ -28,12 +28,12 @@ export function formatInteger(value: number) {
 }
 
 export function formatDateLabel(value: string) {
-  return new Intl.DateTimeFormat('en-US', {
+  return new Intl.DateTimeFormat('ko-KR', {
     month: 'short',
     day: 'numeric',
   }).format(new Date(value))
 }
 
 export function formatDateRange(startDate: string, endDate: string) {
-  return `${formatDateLabel(startDate)} - ${formatDateLabel(endDate)}`
+  return `${formatDateLabel(startDate)} ~ ${formatDateLabel(endDate)}`
 }

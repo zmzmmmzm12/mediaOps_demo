@@ -18,7 +18,7 @@ export function Pagination({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3">
       <p className="text-sm text-slate-500">
-        Page {page} of {pageCount}
+        {page} / {pageCount} 페이지
       </p>
       <div className="flex gap-2">
         <Button
@@ -26,14 +26,14 @@ export function Pagination({
           onClick={() => onPageChange(page - 1)}
           disabled={page <= 1}
         >
-          Previous
+          이전
         </Button>
         <Button
           variant="secondary"
           onClick={() => onPageChange(page + 1)}
           disabled={page >= pageCount}
         >
-          Next
+          다음
         </Button>
       </div>
     </div>

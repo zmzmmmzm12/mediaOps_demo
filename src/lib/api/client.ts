@@ -1,4 +1,5 @@
 import { useAuthStore } from '../../features/auth/auth-store'
+import { normalizeUserRole } from '../../features/auth/permissions'
 
 export class ApiError extends Error {
   status: number
@@ -21,7 +22,11 @@ export async function fetchJson<T>(
 
   if (session) {
     headers.set('x-mediaops-user-id', session.id)
-    headers.set('x-mediaops-user-role', session.role)
+    const normalizedRole = normalizeUserRole(session.role)
+
+    if (normalizedRole) {
+      headers.set('x-mediaops-user-role', normalizedRole)
+    }
   }
 
   const response = await fetch(input, {

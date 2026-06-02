@@ -22,8 +22,10 @@ import {
   defaultCampaignFilters,
   parseCampaignFilters,
 } from '../features/campaigns/url-state'
+import { usePreferencesStore } from '../features/ui/preferences-store'
 import { useToastStore } from '../features/ui/toast-store'
 import { downloadTextFile } from '../lib/download'
+import { campaignStatusTextMap } from '../lib/labels'
 import {
   createFilterPreset,
   deleteFilterPreset,
@@ -41,6 +43,7 @@ import type {
 
 export function CampaignsPage() {
   const queryClient = useQueryClient()
+  const theme = usePreferencesStore((state) => state.theme)
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
   const [searchParams, setSearchParams] = useSearchParams()
@@ -82,7 +85,7 @@ export function CampaignsPage() {
       setPresetName(preset.name)
       showToast({
         tone: 'success',
-        title: `Saved preset "${preset.name}".`,
+        title: `"${preset.name}" 프리셋을 저장했습니다.`,
       })
     },
   })
@@ -100,7 +103,7 @@ export function CampaignsPage() {
       setSelectedPresetId('')
       showToast({
         tone: 'info',
-        title: 'Deleted preset.',
+        title: '프리셋을 삭제했습니다.',
       })
     },
   })
@@ -116,7 +119,7 @@ export function CampaignsPage() {
     onSuccess: () => {
       showToast({
         tone: 'success',
-        title: `Updated ${selectedCampaignIds.length} campaign${selectedCampaignIds.length > 1 ? 's' : ''} to ${bulkStatus}.`,
+        title: `${selectedCampaignIds.length}개 캠페인의 상태를 변경했습니다.`,
       })
       setSelectedCampaignIds([])
       setConfirmOpen(false)
@@ -226,7 +229,7 @@ export function CampaignsPage() {
     setSearchParams(buildCampaignSearchParams(nextFilters), { replace: true })
     showToast({
       tone: 'info',
-      title: `Loaded preset "${preset.name}".`,
+      title: `"${preset.name}" 프리셋을 불러왔습니다.`,
     })
   }
 
@@ -235,7 +238,7 @@ export function CampaignsPage() {
     downloadTextFile('mediaops-campaigns.csv', csv, 'text/csv;charset=utf-8')
     showToast({
       tone: 'info',
-      title: `Downloaded ${filteredCampaigns.length} campaigns as CSV.`,
+      title: `${filteredCampaigns.length}개 캠페인을 CSV로 다운로드했습니다.`,
     })
   }
 
@@ -254,6 +257,7 @@ export function CampaignsPage() {
     sortBy: filters.sortBy,
     sortDirection: filters.sortDirection,
     onSort: handleSort,
+    theme,
   })
 
   if (campaignsQuery.isLoading) {
@@ -266,7 +270,7 @@ export function CampaignsPage() {
         message={campaignsQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => campaignsQuery.refetch()}>
-            Retry
+            다시 시도
           </Button>
         }
       />
@@ -276,23 +280,29 @@ export function CampaignsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        eyebrow="Campaigns"
-        title="Campaign explorer"
-        description="Search, filter, sort, paginate, save presets, and bulk-update campaign status."
+        eyebrow="캠페인"
+        title="캠페인 탐색기"
+        description="검색, 필터, 정렬, 페이지네이션, 프리셋 저장, 일괄 상태 변경까지 한 화면에서 처리합니다."
       />
 
-      <section className="rounded-[28px] border border-slate-200 bg-white p-5">
+      <section
+        className={`rounded-[28px] border p-5 ${
+          theme === 'dark'
+            ? 'border-slate-800 bg-slate-900'
+            : 'border-slate-200 bg-white'
+        }`}
+      >
         <div className="grid gap-3 lg:grid-cols-5">
           <Input
-            label="Search campaigns"
-            aria-label="Search campaigns"
+            label="캠페인 검색"
+            aria-label="캠페인 검색"
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Search by campaign or manager"
+            placeholder="캠페인명 또는 담당자로 검색"
           />
           <Select
-            label="Status"
-            aria-label="Status"
+            label="상태"
+            aria-label="상태"
             value={filters.status}
             onChange={(event) =>
               updateFilters({
@@ -300,14 +310,14 @@ export function CampaignsPage() {
               })
             }
           >
-            <SelectOption value="all">All statuses</SelectOption>
-            <SelectOption value="active">Active</SelectOption>
-            <SelectOption value="paused">Paused</SelectOption>
-            <SelectOption value="ended">Ended</SelectOption>
+            <SelectOption value="all">전체 상태</SelectOption>
+            <SelectOption value="active">운영 중</SelectOption>
+            <SelectOption value="paused">일시중지</SelectOption>
+            <SelectOption value="ended">종료</SelectOption>
           </Select>
           <Select
-            label="Channel"
-            aria-label="Channel"
+            label="채널"
+            aria-label="채널"
             value={filters.channel}
             onChange={(event) =>
               updateFilters({
@@ -315,11 +325,11 @@ export function CampaignsPage() {
               })
             }
           >
-            <SelectOption value="all">All channels</SelectOption>
-            <SelectOption value="google">Google</SelectOption>
-            <SelectOption value="meta">Meta</SelectOption>
-            <SelectOption value="naver">Naver</SelectOption>
-            <SelectOption value="kakao">Kakao</SelectOption>
+            <SelectOption value="all">전체 채널</SelectOption>
+            <SelectOption value="google">구글</SelectOption>
+            <SelectOption value="meta">메타</SelectOption>
+            <SelectOption value="naver">네이버</SelectOption>
+            <SelectOption value="kakao">카카오</SelectOption>
           </Select>
           <DateRangePicker
             startDate={filters.startDate}
@@ -331,19 +341,19 @@ export function CampaignsPage() {
 
         <div className="mt-4 grid gap-3 xl:grid-cols-[1fr_240px_auto_auto_auto_auto_auto]">
           <Input
-            label="Preset name"
-            aria-label="Preset name"
+            label="프리셋 이름"
+            aria-label="프리셋 이름"
             value={presetName}
             onChange={(event) => setPresetName(event.target.value)}
-            placeholder="Preset name"
+            placeholder="프리셋 이름 입력"
           />
           <Select
-            label="Saved presets"
-            aria-label="Saved presets"
+            label="저장된 프리셋"
+            aria-label="저장된 프리셋"
             value={selectedPresetId}
             onChange={(event) => setSelectedPresetId(event.target.value)}
           >
-            <SelectOption value="">Saved presets</SelectOption>
+            <SelectOption value="">저장된 프리셋 선택</SelectOption>
             {presets.map((preset: FilterPreset) => (
               <SelectOption key={preset.id} value={preset.id}>
                 {preset.name}
@@ -365,7 +375,7 @@ export function CampaignsPage() {
               })
             }
           >
-            Save preset
+            프리셋 저장
           </Button>
           <Button
             variant="secondary"
@@ -373,7 +383,7 @@ export function CampaignsPage() {
             onClick={handleLoadPreset}
             disabled={!selectedPresetId}
           >
-            Load preset
+            불러오기
           </Button>
           <Button
             variant="secondary"
@@ -381,14 +391,14 @@ export function CampaignsPage() {
             onClick={() => deletePresetMutation.mutate(selectedPresetId)}
             disabled={!selectedPresetId}
           >
-            Delete preset
+            삭제
           </Button>
           <Button
             variant="secondary"
             data-testid="download-csv-button"
             onClick={handleDownloadCsv}
           >
-            Download CSV
+            CSV 다운로드
           </Button>
           <Button
             variant="secondary"
@@ -400,42 +410,42 @@ export function CampaignsPage() {
               })
             }}
           >
-            Reset
+            초기화
           </Button>
         </div>
 
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
           <p
-            className="text-sm text-slate-500"
+            className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}
             aria-live="polite"
             data-testid="campaign-results-count"
           >
-            {filteredCampaigns.length} campaigns match the current filters.
+            현재 조건에 맞는 캠페인 {filteredCampaigns.length}개
           </p>
           {canEdit ? (
             <div className="flex items-center gap-3">
               <Select
-                label="Bulk status"
+                label="일괄 변경 상태"
                 value={bulkStatus}
-                aria-label="Bulk status"
+                aria-label="일괄 변경 상태"
                 onChange={(event) =>
                   setBulkStatus(event.target.value as CampaignStatus)
                 }
               >
-                <SelectOption value="active">Set active</SelectOption>
-                <SelectOption value="paused">Set paused</SelectOption>
-                <SelectOption value="ended">Set ended</SelectOption>
+                <SelectOption value="active">운영 중으로 변경</SelectOption>
+                <SelectOption value="paused">일시중지로 변경</SelectOption>
+                <SelectOption value="ended">종료로 변경</SelectOption>
               </Select>
               <Button
                 onClick={() => setConfirmOpen(true)}
                 disabled={selectedCampaignIds.length === 0}
               >
-                Bulk status change
+                일괄 상태 변경
               </Button>
             </div>
           ) : (
-            <p className="text-sm text-slate-500">
-              Viewer access can explore data but cannot change campaign state.
+            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+              조회 전용 계정은 데이터를 확인할 수 있지만 상태 변경은 할 수 없습니다.
             </p>
           )}
         </div>
@@ -443,8 +453,8 @@ export function CampaignsPage() {
 
       {paginatedCampaigns.length === 0 ? (
         <EmptyState
-          title="No campaigns match these filters"
-          description="Try broadening the search, channel, or date range."
+          title="조건에 맞는 캠페인이 없습니다"
+          description="검색어, 채널, 기간 조건을 더 넓혀서 다시 확인해 보세요."
         />
       ) : (
         <>
@@ -465,9 +475,9 @@ export function CampaignsPage() {
       {canEdit ? (
         <ConfirmDialog
           open={confirmOpen}
-          title="Change campaign status"
-          description={`Apply "${bulkStatus}" to ${selectedCampaignIds.length} selected campaign${selectedCampaignIds.length === 1 ? '' : 's'}?`}
-          confirmLabel="Apply change"
+          title="캠페인 상태 변경"
+          description={`선택한 ${selectedCampaignIds.length}개 캠페인의 상태를 "${campaignStatusTextMap[bulkStatus]}"(으)로 변경할까요?`}
+          confirmLabel="변경 적용"
           onCancel={() => setConfirmOpen(false)}
           onConfirm={() => batchUpdateMutation.mutate(bulkStatus)}
         />

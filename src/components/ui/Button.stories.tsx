@@ -5,7 +5,7 @@ const meta = {
   title: 'UI/Button',
   component: Button,
   args: {
-    children: 'Primary action',
+    children: '주요 액션',
   },
 } satisfies Meta<typeof Button>
 
@@ -18,13 +18,13 @@ export const Primary: Story = {}
 export const Secondary: Story = {
   args: {
     variant: 'secondary',
-    children: 'Secondary action',
+    children: '보조 액션',
   },
 }
 
 export const Ghost: Story = {
   args: {
     variant: 'ghost',
-    children: 'Ghost action',
+    children: '고스트 액션',
   },
 }

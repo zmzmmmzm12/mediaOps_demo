@@ -30,7 +30,7 @@ export const useCampaignFilterPresetStore = create<CampaignFilterPresetState>()(
     (set, get) => ({
       presets: [],
       savePreset: (name, filters) => {
-        const presetName = normalizeName(name) || 'Untitled preset'
+        const presetName = normalizeName(name) || '이름 없는 프리셋'
         const existingPreset = get().presets.find(
           (preset) => preset.name.toLowerCase() === presetName.toLowerCase(),
         )

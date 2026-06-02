@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { ChannelComparisonChart, RevenueSpendTrendChart } from '../components/charts/RechartsPanels'
 import { ChartCard } from '../components/charts/ChartCard'
@@ -15,6 +15,7 @@ import { Tabs } from '../components/ui/Tabs'
 import { useAuthStore } from '../features/auth/auth-store'
 import { hasPermission } from '../features/auth/permissions'
 import { deriveCampaignSummary } from '../features/campaigns/summary'
+import { usePreferencesStore } from '../features/ui/preferences-store'
 import { useToastStore } from '../features/ui/toast-store'
 import {
   getCampaignDetail,
@@ -27,6 +28,11 @@ import {
   formatPercent,
   formatRatio,
 } from '../lib/format'
+import {
+  campaignChannelTextMap,
+  campaignStatusTextMap,
+  priorityTextMap,
+} from '../lib/labels'
 import type {
   CampaignDetailResponse,
   CampaignListResponse,
@@ -34,41 +40,6 @@ import type {
   CampaignStatus,
   CampaignUpdateResponse,
 } from '../types/mediaops'
-
-const creativeColumns: Array<DataTableColumn<CampaignDetailResponse['detail']['creatives'][number]>> = [
-  {
-    id: 'creative',
-    header: 'Creative',
-    cell: (creative) => (
-      <div>
-        <p className="font-semibold text-slate-950">{creative.creativeName}</p>
-        <p className="text-xs text-slate-500">
-          {formatInteger(creative.impressions)} impressions
-        </p>
-      </div>
-    ),
-  },
-  {
-    id: 'spend',
-    header: 'Spend',
-    cell: (creative) => formatCompactCurrency(creative.spend),
-  },
-  {
-    id: 'revenue',
-    header: 'Revenue',
-    cell: (creative) => formatCompactCurrency(creative.revenue),
-  },
-  {
-    id: 'roas',
-    header: 'ROAS',
-    cell: (creative) => formatRatio(creative.roas),
-  },
-  {
-    id: 'conversionRate',
-    header: 'CVR',
-    cell: (creative) => formatPercent(creative.conversionRate),
-  },
-]
 
 type MutationContext = {
   previousDetail?: CampaignDetailResponse
@@ -80,9 +51,48 @@ export function CampaignDetailPage() {
   const queryClient = useQueryClient()
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
+  const theme = usePreferencesStore((state) => state.theme)
   const showToast = useToastStore((state) => state.showToast)
   const [activeTab, setActiveTab] = useState('overview')
   const [memoOverrides, setMemoOverrides] = useState<Record<string, string>>({})
+
+  const creativeColumns: Array<DataTableColumn<CampaignDetailResponse['detail']['creatives'][number]>> = useMemo(
+    () => [
+      {
+        id: 'creative',
+        header: '소재',
+        cell: (creative) => (
+          <div>
+            <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{creative.creativeName}</p>
+            <p className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+              노출수 {formatInteger(creative.impressions)}
+            </p>
+          </div>
+        ),
+      },
+      {
+        id: 'spend',
+        header: '광고비',
+        cell: (creative) => formatCompactCurrency(creative.spend),
+      },
+      {
+        id: 'revenue',
+        header: '매출',
+        cell: (creative) => formatCompactCurrency(creative.revenue),
+      },
+      {
+        id: 'roas',
+        header: 'ROAS',
+        cell: (creative) => formatRatio(creative.roas),
+      },
+      {
+        id: 'conversionRate',
+        header: '전환율',
+        cell: (creative) => formatPercent(creative.conversionRate),
+      },
+    ],
+    [theme],
+  )
 
   const detailQuery = useQuery({
     queryKey: ['campaign-detail', campaignId],
@@ -151,13 +161,13 @@ export function CampaignDetailPage() {
       }
       showToast({
         tone: 'error',
-        title: 'Campaign status update failed.',
+        title: '캠페인 상태 변경에 실패했습니다.',
       })
     },
     onSuccess: () => {
       showToast({
         tone: 'success',
-        title: 'Campaign status updated.',
+        title: '캠페인 상태를 변경했습니다.',
       })
     },
     onSettled: async () => {
@@ -227,7 +237,7 @@ export function CampaignDetailPage() {
       }
       showToast({
         tone: 'error',
-        title: 'Memo save failed.',
+        title: '메모 저장에 실패했습니다.',
       })
     },
     onSettled: async () => {
@@ -250,7 +260,7 @@ export function CampaignDetailPage() {
         message={detailQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => detailQuery.refetch()}>
-            Retry
+            다시 시도
           </Button>
         }
       />
@@ -258,7 +268,7 @@ export function CampaignDetailPage() {
   }
 
   if (!detail) {
-    return <ErrorStatePanel message="Campaign detail is unavailable." />
+    return <ErrorStatePanel message="캠페인 상세 데이터를 표시할 수 없습니다." />
   }
 
   const campaign = detail.campaign
@@ -269,54 +279,64 @@ export function CampaignDetailPage() {
       <div className="flex items-center gap-3">
         <Link
           to="/campaigns"
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
+          className={`rounded-full border px-4 py-2 text-sm font-semibold ${
+            theme === 'dark'
+              ? 'border-slate-700 bg-slate-800 text-slate-200'
+              : 'border-slate-200 text-slate-700'
+          }`}
         >
-          Back to campaigns
+          캠페인 목록으로
         </Link>
-        <StatusBadge label={campaign.status} tone={campaign.status === 'active' ? 'positive' : campaign.status === 'paused' ? 'warning' : 'neutral'} />
-        <StatusBadge label={campaign.priority} tone={campaign.priority === 'critical' ? 'warning' : 'neutral'} />
+        <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={campaign.status === 'active' ? 'positive' : campaign.status === 'paused' ? 'warning' : 'neutral'} />
+        <StatusBadge label={priorityTextMap[campaign.priority]} tone={campaign.priority === 'critical' ? 'warning' : 'neutral'} />
       </div>
 
       <PageHeader
-        eyebrow="Campaign Detail"
+        eyebrow="캠페인 상세"
         title={campaign.name}
-        description={`${campaign.channel} · ${campaign.managerName} · ${campaign.startDate} to ${campaign.endDate}`}
+        description={`${campaignChannelTextMap[campaign.channel]} · ${campaign.managerName} · ${campaign.startDate} ~ ${campaign.endDate}`}
         actions={
           canEdit ? (
             <Select
-              label="Campaign status"
-              aria-label="Campaign status"
+              label="캠페인 상태"
+              aria-label="캠페인 상태"
               value={campaign.status}
               onChange={(event) =>
                 statusMutation.mutate(event.target.value as CampaignStatus)
               }
-              className="border-white/10 bg-white/10 text-white [&>option]:text-slate-900"
+              className="min-w-40"
             >
-              <SelectOption value="active">Active</SelectOption>
-              <SelectOption value="paused">Paused</SelectOption>
-              <SelectOption value="ended">Ended</SelectOption>
+              <SelectOption value="active">운영 중</SelectOption>
+              <SelectOption value="paused">일시중지</SelectOption>
+              <SelectOption value="ended">종료</SelectOption>
             </Select>
           ) : null
         }
       />
 
       <section className="grid gap-4 lg:grid-cols-5">
-        <MetricCard label="Revenue" value={formatCompactCurrency(campaign.revenue)} delta={`${formatInteger(campaign.conversions)} conversions`} tone="positive" />
-        <MetricCard label="Ad spend" value={formatCompactCurrency(campaign.spend)} delta={`${detail.summary.budgetUtilization}% of budget used`} tone="neutral" />
+        <MetricCard label="매출" value={formatCompactCurrency(campaign.revenue)} delta={`전환 ${formatInteger(campaign.conversions)}건`} tone="positive" />
+        <MetricCard label="광고비" value={formatCompactCurrency(campaign.spend)} delta={`예산 사용률 ${detail.summary.budgetUtilization}%`} tone="neutral" />
         <MetricCard label="ROAS" value={formatRatio(campaign.roas)} delta={detail.summary.health} tone={campaign.roas >= 2 ? 'positive' : 'warning'} />
-        <MetricCard label="Conversion rate" value={formatPercent(campaign.conversionRate)} delta={detail.summary.pacing} tone="positive" />
-        <MetricCard label="Budget" value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
+        <MetricCard label="전환율" value={formatPercent(campaign.conversionRate)} delta={detail.summary.pacing} tone="positive" />
+        <MetricCard label="예산" value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
       </section>
 
-      <section className="rounded-[28px] border border-slate-200 bg-white p-5">
+      <section
+        className={`rounded-[28px] border p-5 ${
+          theme === 'dark'
+            ? 'border-slate-800 bg-slate-900'
+            : 'border-slate-200 bg-white'
+        }`}
+      >
         <Tabs
           value={activeTab}
           onChange={setActiveTab}
           options={[
-            { id: 'overview', label: 'Overview' },
-            { id: 'creatives', label: 'Creatives' },
-            { id: 'revenue', label: 'Revenue' },
-            { id: 'memo', label: 'Memo' },
+            { id: 'overview', label: '개요' },
+            { id: 'creatives', label: '소재' },
+            { id: 'revenue', label: '매출' },
+            { id: 'memo', label: '메모' },
           ]}
         />
       </section>
@@ -324,8 +344,8 @@ export function CampaignDetailPage() {
       {activeTab === 'overview' ? (
         <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
           <ChartCard
-            title="Performance trend"
-            description="Revenue and spend trend by period."
+            title="성과 추이"
+            description="기간별 매출과 광고비 흐름입니다."
           >
             <RevenueSpendTrendChart
               data={detail.delivery.map((point) => ({
@@ -336,27 +356,34 @@ export function CampaignDetailPage() {
             />
           </ChartCard>
           <ChartCard
-            title="Budget utilization"
-            description="Current budget burn against the campaign cap."
+            title="예산 소진율"
+            description="설정된 예산 대비 현재 사용량입니다."
           >
             <div className="space-y-4">
-              <div className="h-4 overflow-hidden rounded-full bg-slate-100">
+              <div className={`h-4 overflow-hidden rounded-full ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
                 <div
-                  className="h-full rounded-full bg-teal-700"
+                  className="h-full rounded-full bg-teal-600"
                   style={{ width: `${Math.min(100, detail.summary.budgetUtilization)}%` }}
                 />
               </div>
-              <p className="text-sm text-slate-500">
-                {detail.summary.budgetUtilization}% of the budget is already used.
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+                전체 예산의 {detail.summary.budgetUtilization}%를 사용했습니다.
               </p>
               <div className="space-y-3">
                 {detail.activity.map((item) => (
-                  <article key={item.id} className="rounded-3xl border border-slate-200 p-4">
+                  <article
+                    key={item.id}
+                    className={`rounded-3xl border p-4 ${
+                      theme === 'dark'
+                        ? 'border-slate-800 bg-slate-800/50'
+                        : 'border-slate-200 bg-white'
+                    }`}
+                  >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold text-slate-950">{item.actor}</p>
-                      <p className="text-xs uppercase tracking-[0.2em] text-slate-400">{item.timeLabel}</p>
+                      <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{item.actor}</p>
+                      <p className={`text-xs uppercase tracking-[0.2em] ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>{item.timeLabel}</p>
                     </div>
-                    <p className="mt-2 text-sm text-slate-500">{item.message}</p>
+                    <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{item.message}</p>
                   </article>
                 ))}
               </div>
@@ -368,8 +395,8 @@ export function CampaignDetailPage() {
       {activeTab === 'creatives' ? (
         <div id="panel-creatives" role="tabpanel" aria-labelledby="tab-creatives" className="space-y-6">
           <ChartCard
-            title="Creative performance"
-            description="Material-level breakdown for spend, revenue, ROAS, and conversion rate."
+            title="소재 성과"
+            description="소재 단위의 광고비, 매출, ROAS, 전환율을 비교합니다."
           >
             <DataTable
               columns={creativeColumns}
@@ -383,33 +410,38 @@ export function CampaignDetailPage() {
       {activeTab === 'revenue' ? (
         <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-6 xl:grid-cols-[1fr_1fr]">
           <ChartCard
-            title="Channel comparison"
-            description="Revenue versus spend by channel."
+            title="채널별 비교"
+            description="채널별 매출과 광고비를 비교합니다."
           >
             <ChannelComparisonChart data={detail.channelComparison} />
           </ChartCard>
           <ChartCard
-            title="Daily revenue summary"
-            description="Recent daily financial performance."
+            title="일별 성과 요약"
+            description="최근 일자별 재무 성과를 확인합니다."
           >
             <div className="space-y-3">
               {detail.delivery.map((point) => (
-                <div key={point.date} className="grid grid-cols-4 gap-3 rounded-3xl bg-slate-50 px-4 py-4 text-sm">
+                <div
+                  key={point.date}
+                  className={`grid grid-cols-4 gap-3 rounded-3xl px-4 py-4 text-sm ${
+                    theme === 'dark' ? 'bg-slate-800/70' : 'bg-slate-50'
+                  }`}
+                >
                   <div>
-                    <p className="text-slate-500">Date</p>
-                    <p className="font-semibold text-slate-950">{point.date}</p>
+                    <p className="text-slate-500">일자</p>
+                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{point.date}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Revenue</p>
-                    <p className="font-semibold text-slate-950">{formatCompactCurrency(point.revenue)}</p>
+                    <p className="text-slate-500">매출</p>
+                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatCompactCurrency(point.revenue)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">Spend</p>
-                    <p className="font-semibold text-slate-950">{formatCompactCurrency(point.spend)}</p>
+                    <p className="text-slate-500">광고비</p>
+                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatCompactCurrency(point.spend)}</p>
                   </div>
                   <div>
                     <p className="text-slate-500">ROAS</p>
-                    <p className="font-semibold text-slate-950">{formatRatio(point.roas)}</p>
+                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatRatio(point.roas)}</p>
                   </div>
                 </div>
               ))}
@@ -421,11 +453,11 @@ export function CampaignDetailPage() {
       {activeTab === 'memo' ? (
         <div id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" className="space-y-6">
           <ChartCard
-            title="Operations memo"
-            description="Write and update internal notes with optimistic save."
+            title="운영 메모"
+            description="내부 메모를 작성하고 optimistic update로 즉시 반영합니다."
           >
             <textarea
-              aria-label="Operations memo"
+              aria-label="운영 메모"
               value={memoDraft}
               onChange={(event) =>
                 setMemoOverrides((current) => ({
@@ -435,19 +467,23 @@ export function CampaignDetailPage() {
               }
               disabled={!canEdit}
               rows={8}
-              className="w-full rounded-3xl border border-slate-200 px-4 py-4 text-sm text-slate-700 disabled:bg-slate-100"
+              className={`w-full rounded-3xl border px-4 py-4 text-sm ${
+                theme === 'dark'
+                  ? 'border-slate-800 bg-slate-800 text-slate-100 disabled:bg-slate-800 disabled:text-slate-500'
+                  : 'border-slate-200 text-slate-700 disabled:bg-slate-100'
+              }`}
             />
             <div className="mt-4 flex items-center justify-between gap-3">
-              <p className="text-sm text-slate-500" aria-live="polite">
+              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`} aria-live="polite">
                 {!canEdit
-                  ? 'Viewer access cannot edit memo.'
+                  ? '조회 전용 계정은 메모를 수정할 수 없습니다.'
                   : memoMutation.isPending
-                    ? 'Saving memo...'
+                    ? '메모 저장 중...'
                     : memoMutation.isSuccess
-                      ? 'Memo saved.'
+                      ? '메모가 저장되었습니다.'
                       : memoMutation.isError
                         ? memoMutation.error.message
-                        : 'Save notes with optimistic update and rollback support.'}
+                        : '즉시 반영 후 실패 시 롤백되는 방식으로 저장됩니다.'}
               </p>
               {canEdit ? (
                 <Button
@@ -456,7 +492,7 @@ export function CampaignDetailPage() {
                       onSuccess: () => {
                         showToast({
                           tone: 'success',
-                          title: 'Memo saved.',
+                          title: '메모를 저장했습니다.',
                         })
                         setMemoOverrides((current) => {
                           const next = { ...current }
@@ -467,7 +503,7 @@ export function CampaignDetailPage() {
                     })
                   }
                 >
-                  Save memo
+                  메모 저장
                 </Button>
               ) : null}
             </div>

@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom'
 import type { DataTableColumn } from '../../components/ui/DataTable'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { formatCompactCurrency, formatPercent, formatRatio } from '../../lib/format'
+import { campaignChannelTextMap, campaignStatusTextMap } from '../../lib/labels'
 import type { Campaign, CampaignStatus } from '../../types/mediaops'
+
+type ThemeMode = 'light' | 'dark'
 
 interface CampaignTableColumnOptions {
   selectedIds: string[]
@@ -13,6 +16,7 @@ interface CampaignTableColumnOptions {
   sortBy: string
   sortDirection: string
   onSort: (field: 'revenue' | 'spend' | 'roas' | 'conversionRate') => void
+  theme: ThemeMode
 }
 
 function SortButton({
@@ -20,20 +24,26 @@ function SortButton({
   active,
   direction,
   onClick,
+  theme,
 }: {
   label: string
   active: boolean
   direction: string
   onClick: () => void
+  theme: ThemeMode
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1 text-left font-semibold text-slate-700"
+      className={`inline-flex items-center gap-1 text-left font-semibold ${
+        theme === 'dark' ? 'text-slate-200' : 'text-slate-700'
+      }`}
     >
       <span>{label}</span>
-      <span className="text-slate-400">{active ? (direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+      <span className={theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}>
+        {active ? (direction === 'asc' ? '↑' : '↓') : '↕'}
+      </span>
     </button>
   )
 }
@@ -57,6 +67,7 @@ export function createCampaignTableColumns({
   sortBy,
   sortDirection,
   onSort,
+  theme,
 }: CampaignTableColumnOptions): Array<DataTableColumn<Campaign>> {
   return [
     {
@@ -65,7 +76,7 @@ export function createCampaignTableColumns({
       cell: (campaign) => (
         <input
           type="checkbox"
-          aria-label={`Select ${campaign.name}`}
+          aria-label={`${campaign.name} 선택`}
           checked={selectedIds.includes(campaign.id)}
           disabled={!canEdit}
           onChange={() => onToggleSelected(campaign.id)}
@@ -74,39 +85,44 @@ export function createCampaignTableColumns({
     },
     {
       id: 'campaign',
-      header: 'Campaign',
+      header: '캠페인',
       cell: (campaign) => (
         <div>
           <Link
             to={`/campaigns/${campaign.id}`}
             onMouseEnter={() => onPrefetch(campaign.id)}
             onFocus={() => onPrefetch(campaign.id)}
-            aria-label={`Open ${campaign.name} campaign details`}
-            className="font-semibold text-slate-950 underline decoration-slate-200 underline-offset-4"
+            aria-label={`${campaign.name} 상세 보기`}
+            className={`font-semibold underline underline-offset-4 ${
+              theme === 'dark'
+                ? 'text-slate-100 decoration-slate-700'
+                : 'text-slate-950 decoration-slate-200'
+            }`}
           >
             {campaign.name}
           </Link>
-          <p className="mt-1 text-xs text-slate-500">
-            {campaign.channel} · {campaign.managerName}
+          <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+            {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
           </p>
         </div>
       ),
     },
     {
       id: 'status',
-      header: 'Status',
+      header: '상태',
       cell: (campaign) => (
-        <StatusBadge label={campaign.status} tone={mapStatusTone(campaign.status)} />
+        <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={mapStatusTone(campaign.status)} />
       ),
     },
     {
       id: 'revenue',
       header: (
         <SortButton
-          label="Revenue"
+          label="매출"
           active={sortBy === 'revenue'}
           direction={sortDirection}
           onClick={() => onSort('revenue')}
+          theme={theme}
         />
       ),
       cell: (campaign) => formatCompactCurrency(campaign.revenue),
@@ -115,10 +131,11 @@ export function createCampaignTableColumns({
       id: 'spend',
       header: (
         <SortButton
-          label="Spend"
+          label="광고비"
           active={sortBy === 'spend'}
           direction={sortDirection}
           onClick={() => onSort('spend')}
+          theme={theme}
         />
       ),
       cell: (campaign) => formatCompactCurrency(campaign.spend),
@@ -131,6 +148,7 @@ export function createCampaignTableColumns({
           active={sortBy === 'roas'}
           direction={sortDirection}
           onClick={() => onSort('roas')}
+          theme={theme}
         />
       ),
       cell: (campaign) => formatRatio(campaign.roas),
@@ -139,10 +157,11 @@ export function createCampaignTableColumns({
       id: 'conversionRate',
       header: (
         <SortButton
-          label="CVR"
+          label="전환율"
           active={sortBy === 'conversionRate'}
           direction={sortDirection}
           onClick={() => onSort('conversionRate')}
+          theme={theme}
         />
       ),
       cell: (campaign) => formatPercent(campaign.conversionRate),

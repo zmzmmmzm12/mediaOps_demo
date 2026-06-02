@@ -5,7 +5,7 @@ import { CampaignFilters } from './CampaignFilters'
 function CampaignFiltersStory() {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<'all' | 'active' | 'paused' | 'ended'>('all')
-  const [presetName, setPresetName] = useState('High priority active')
+  const [presetName, setPresetName] = useState('우선 대응 운영 중')
   const [selectedPresetId, setSelectedPresetId] = useState('preset-1')
 
   return (
@@ -19,9 +19,9 @@ function CampaignFiltersStory() {
       presets={[
         {
           id: 'preset-1',
-          name: 'High priority active',
+          name: '우선 대응 운영 중',
           filters: {
-            search: 'Orbit',
+            search: '오르빗',
             status: 'active',
             channel: 'meta',
             startDate: '',

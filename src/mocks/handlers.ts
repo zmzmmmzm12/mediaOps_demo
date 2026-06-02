@@ -52,7 +52,7 @@ export const handlers = [
     const profile = body.userId ? findProfile(body.userId) : null
 
     if (!profile) {
-      return HttpResponse.json({ message: 'Mock profile not found.' }, { status: 404 })
+      return HttpResponse.json({ message: '데모 계정을 찾을 수 없습니다.' }, { status: 404 })
     }
 
     return HttpResponse.json({ user: profile })
@@ -64,18 +64,18 @@ export const handlers = [
     const mode = getDebugMode(request.url)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     if (mode === 'error') {
-      return HttpResponse.json({ message: 'Dashboard failed to load.' }, { status: 500 })
+      return HttpResponse.json({ message: '대시보드 데이터를 불러오지 못했습니다.' }, { status: 500 })
     }
 
     if (mode === 'empty') {
       return HttpResponse.json({
         dashboard: {
-          headline: 'No data is available for this view yet.',
-          subheadline: 'Connect more campaign sources or widen the date range.',
+          headline: '아직 표시할 데이터가 없습니다.',
+          subheadline: '데이터 소스를 더 연결하거나 기간 범위를 넓혀보세요.',
           metrics: [],
           trend: [],
           statusDistribution: [],
@@ -94,11 +94,11 @@ export const handlers = [
     const mode = getDebugMode(request.url)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     if (mode === 'error') {
-      return HttpResponse.json({ message: 'Campaign list failed to load.' }, { status: 500 })
+      return HttpResponse.json({ message: '캠페인 목록을 불러오지 못했습니다.' }, { status: 500 })
     }
 
     if (mode === 'empty') {
@@ -108,7 +108,7 @@ export const handlers = [
     const result = listCampaigns(role)
 
     if (!result) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ message: '접근 권한이 없습니다.' }, { status: 403 })
     }
 
     return HttpResponse.json(result)
@@ -120,23 +120,23 @@ export const handlers = [
     const mode = getDebugMode(request.url)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     if (mode === 'error') {
-      return HttpResponse.json({ message: 'Campaign detail failed to load.' }, { status: 500 })
+      return HttpResponse.json({ message: '캠페인 상세 데이터를 불러오지 못했습니다.' }, { status: 500 })
     }
 
     const campaignId = params.campaignId
 
     if (typeof campaignId !== 'string') {
-      return HttpResponse.json({ message: 'Campaign id is required.' }, { status: 400 })
+      return HttpResponse.json({ message: '캠페인 ID가 필요합니다.' }, { status: 400 })
     }
 
     const detail = getCampaignDetailForRole(role, campaignId)
 
     if (!detail) {
-      return HttpResponse.json({ message: 'Campaign not found.' }, { status: 404 })
+      return HttpResponse.json({ message: '캠페인을 찾을 수 없습니다.' }, { status: 404 })
     }
 
     return HttpResponse.json({ detail })
@@ -147,13 +147,13 @@ export const handlers = [
     const role = getRoleFromHeaders(request.headers)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     const campaignId = params.campaignId
 
     if (typeof campaignId !== 'string') {
-      return HttpResponse.json({ message: 'Campaign id is required.' }, { status: 400 })
+      return HttpResponse.json({ message: '캠페인 ID가 필요합니다.' }, { status: 400 })
     }
 
     const body = (await request.json()) as {
@@ -163,7 +163,7 @@ export const handlers = [
     const campaign = updateCampaignForRole(role, campaignId, body)
 
     if (!campaign) {
-      return HttpResponse.json({ message: 'Permission denied.' }, { status: 403 })
+      return HttpResponse.json({ message: '수정 권한이 없습니다.' }, { status: 403 })
     }
 
     return HttpResponse.json({ campaign })
@@ -174,25 +174,25 @@ export const handlers = [
     const role = getRoleFromHeaders(request.headers)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     const campaignId = params.campaignId
 
     if (typeof campaignId !== 'string') {
-      return HttpResponse.json({ message: 'Campaign id is required.' }, { status: 400 })
+      return HttpResponse.json({ message: '캠페인 ID가 필요합니다.' }, { status: 400 })
     }
 
     const body = (await request.json()) as { memo?: string }
 
     if (typeof body.memo !== 'string') {
-      return HttpResponse.json({ message: 'Memo is required.' }, { status: 400 })
+      return HttpResponse.json({ message: '메모 내용이 필요합니다.' }, { status: 400 })
     }
 
     const campaign = updateCampaignMemoForRole(role, campaignId, body.memo)
 
     if (!campaign) {
-      return HttpResponse.json({ message: 'Permission denied.' }, { status: 403 })
+      return HttpResponse.json({ message: '메모 수정 권한이 없습니다.' }, { status: 403 })
     }
 
     return HttpResponse.json({ campaign })
@@ -204,11 +204,11 @@ export const handlers = [
     const mode = getDebugMode(request.url)
 
     if (!role) {
-      return HttpResponse.json({ message: 'Unauthorized' }, { status: 401 })
+      return HttpResponse.json({ message: '인증 정보가 없습니다.' }, { status: 401 })
     }
 
     if (mode === 'error') {
-      return HttpResponse.json({ message: 'Reports failed to load.' }, { status: 500 })
+      return HttpResponse.json({ message: '리포트 데이터를 불러오지 못했습니다.' }, { status: 500 })
     }
 
     if (mode === 'empty') {
@@ -224,7 +224,7 @@ export const handlers = [
     const reports = getReportsForRole(role)
 
     if (!reports) {
-      return HttpResponse.json({ message: 'Forbidden' }, { status: 403 })
+      return HttpResponse.json({ message: '접근 권한이 없습니다.' }, { status: 403 })
     }
 
     return HttpResponse.json({ reports })
@@ -243,7 +243,7 @@ export const handlers = [
     }
 
     if (!body.name || !body.filters) {
-      return HttpResponse.json({ message: 'Preset payload is invalid.' }, { status: 400 })
+      return HttpResponse.json({ message: '프리셋 요청 데이터가 올바르지 않습니다.' }, { status: 400 })
     }
 
     return HttpResponse.json({
@@ -259,13 +259,13 @@ export const handlers = [
     const presetId = params.presetId
 
     if (typeof presetId !== 'string') {
-      return HttpResponse.json({ message: 'Preset id is required.' }, { status: 400 })
+      return HttpResponse.json({ message: '프리셋 ID가 필요합니다.' }, { status: 400 })
     }
 
     const deleted = deleteFilterPreset(presetId)
 
     if (!deleted) {
-      return HttpResponse.json({ message: 'Preset not found.' }, { status: 404 })
+      return HttpResponse.json({ message: '프리셋을 찾을 수 없습니다.' }, { status: 404 })
     }
 
     return HttpResponse.json({ success: true })
