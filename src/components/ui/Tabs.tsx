@@ -48,7 +48,7 @@ export function Tabs({ value, options, onChange }: TabsProps) {
     <div
       role="tablist"
       aria-label="콘텐츠 구역"
-      className="inline-flex flex-wrap gap-1 rounded-[14px] border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-1"
+      className="inline-flex flex-wrap gap-1 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-1"
     >
       {options.map((option, index) => {
         const isActive = option.id === value
@@ -64,10 +64,10 @@ export function Tabs({ value, options, onChange }: TabsProps) {
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(option.id)}
             onKeyDown={(event) => handleKeyDown(index, event)}
-            className={`focus-ring rounded-[10px] px-3.5 py-2 text-sm font-medium transition ${
+            className={`focus-ring rounded-md px-3.5 py-2 text-sm font-medium transition ${
               isActive
                 ? theme === 'dark'
-                  ? 'bg-slate-800 text-slate-50'
+                  ? 'bg-white/[0.08] text-slate-50 shadow-sm'
                   : 'bg-white text-slate-950 shadow-sm'
                 : theme === 'dark'
                   ? 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'

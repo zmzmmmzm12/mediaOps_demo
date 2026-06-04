@@ -295,17 +295,17 @@ export function CampaignsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         eyebrow="캠페인"
         title="캠페인 탐색기"
         description="검색, 필터, 정렬, 저장된 프리셋, CSV 다운로드, 일괄 상태 변경을 한 흐름으로 처리합니다."
       />
 
-      <section className="surface-card overflow-hidden px-6 py-6">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.6fr))]">
-          <div className="surface-muted px-4 py-4 xl:col-span-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">운영 제어</p>
+      <section className="surface-card overflow-hidden p-4">
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,0.55fr))]">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4 xl:col-span-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">운영 제어</p>
             <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
               캠페인 검색과 운영 제어
             </h3>
@@ -313,19 +313,19 @@ export function CampaignsPage() {
               상태, 채널, 기간, 프리셋을 조합해 운영 대상을 빠르게 찾고 바로 액션할 수 있습니다.
             </p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">검색 결과</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
               {filteredCampaigns.length}
             </p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">조건에 맞는 활성 데이터</p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">저장 프리셋</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">빠른 필터 재사용</p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">선택 항목</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{selectedCampaignIds.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">일괄 작업 대상</p>
@@ -333,7 +333,13 @@ export function CampaignsPage() {
         </div>
       </section>
 
-      <section className="surface-card px-5 py-5">
+      <section className="surface-card p-4">
+        <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">필터 툴바</p>
+            <p className="text-xs text-[var(--text-tertiary)]">검색 조건과 프리셋을 한 번에 조정합니다.</p>
+          </div>
+        </div>
         <div className="grid gap-3 xl:grid-cols-4">
           <Input
             label="캠페인 검색"
@@ -381,7 +387,7 @@ export function CampaignsPage() {
           />
         </div>
 
-        <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_220px_repeat(5,minmax(0,auto))]">
+        <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_220px_repeat(5,minmax(0,auto))] xl:items-end">
           <Input
             label="프리셋 이름"
             aria-label="프리셋 이름"
@@ -495,7 +501,7 @@ export function CampaignsPage() {
       ) : (
         <>
           <section className="surface-card overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-4">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3.5">
               <div>
                 <p className="text-sm font-semibold text-[var(--text-primary)]">캠페인 목록</p>
                 <p className="mt-1 text-xs text-[var(--text-tertiary)]">선택한 조건에 맞는 캠페인을 정렬된 표로 제공합니다.</p>

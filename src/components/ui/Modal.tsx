@@ -68,7 +68,7 @@ export function Modal({ open, title, children, onClose, actions }: ModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="surface-elevated w-full max-w-lg p-6"
+        className="surface-elevated w-full max-w-lg p-5"
       >
         <div className="flex items-start justify-between gap-4">
           <h3 id="modal-title" className="text-2xl font-semibold text-[var(--text-primary)]">

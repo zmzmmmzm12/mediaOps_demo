@@ -14,7 +14,7 @@ export function PageHeader({
   actions,
 }: PageHeaderProps) {
   return (
-    <section className="px-1 py-1">
+    <section className="px-0 py-1">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="min-w-0">
           {eyebrow ? (
@@ -22,11 +22,11 @@ export function PageHeader({
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="page-header-title mt-2 text-[30px] font-semibold text-[var(--text-primary)] sm:text-[36px]">
+          <h2 className="page-header-title mt-2 text-[28px] font-semibold leading-tight text-[var(--text-primary)] sm:text-[34px]">
             {title}
           </h2>
           {description ? (
-            <p className="mt-2.5 max-w-3xl text-sm leading-7 text-[var(--text-tertiary)] sm:text-[15px]">
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-tertiary)] sm:text-[15px]">
               {description}
             </p>
           ) : null}

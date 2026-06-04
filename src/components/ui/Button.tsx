@@ -28,20 +28,20 @@ export function Button({
   const variantClassMap: Record<ButtonVariant, string> = {
     primary:
       theme === 'dark'
-        ? 'border-transparent bg-indigo-400 text-slate-950 shadow-sm hover:bg-indigo-300'
-        : 'border-transparent bg-indigo-600 text-white shadow-sm hover:bg-indigo-500',
+        ? 'border-transparent bg-indigo-400 text-slate-950 shadow-sm shadow-indigo-950/20 hover:bg-indigo-300'
+        : 'border-transparent bg-indigo-600 text-white shadow-sm shadow-indigo-200/60 hover:bg-indigo-500',
     secondary:
       theme === 'dark'
-        ? 'border-slate-700 bg-slate-900/90 text-slate-100 hover:border-slate-600 hover:bg-slate-800'
-        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50',
+        ? 'border-white/10 bg-white/[0.04] text-slate-100 hover:border-white/15 hover:bg-white/[0.07]'
+        : 'border-slate-200/80 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50',
     ghost:
       theme === 'dark'
-        ? 'border-transparent bg-transparent text-slate-300 hover:bg-white/5 hover:text-slate-100'
-        : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+        ? 'border-transparent bg-transparent text-slate-300 hover:bg-white/[0.06] hover:text-slate-100'
+        : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900',
     danger:
       theme === 'dark'
         ? 'border-transparent bg-red-400 text-slate-950 shadow-sm hover:bg-red-300'
-        : 'border-transparent bg-red-600 text-white shadow-sm hover:bg-red-500',
+        : 'border-transparent bg-red-600 text-white shadow-sm shadow-red-200/60 hover:bg-red-500',
   }
 
   const sizeClassMap: Record<ButtonSize, string> = {
@@ -55,7 +55,7 @@ export function Button({
       disabled={disabled || loading}
       aria-busy={loading || undefined}
       className={cn(
-        'focus-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border font-medium leading-none',
+        'focus-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium leading-none',
         'disabled:cursor-not-allowed disabled:opacity-45',
         sizeClassMap[buttonSize],
         variantClassMap[variant],

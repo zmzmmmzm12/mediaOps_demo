@@ -49,7 +49,7 @@ export function CampaignFilters({
         <div className="space-y-2">
           <label
             htmlFor="campaign-search"
-            className="text-sm font-medium text-white"
+            className="field-label text-sm font-medium"
           >
             캠페인 검색
           </label>
@@ -58,14 +58,14 @@ export function CampaignFilters({
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="캠페인명 또는 담당자로 검색"
-            className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-teal-300"
+            className="field-shell focus-ring px-4 py-3 text-sm"
           />
         </div>
 
         <div className="space-y-2">
           <label
             htmlFor="campaign-status"
-            className="text-sm font-medium text-white"
+            className="field-label text-sm font-medium"
           >
             상태
           </label>
@@ -75,10 +75,10 @@ export function CampaignFilters({
             onChange={(event) =>
               onStatusChange(event.target.value as CampaignStatus | 'all')
             }
-            className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none focus:border-teal-300"
+            className="field-shell focus-ring px-4 py-3 text-sm"
           >
             {statusOptions.map((option) => (
-              <option key={option} value={option} className="text-slate-900">
+              <option key={option} value={option}>
                 {option === 'all'
                   ? '전체 상태'
                   : option === 'active'
@@ -96,7 +96,7 @@ export function CampaignFilters({
         <div className="space-y-2">
           <label
             htmlFor="campaign-preset-name"
-            className="text-sm font-medium text-white"
+            className="field-label text-sm font-medium"
           >
             프리셋 이름
           </label>
@@ -105,14 +105,14 @@ export function CampaignFilters({
             value={presetName}
             onChange={(event) => onPresetNameChange(event.target.value)}
             placeholder="현재 필터 조건 저장"
-            className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none placeholder:text-slate-400 focus:border-teal-300"
+            className="field-shell focus-ring px-4 py-3 text-sm"
           />
         </div>
 
         <div className="space-y-2">
           <label
             htmlFor="campaign-preset-select"
-            className="text-sm font-medium text-white"
+            className="field-label text-sm font-medium"
           >
             저장된 프리셋
           </label>
@@ -120,16 +120,15 @@ export function CampaignFilters({
             id="campaign-preset-select"
             value={selectedPresetId}
             onChange={(event) => onSelectedPresetIdChange(event.target.value)}
-            className="w-full rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm text-white outline-none focus:border-teal-300"
+            className="field-shell focus-ring px-4 py-3 text-sm"
           >
-            <option value="" className="text-slate-900">
+            <option value="">
               {presets.length === 0 ? '저장된 프리셋이 없습니다' : '프리셋 선택'}
             </option>
             {presets.map((preset) => (
               <option
                 key={preset.id}
                 value={preset.id}
-                className="text-slate-900"
               >
                 {preset.name}
               </option>
@@ -178,7 +177,7 @@ export function CampaignFilters({
       </div>
 
       <p
-        className="text-sm text-slate-300"
+        className="text-sm text-[var(--text-tertiary)]"
         aria-live="polite"
         data-testid="campaign-results-count"
       >

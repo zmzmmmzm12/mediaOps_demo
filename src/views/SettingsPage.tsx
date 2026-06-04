@@ -75,33 +75,33 @@ export function SettingsPage() {
   const presets = presetsQuery.data?.presets ?? []
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         eyebrow="설정"
         title="프로필과 개인화 설정"
         description="테마, 권한 범위, 저장된 프리셋을 한 자리에서 관리합니다."
       />
 
-      <section className="surface-card overflow-hidden px-6 py-6">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
-          <div className="surface-muted px-5 py-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">개인 설정</p>
+      <section className="surface-card overflow-hidden p-4">
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">개인 설정</p>
             <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">운영 환경과 개인 설정</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               현재 계정 역할, 테마, 프리셋 보관함을 같은 톤의 관리자 화면에서 관리할 수 있게 정리했습니다.
             </p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">현재 역할</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{roleLabels[session.role]}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">접근 가능한 메뉴 기준</p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">활성 테마</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{theme === 'dark' ? '다크' : '라이트'}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">개인 환경설정</p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">저장 프리셋</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">필터 조건 재사용</p>
@@ -109,10 +109,10 @@ export function SettingsPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(320px,0.95fr)_minmax(0,1.05fr)]">
-        <article className="surface-card px-6 py-6">
+      <section className="grid gap-5 xl:grid-cols-[minmax(320px,0.95fr)_minmax(0,1.05fr)]">
+        <article className="surface-card p-5">
           <div className="flex items-start gap-4">
-            <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-lg font-semibold text-[var(--brand)]">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-lg font-semibold text-[var(--brand)]">
               {session.name.slice(0, 1)}
             </span>
             <div className="min-w-0">
@@ -125,7 +125,7 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div className="surface-muted mt-6 px-4 py-4">
+          <div className="surface-muted mt-5 p-4">
             <p className="text-sm font-medium text-[var(--text-primary)]">테마</p>
             <p className="mt-1 text-sm text-[var(--text-tertiary)]">
               포트폴리오와 실무 시연에 적합한 관리자 화면 테마를 선택합니다.
@@ -134,9 +134,9 @@ export function SettingsPage() {
               <button
                 type="button"
                 onClick={() => setTheme('light')}
-                className={`focus-ring rounded-2xl border px-4 py-4 text-left ${
+                className={`focus-ring rounded-xl border p-4 text-left ${
                   theme === 'light'
-                    ? 'border-indigo-300 bg-indigo-50 text-slate-900'
+                    ? 'border-[var(--brand)] bg-[var(--brand-soft)] text-[var(--text-primary)]'
                     : 'border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-secondary)]'
                 }`}
               >
@@ -146,7 +146,7 @@ export function SettingsPage() {
               <button
                 type="button"
                 onClick={() => setTheme('dark')}
-                className={`focus-ring rounded-2xl border px-4 py-4 text-left ${
+                className={`focus-ring rounded-xl border p-4 text-left ${
                   theme === 'dark'
                     ? 'border-indigo-400/50 bg-[var(--brand-soft)] text-[var(--text-primary)]'
                     : 'border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-secondary)]'
@@ -159,14 +159,14 @@ export function SettingsPage() {
           </div>
         </article>
 
-        <article className="surface-card px-6 py-6">
+        <article className="surface-card p-5">
           <div>
             <p className="text-sm text-[var(--text-tertiary)]">권한별 접근 범위</p>
             <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">역할별 사용 범위</h3>
           </div>
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             {(['admin', 'manager', 'viewer'] as const).map((role) => (
-              <div key={role} className="surface-muted px-4 py-4">
+              <div key={role} className="surface-muted p-4">
                 <p className="font-semibold text-[var(--text-primary)]">{roleLabels[role]}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-tertiary)]">
                   {role === 'admin'
@@ -179,7 +179,7 @@ export function SettingsPage() {
             ))}
           </div>
           {hasPermission(session.role, 'settings:manage-users') ? (
-            <div className="surface-muted mt-5 px-4 py-4">
+            <div className="surface-muted mt-5 p-4">
               <p className="font-semibold text-[var(--text-primary)]">관리자 전용 영역</p>
               <p className="mt-2 text-sm text-[var(--text-tertiary)]">
                 사용자 관리, 승인 정책, 운영 워크플로 확장 기능을 연결하기 좋은 위치입니다.
@@ -189,7 +189,7 @@ export function SettingsPage() {
         </article>
       </section>
 
-      <section className="surface-card px-6 py-6">
+      <section className="surface-card p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm text-[var(--text-tertiary)]">저장된 필터 프리셋</p>

@@ -97,7 +97,7 @@ export function ReportsPage() {
   const topCampaign = reports.roasRanking[0]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         eyebrow="리포트"
         title="매출과 효율 리포트"
@@ -118,21 +118,21 @@ export function ReportsPage() {
         }
       />
 
-      <section className="surface-card overflow-hidden px-6 py-6">
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
-          <div className="surface-muted px-5 py-5">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">성과 요약</p>
+      <section className="surface-card overflow-hidden p-4">
+        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">성과 요약</p>
             <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">채널 효율과 ROAS 흐름</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               차트와 표를 함께 보면서 이번 기간의 매출, 광고비, 상위 캠페인 효율을 한 번에 검토합니다.
             </p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">총 매출</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{formatCompactCurrency(totalRevenue)}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">선택 기간 누적 매출</p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상위 채널</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
               {topChannel ? campaignChannelTextMap[topChannel.channel] : '-'}
@@ -141,7 +141,7 @@ export function ReportsPage() {
               {topChannel ? formatCompactCurrency(topChannel.revenue) : '집계 없음'}
             </p>
           </div>
-          <div className="surface-muted px-4 py-4">
+          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상위 캠페인</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
               {topCampaign ? formatRatio(topCampaign.roas) : '-'}
@@ -153,7 +153,7 @@ export function ReportsPage() {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-2">
+      <section className="grid gap-5 xl:grid-cols-2">
         <ChartCard title="기간별 매출 추이" description="최근 기간의 매출 흐름입니다.">
           <RevenueSpendTrendChart
             data={reports.revenueByPeriod.map((item) => ({
@@ -168,7 +168,7 @@ export function ReportsPage() {
         </ChartCard>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(320px,0.88fr)_minmax(0,1.12fr)]">
+      <section className="grid gap-5 xl:grid-cols-[minmax(320px,0.88fr)_minmax(0,1.12fr)]">
         <ChartCard title="ROAS 순위" description="효율이 높은 캠페인 순으로 정렬했습니다.">
           <RoasRankingChart data={reports.roasRanking} />
         </ChartCard>

@@ -84,7 +84,7 @@ export function DashboardPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
         eyebrow="대시보드"
         title={dashboard.headline}
@@ -98,15 +98,15 @@ export function DashboardPage() {
         />
       ) : (
         <>
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.38fr)_minmax(320px,0.82fr)]">
-            <article className="surface-card overflow-hidden rounded-[28px] px-6 py-6">
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
+          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.78fr)]">
+            <article className="surface-card overflow-hidden p-4 sm:p-5">
+              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
                 <div>
-                  <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">
-                    <span className="inline-flex h-2 w-2 rounded-full bg-[var(--brand)]" />
+                  <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
                     운영 대시보드
                   </div>
-                  <h3 className="mt-4 text-[32px] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+                  <h3 className="mt-5 text-[28px] font-semibold leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
                     운영 팀이 바로 확인해야 할
                     <br />
                     핵심 성과 요약
@@ -115,9 +115,9 @@ export function DashboardPage() {
                     매출, 광고비, 상태 분포, 상위 캠페인 성과를 관리자형 화면 밀도로 정리했습니다.
                   </p>
 
-                  <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                  <div className="mt-7 grid gap-3 sm:grid-cols-3">
                     {dashboard.metrics.slice(0, 3).map((metric) => (
-                      <div key={metric.id} className="surface-muted rounded-[20px] px-4 py-4">
+                      <div key={metric.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-3.5">
                         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                           {metric.label}
                         </p>
@@ -130,7 +130,7 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="surface-muted rounded-[24px] px-5 py-5">
+                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
@@ -138,7 +138,7 @@ export function DashboardPage() {
                       </p>
                       <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">운영 흐름</p>
                     </div>
-                    <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
+                    <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
                       실시간
                     </span>
                   </div>
@@ -146,7 +146,7 @@ export function DashboardPage() {
                     {dashboard.trend.map((point, index) => (
                       <div key={point.date} className="flex w-full flex-col items-center gap-2">
                         <span
-                          className="w-full rounded-full bg-indigo-300/90"
+                      className="w-full rounded-full bg-indigo-400/80"
                           style={{ height: `${38 + ((point.revenue + index * 17) % 58)}%` }}
                         />
                         <span className="text-[10px] text-[var(--text-quaternary)]">
@@ -184,7 +184,7 @@ export function DashboardPage() {
             ))}
           </section>
 
-          <section className="grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
+          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
             <ChartCard
               title="매출 대비 광고비 추이"
               description="최근 기간의 매출과 광고비 흐름을 확인합니다."
@@ -199,7 +199,7 @@ export function DashboardPage() {
             </ChartCard>
           </section>
 
-          <section className="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.8fr)]">
+          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.8fr)]">
             <ChartCard
               title="성과 상위 캠페인"
               description="ROAS 기준으로 상위 캠페인을 빠르게 비교합니다."
@@ -218,7 +218,7 @@ export function DashboardPage() {
             >
               <div className="space-y-3">
                 {dashboard.alerts.map((alert) => (
-                  <article key={alert.id} className="surface-muted px-4 py-4">
+                  <article key={alert.id} className="surface-muted p-4">
                     <div className="flex items-start justify-between gap-3">
                       <p className="font-semibold text-[var(--text-primary)]">{alert.title}</p>
                       <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-tertiary)] ring-1 ring-inset ring-[var(--border-subtle)]">

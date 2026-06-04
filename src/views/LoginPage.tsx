@@ -53,15 +53,15 @@ export function LoginPage() {
 
   return (
     <div className="min-h-screen bg-[var(--app-bg)] px-4 py-6 sm:px-6 lg:px-8" data-theme={theme}>
-      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-stretch gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="surface-card relative flex min-h-[720px] flex-col justify-between overflow-hidden px-8 py-10 sm:px-10 sm:py-12">
-          <div className="pointer-events-none absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-indigo-100 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-[-80px] left-[-40px] h-56 w-56 rounded-full bg-sky-100 blur-3xl" />
+      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-stretch gap-4 lg:grid-cols-[1.05fr_0.95fr]">
+        <section className="surface-card relative flex min-h-[680px] flex-col justify-between overflow-hidden p-5 sm:p-7">
+          <div className="pointer-events-none absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-[var(--brand-soft)] blur-3xl" />
+          <div className="pointer-events-none absolute bottom-[-80px] left-[-40px] h-56 w-56 rounded-full bg-[var(--panel-subtle)] blur-3xl" />
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand)]">
               MediaOps
             </p>
-            <h1 className="mt-5 max-w-2xl text-5xl font-semibold tracking-[-0.05em] text-[var(--text-primary)] sm:text-[68px] sm:leading-[1.02]">
+            <h1 className="mt-5 max-w-2xl text-5xl font-semibold tracking-[-0.05em] text-[var(--text-primary)] sm:text-[64px] sm:leading-[1.03]">
               성과 운영을 위한
               <br />
               깔끔한 관리자 대시보드
@@ -74,21 +74,21 @@ export function LoginPage() {
 
           <div className="relative mt-12 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-              <div className="surface-muted px-4 py-4">
+              <div className="surface-muted p-4">
                 <p className="text-sm text-[var(--text-tertiary)]">권한 제어</p>
                 <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">3개 역할</p>
               </div>
-              <div className="surface-muted px-4 py-4">
+              <div className="surface-muted p-4">
                 <p className="text-sm text-[var(--text-tertiary)]">캠페인 분석</p>
                 <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">목록 + 상세</p>
               </div>
-              <div className="surface-muted px-4 py-4">
+              <div className="surface-muted p-4">
                 <p className="text-sm text-[var(--text-tertiary)]">다국어 문구</p>
                 <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">한/영 정리</p>
               </div>
             </div>
             <div className="relative min-h-[420px]">
-              <div className="absolute left-0 top-10 w-[72%] rounded-[28px] border border-[var(--border-subtle)] bg-white/90 p-4 shadow-[0_24px_60px_rgba(79,70,229,0.08)] backdrop-blur">
+              <div className="absolute left-0 top-10 w-[72%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)] backdrop-blur">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">운영 개요</p>
@@ -97,21 +97,21 @@ export function LoginPage() {
                   <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">실시간</span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <div className="surface-muted px-4 py-4">
+                  <div className="surface-muted p-4">
                     <p className="text-xs text-[var(--text-tertiary)]">주간 매출</p>
                     <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">₩14,869.95</p>
                   </div>
-                  <div className="surface-muted px-4 py-4">
+                  <div className="surface-muted p-4">
                     <p className="text-xs text-[var(--text-tertiary)]">티켓 전환</p>
                     <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">24,580</p>
                   </div>
                 </div>
-                <div className="mt-4 h-32 rounded-2xl bg-[var(--panel-muted)] p-4">
+                <div className="mt-4 h-32 rounded-xl bg-[var(--panel-muted)] p-3">
                   <div className="flex h-full items-end gap-2">
                     {Array.from({ length: 18 }).map((_, index) => (
                       <span
                         key={`hero-bar-${index}`}
-                        className="w-full rounded-full bg-indigo-300/80"
+                        className="w-full rounded-full bg-indigo-400/70"
                         style={{ height: `${28 + ((index * 7) % 58)}%` }}
                       />
                     ))}
@@ -119,7 +119,7 @@ export function LoginPage() {
                 </div>
               </div>
 
-              <div className="absolute bottom-0 right-0 w-[56%] rounded-[24px] border border-[var(--border-subtle)] bg-white/95 p-4 shadow-[0_24px_50px_rgba(15,23,42,0.08)]">
+              <div className="absolute bottom-0 right-0 w-[56%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)]">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">부서별 리포트</p>
                 <div className="mt-4 space-y-3">
                   {[
@@ -134,7 +134,7 @@ export function LoginPage() {
                       </div>
                       <div className="mt-2 h-2 rounded-full bg-[var(--panel-muted)]">
                         <div
-                          className="h-full rounded-full bg-indigo-500"
+                          className="h-full rounded-full bg-[var(--brand)]"
                           style={{ width: value }}
                         />
                       </div>
@@ -146,7 +146,7 @@ export function LoginPage() {
           </div>
         </section>
 
-        <section className="surface-card px-6 py-7 sm:px-8 sm:py-8">
+        <section className="surface-card p-5 sm:p-6">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
             로그인
           </p>
@@ -161,7 +161,7 @@ export function LoginPage() {
             {profilesQuery.isLoading && (
               <div className="space-y-3" aria-busy="true" aria-live="polite">
                 {Array.from({ length: 3 }).map((_, index) => (
-                  <div key={`profile-skeleton-${index}`} className="surface-muted px-4 py-4">
+                  <div key={`profile-skeleton-${index}`} className="surface-muted p-4">
                     <Skeleton className="h-6 w-40" />
                     <Skeleton className="mt-3 h-4 w-52" />
                     <Skeleton className="mt-4 h-4 w-56" />
@@ -192,9 +192,9 @@ export function LoginPage() {
                   onClick={() => setSelectedUserId(profile.id)}
                   aria-pressed={isSelected}
                   data-testid={`login-profile-${profile.role}`}
-                  className={`focus-ring w-full rounded-2xl border px-4 py-4 text-left ${
+                  className={`focus-ring w-full rounded-xl border p-4 text-left ${
                     isSelected
-                      ? 'border-indigo-300 bg-[var(--brand-soft)]'
+                      ? 'border-[var(--brand)] bg-[var(--brand-soft)]'
                       : 'border-[var(--border-subtle)] bg-[var(--panel-strong)] hover:bg-[var(--panel-muted)]'
                   }`}
                 >
@@ -219,7 +219,7 @@ export function LoginPage() {
             })}
           </div>
 
-          <div className="surface-muted mt-8 px-4 py-4">
+          <div className="surface-muted mt-7 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
               선택된 권한
             </p>

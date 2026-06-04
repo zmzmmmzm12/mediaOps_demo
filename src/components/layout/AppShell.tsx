@@ -145,27 +145,27 @@ export function AppShell({ children }: AppShellProps) {
         본문으로 건너뛰기
       </a>
 
-      <div className="mx-auto grid min-h-screen max-w-[1480px] gap-6 px-4 py-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-6 lg:py-6">
-        <aside className="surface-card flex h-full flex-col overflow-hidden rounded-[28px] px-4 py-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
-          <Link href="/dashboard" className="focus-ring rounded-2xl">
-            <div className="flex items-center gap-3 rounded-2xl px-3 py-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
+      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-4 px-4 py-4 lg:grid-cols-[228px_minmax(0,1fr)] lg:px-5 lg:py-5">
+        <aside className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 py-3 shadow-[0_14px_42px_rgba(15,23,42,0.05)] lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto">
+          <Link href="/dashboard" className="focus-ring rounded-xl">
+            <div className="flex items-center gap-3 rounded-xl px-2.5 py-2.5">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand)]">
                 <DashboardIcon />
               </span>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
                   MediaOps
                 </p>
-                <p className="mt-0.5 text-base font-semibold text-[var(--text-primary)]">
+                <p className="mt-0.5 text-[15px] font-semibold text-[var(--text-primary)]">
                   운영 대시보드
                 </p>
               </div>
             </div>
           </Link>
 
-          <div className="surface-muted mt-5 rounded-[22px] px-4 py-4">
+          <div className="mt-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--sidebar-panel)] px-3 py-3">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--panel-strong)] text-sm font-semibold text-[var(--text-primary)] shadow-sm">
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--panel-strong)] text-sm font-semibold text-[var(--text-primary)] shadow-sm">
                 {session.name.slice(0, 1)}
               </span>
               <div className="min-w-0">
@@ -173,7 +173,7 @@ export function AppShell({ children }: AppShellProps) {
                 <p className="truncate text-xs text-[var(--text-tertiary)]">{session.email}</p>
               </div>
             </div>
-            <div className="mt-4 flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
+            <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
               <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-tertiary)]">권한</span>
               <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">
                 {roleLabels[session.role]}
@@ -187,7 +187,7 @@ export function AppShell({ children }: AppShellProps) {
             </p>
           </div>
 
-          <nav className="mt-2 space-y-1.5" aria-label="주요 메뉴">
+          <nav className="mt-2 space-y-1" aria-label="주요 메뉴">
             {filteredMenu.map((entry) => {
               const isActive = pathname === entry.to || pathname.startsWith(`${entry.to}/`)
 
@@ -196,16 +196,19 @@ export function AppShell({ children }: AppShellProps) {
                   key={entry.to}
                   href={entry.to}
                   className={cn(
-                    'focus-ring group flex items-center gap-3 rounded-2xl px-3 py-3.5',
+                    'focus-ring group relative flex items-center gap-3 rounded-xl px-3 py-2.5',
                     isActive
-                      ? 'bg-[var(--brand-soft)] text-[var(--text-primary)] shadow-sm'
+                      ? 'bg-[var(--brand-soft)] text-[var(--text-primary)]'
                       : 'text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]',
                   )}
                   aria-current={isActive ? 'page' : undefined}
                 >
+                  {isActive ? (
+                    <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+                  ) : null}
                   <span
                     className={cn(
-                      'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl',
+                      'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
                       isActive
                         ? 'bg-[var(--panel-strong)] text-[var(--brand)] shadow-sm'
                         : 'bg-transparent text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]',
@@ -220,14 +223,13 @@ export function AppShell({ children }: AppShellProps) {
                       {entry.description}
                     </p>
                   </div>
-                  {isActive ? <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand)]" aria-hidden="true" /> : null}
                 </Link>
               )
             })}
           </nav>
 
-          <div className="mt-auto border-t border-[var(--border-subtle)] px-2 pt-4">
-            <div className="surface-muted mb-3 rounded-[20px] px-4 py-4">
+          <div className="mt-auto border-t border-[var(--border-subtle)] px-1 pt-4">
+            <div className="mb-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--sidebar-panel)] px-3 py-3">
               <div className="flex items-center gap-2 text-[var(--brand)]">
                 <SparkIcon />
                 <p className="text-xs font-semibold uppercase tracking-[0.12em]">작업 공간</p>
@@ -255,29 +257,29 @@ export function AppShell({ children }: AppShellProps) {
         </aside>
 
         <main id="main-content" className="min-w-0 overflow-x-hidden" tabIndex={-1}>
-          <div className="mx-auto flex min-h-full max-w-[1180px] flex-col gap-6 pb-8">
-            <header className="surface-card flex flex-col gap-4 rounded-[24px] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="mx-auto flex min-h-full max-w-[1160px] flex-col gap-5 pb-8">
+            <header className="flex flex-col gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] px-4 py-3 shadow-[0_10px_28px_rgba(15,23,42,0.035)] backdrop-blur sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <Breadcrumbs />
-                <p className="mt-2 text-sm text-[var(--text-tertiary)]">
+                <p className="mt-1.5 text-sm text-[var(--text-tertiary)]">
                   광고 운영 현황과 의사결정을 한 화면에서 정리합니다.
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="hidden items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-2 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[280px]">
+                <div className="hidden h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[270px]">
                   <SearchIcon />
                   <span>캠페인, 채널, 담당자 검색</span>
                 </div>
                 <button
                   type="button"
-                  className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
                   aria-label="알림"
                 >
                   <BellIcon />
                 </button>
                 <button
                   type="button"
-                  className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
                   aria-label="도구"
                 >
                   <SparkIcon />
@@ -285,13 +287,13 @@ export function AppShell({ children }: AppShellProps) {
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="focus-ring inline-flex h-10 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-muted)]"
+                  className="focus-ring inline-flex h-9 items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-muted)]"
                   aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
                 >
                   {theme === 'dark' ? '라이트' : '다크'}
                 </button>
-                <div className="flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--panel-muted)] text-sm font-semibold text-[var(--text-primary)]">
+                <div className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--panel-muted)] text-xs font-semibold text-[var(--text-primary)]">
                     {session.name.slice(0, 1)}
                   </span>
                   <div className="min-w-0">

@@ -32,10 +32,10 @@ export function PrioritySelector({
             disabled={disabled}
             onClick={() => onChange(option)}
             data-testid={`priority-option-${option}`}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 ${
+            className={`focus-ring rounded-full border px-4 py-2 text-sm font-semibold transition ${
               isActive
-                ? 'bg-slate-950 text-white'
-                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                ? 'border-[var(--brand)] bg-[var(--brand-soft)] text-[var(--brand-strong)]'
+                : 'border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]'
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {priorityTextMap[option]}

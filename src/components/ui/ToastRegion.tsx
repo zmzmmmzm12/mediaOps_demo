@@ -31,7 +31,7 @@ export function ToastRegion() {
         <section
           key={toast.id}
           role="status"
-          className={`pointer-events-auto w-full rounded-2xl border p-4 shadow-[var(--shadow-md)] backdrop-blur ${toneClassMap[toast.tone]}`}
+          className={`pointer-events-auto w-full rounded-xl border p-4 shadow-[var(--shadow-md)] backdrop-blur ${toneClassMap[toast.tone]}`}
         >
           <div className="flex items-start justify-between gap-3">
             <div>

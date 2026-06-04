@@ -284,8 +284,8 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
   const memoDraft = memoOverrides[campaign.id] ?? campaign.memo
 
   return (
-    <div className="space-y-6">
-      <section className="surface-card overflow-hidden px-6 py-6">
+    <div className="space-y-5">
+      <section className="surface-card overflow-hidden p-4 sm:p-5">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-2xl">
             <Link
@@ -294,10 +294,10 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
             >
               캠페인 목록으로
             </Link>
-            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">
+            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
               캠페인 상세
             </p>
-            <h2 className="mt-3 text-[30px] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{campaign.name}</h2>
+            <h2 className="mt-3 text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[var(--text-primary)]">{campaign.name}</h2>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               {campaignChannelTextMap[campaign.channel]} · {campaign.managerName} · {campaign.startDate} ~ {campaign.endDate}
             </p>
@@ -314,12 +314,12 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-            <div className="surface-muted px-4 py-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">예산 사용률</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{detail.summary.budgetUtilization}%</p>
               <p className="mt-2 text-xs text-[var(--text-tertiary)]">{detail.summary.pacing}</p>
             </div>
-            <div className="surface-muted px-4 py-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상태 변경</p>
               {canEdit ? (
                 <Select
@@ -336,7 +336,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
                   <SelectOption value="ended">종료</SelectOption>
                 </Select>
               ) : (
-                <p className="mt-2 text-sm text-slate-300">조회 전용 계정</p>
+                <p className="mt-2 text-sm text-[var(--text-tertiary)]">조회 전용 계정</p>
               )}
             </div>
           </div>
@@ -351,7 +351,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
         <MetricCard label="예산" value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
       </section>
 
-      <section className="surface-card px-5 py-4">
+      <section className="surface-card px-3 py-3">
         <Tabs
           value={activeTab}
           onChange={setActiveTab}
@@ -365,7 +365,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       </section>
 
       {activeTab === 'overview' ? (
-        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
           <ChartCard title="성과 추이" description="기간별 매출과 광고비 흐름입니다.">
             <RevenueSpendTrendChart
               data={detail.delivery.map((point) => ({
@@ -379,7 +379,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
             <div className="space-y-4">
               <div className="h-3 overflow-hidden rounded-full bg-[var(--panel-subtle)]">
                 <div
-                  className="h-full rounded-full bg-indigo-600"
+                  className="h-full rounded-full bg-[var(--brand)]"
                   style={{ width: `${Math.min(100, detail.summary.budgetUtilization)}%` }}
                 />
               </div>
@@ -388,7 +388,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
               </p>
               <div className="space-y-3">
                 {detail.activity.map((item) => (
-                  <article key={item.id} className="surface-muted px-4 py-4">
+                  <article key={item.id} className="surface-muted p-4">
                     <div className="flex items-center justify-between gap-3">
                       <p className="font-semibold text-[var(--text-primary)]">{item.actor}</p>
                       <p className="text-xs uppercase tracking-[0.12em] text-[var(--text-quaternary)]">{item.timeLabel}</p>
@@ -403,7 +403,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       ) : null}
 
       {activeTab === 'creatives' ? (
-        <div id="panel-creatives" role="tabpanel" aria-labelledby="tab-creatives" className="space-y-6">
+        <div id="panel-creatives" role="tabpanel" aria-labelledby="tab-creatives" className="space-y-5">
           <ChartCard
             title="소재 성과"
             description="소재 단위의 광고비, 매출, ROAS, 전환율을 비교합니다."
@@ -419,14 +419,14 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       ) : null}
 
       {activeTab === 'revenue' ? (
-        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-6 xl:grid-cols-2">
+        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-5 xl:grid-cols-2">
           <ChartCard title="채널별 비교" description="채널별 매출과 광고비를 비교합니다.">
             <ChannelComparisonChart data={detail.channelComparison} />
           </ChartCard>
           <ChartCard title="일별 성과 요약" description="최근 일자별 재무 성과를 확인합니다.">
             <div className="space-y-3">
               {detail.delivery.map((point) => (
-                <div key={point.date} className="surface-muted grid gap-3 px-4 py-4 sm:grid-cols-4">
+                <div key={point.date} className="surface-muted grid gap-3 p-4 sm:grid-cols-4">
                   <div>
                     <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">일자</p>
                     <p className="mt-1 font-semibold text-[var(--text-primary)]">{point.date}</p>
@@ -451,12 +451,12 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       ) : null}
 
       {activeTab === 'memo' ? (
-        <div id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" className="space-y-6">
+        <div id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" className="space-y-5">
           <ChartCard
             title="운영 메모"
             description="메모는 optimistic update로 즉시 반영되고, 실패 시 롤백됩니다."
           >
-            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <textarea
                 aria-label="운영 메모"
                 value={memoDraft}

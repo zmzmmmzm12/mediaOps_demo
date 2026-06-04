@@ -32,7 +32,7 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
       onMouseEnter={() => onPrefetch?.(campaign.id)}
       onFocus={() => onPrefetch?.(campaign.id)}
       aria-label={`${campaign.name} 상세 보기`}
-      className="focus-ring grid gap-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-5 transition hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-sm)] lg:grid-cols-[1.3fr_0.9fr]"
+      className="focus-ring grid gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 transition hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-sm)] lg:grid-cols-[1.3fr_0.9fr]"
     >
       <div>
         <div className="flex flex-wrap items-center gap-3">

@@ -16,7 +16,7 @@ export function Pagination({
   const pageCount = Math.max(1, Math.ceil(total / pageSize))
 
   return (
-    <div className="surface-card flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+    <div className="surface-card flex flex-wrap items-center justify-between gap-3 px-4 py-3.5">
       <div>
         <p className="text-sm font-medium text-[var(--text-primary)]">{page} / {pageCount} 페이지</p>
         <p className="mt-1 text-xs text-[var(--text-tertiary)]">총 {total}개 항목</p>

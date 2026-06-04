@@ -17,7 +17,7 @@ function TabsStory() {
           { id: 'memo', label: '메모' },
         ]}
       />
-      <div className="rounded-3xl bg-slate-50 p-4 text-sm text-slate-600">
+      <div className="rounded-xl bg-slate-50 p-4 text-sm text-slate-600">
         현재 탭: {value}
       </div>
     </div>

@@ -12,11 +12,14 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="surface-card border-dashed px-6 py-12 text-center">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-quaternary)]">
+    <div className="surface-card border-dashed px-5 py-10 text-center">
+      <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-muted)] text-[var(--text-tertiary)]">
+        —
+      </div>
+      <p className="mt-4 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-quaternary)]">
         빈 상태
       </p>
-      <h3 className="mt-4 text-2xl font-semibold text-[var(--text-primary)]">{title}</h3>
+      <h3 className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{title}</h3>
       <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[var(--text-tertiary)]">
         {description}
       </p>
