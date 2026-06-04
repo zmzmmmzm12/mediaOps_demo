@@ -1,12 +1,10 @@
 /* eslint-disable react-refresh/only-export-components */
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import type { DataTableColumn } from '../../components/ui/DataTable'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { formatCompactCurrency, formatPercent, formatRatio } from '../../lib/format'
 import { campaignChannelTextMap, campaignStatusTextMap } from '../../lib/labels'
 import type { Campaign, CampaignStatus } from '../../types/mediaops'
-
-type ThemeMode = 'light' | 'dark'
 
 interface CampaignTableColumnOptions {
   selectedIds: string[]
@@ -16,7 +14,6 @@ interface CampaignTableColumnOptions {
   sortBy: string
   sortDirection: string
   onSort: (field: 'revenue' | 'spend' | 'roas' | 'conversionRate') => void
-  theme: ThemeMode
 }
 
 function SortButton({
@@ -24,24 +21,20 @@ function SortButton({
   active,
   direction,
   onClick,
-  theme,
 }: {
   label: string
   active: boolean
   direction: string
   onClick: () => void
-  theme: ThemeMode
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 text-left font-semibold ${
-        theme === 'dark' ? 'text-slate-200' : 'text-slate-700'
-      }`}
+      className="focus-ring inline-flex w-full items-center justify-end gap-1 text-right font-semibold text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
     >
       <span>{label}</span>
-      <span className={theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}>
+      <span className="text-[var(--text-quaternary)]">
         {active ? (direction === 'asc' ? '↑' : '↓') : '↕'}
       </span>
     </button>
@@ -67,12 +60,12 @@ export function createCampaignTableColumns({
   sortBy,
   sortDirection,
   onSort,
-  theme,
 }: CampaignTableColumnOptions): Array<DataTableColumn<Campaign>> {
   return [
     {
       id: 'select',
       header: '',
+      className: 'w-12',
       cell: (campaign) => (
         <input
           type="checkbox"
@@ -80,6 +73,7 @@ export function createCampaignTableColumns({
           checked={selectedIds.includes(campaign.id)}
           disabled={!canEdit}
           onChange={() => onToggleSelected(campaign.id)}
+          className="focus-ring h-4 w-4 rounded border-[var(--border-strong)] text-indigo-600"
         />
       ),
     },
@@ -89,19 +83,15 @@ export function createCampaignTableColumns({
       cell: (campaign) => (
         <div>
           <Link
-            to={`/campaigns/${campaign.id}`}
+            href={`/campaigns/${campaign.id}`}
             onMouseEnter={() => onPrefetch(campaign.id)}
             onFocus={() => onPrefetch(campaign.id)}
             aria-label={`${campaign.name} 상세 보기`}
-            className={`font-semibold underline underline-offset-4 ${
-              theme === 'dark'
-                ? 'text-slate-100 decoration-slate-700'
-                : 'text-slate-950 decoration-slate-200'
-            }`}
+            className="focus-ring font-semibold text-[var(--text-primary)] hover:text-[var(--brand)]"
           >
             {campaign.name}
           </Link>
-          <p className={`mt-1 text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+          <p className="mt-1 text-xs text-[var(--text-tertiary)]">
             {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
           </p>
         </div>
@@ -116,52 +106,52 @@ export function createCampaignTableColumns({
     },
     {
       id: 'revenue',
+      className: 'text-right',
       header: (
         <SortButton
           label="매출"
           active={sortBy === 'revenue'}
           direction={sortDirection}
           onClick={() => onSort('revenue')}
-          theme={theme}
         />
       ),
       cell: (campaign) => formatCompactCurrency(campaign.revenue),
     },
     {
       id: 'spend',
+      className: 'text-right',
       header: (
         <SortButton
           label="광고비"
           active={sortBy === 'spend'}
           direction={sortDirection}
           onClick={() => onSort('spend')}
-          theme={theme}
         />
       ),
       cell: (campaign) => formatCompactCurrency(campaign.spend),
     },
     {
       id: 'roas',
+      className: 'text-right',
       header: (
         <SortButton
           label="ROAS"
           active={sortBy === 'roas'}
           direction={sortDirection}
           onClick={() => onSort('roas')}
-          theme={theme}
         />
       ),
       cell: (campaign) => formatRatio(campaign.roas),
     },
     {
       id: 'conversionRate',
+      className: 'text-right',
       header: (
         <SortButton
           label="전환율"
           active={sortBy === 'conversionRate'}
           direction={sortDirection}
           onClick={() => onSort('conversionRate')}
-          theme={theme}
         />
       ),
       cell: (campaign) => formatPercent(campaign.conversionRate),

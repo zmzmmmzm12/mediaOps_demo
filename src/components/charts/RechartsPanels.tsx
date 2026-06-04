@@ -26,11 +26,11 @@ import {
   campaignStatusTextMap,
 } from '../../lib/labels'
 
-const channelColors = ['#0f766e', '#f97316', '#1d4ed8', '#7c3aed']
+const channelColors = ['#4f46e5', '#818cf8', '#0f766e', '#f59e0b']
 const statusColorMap = {
-  active: '#0f766e',
-  paused: '#f97316',
-  ended: '#64748b',
+  active: '#4f46e5',
+  paused: '#f59e0b',
+  ended: '#94a3b8',
 } as const
 
 const seriesLabelMap: Record<string, string> = {
@@ -45,7 +45,7 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
   data: DashboardTrendPoint[]
 }) {
   const theme = usePreferencesStore((state) => state.theme)
-  const gridColor = theme === 'dark' ? '#243041' : '#e2e8f0'
+  const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   const tooltipStyle = theme === 'dark'
     ? {
@@ -68,7 +68,7 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
       }
 
   return (
-    <div className="h-72 w-full">
+    <div className="chart-frame">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -82,8 +82,8 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
             ]}
           />
           <Legend formatter={(value) => seriesLabelMap[value] ?? value} />
-          <Line type="monotone" dataKey="revenue" stroke="#0f766e" strokeWidth={3} dot={false} />
-          <Line type="monotone" dataKey="spend" stroke="#f97316" strokeWidth={3} dot={false} />
+          <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} dot={false} />
+          <Line type="monotone" dataKey="spend" stroke="#94a3b8" strokeWidth={3} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
@@ -97,7 +97,7 @@ export const CampaignStatusChart = memo(function CampaignStatusChart({
 }) {
   const theme = usePreferencesStore((state) => state.theme)
   return (
-    <div className="h-72 w-full">
+    <div className="chart-frame">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
@@ -135,10 +135,10 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
   data: Array<{ channel: string; revenue: number; spend: number }>
 }) {
   const theme = usePreferencesStore((state) => state.theme)
-  const gridColor = theme === 'dark' ? '#243041' : '#e2e8f0'
+  const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
-    <div className="h-72 w-full">
+    <div className="chart-frame">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
@@ -158,8 +158,8 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
             ]}
           />
           <Legend formatter={(value) => seriesLabelMap[value] ?? value} />
-          <Bar dataKey="revenue" fill="#0f766e" radius={[8, 8, 0, 0]} />
-          <Bar dataKey="spend" fill="#f97316" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="revenue" fill="#4f46e5" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="spend" fill="#94a3b8" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
@@ -172,10 +172,10 @@ export const RoasRankingChart = memo(function RoasRankingChart({
   data: Campaign[]
 }) {
   const theme = usePreferencesStore((state) => state.theme)
-  const gridColor = theme === 'dark' ? '#243041' : '#e2e8f0'
+  const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
-    <div className="h-72 w-full">
+    <div className="chart-frame">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data.slice(0, 5).map((campaign, index) => ({

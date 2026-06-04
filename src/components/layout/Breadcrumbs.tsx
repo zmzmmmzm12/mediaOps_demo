@@ -1,5 +1,7 @@
-import { Link, useLocation } from 'react-router-dom'
-import { usePreferencesStore } from '../../features/ui/preferences-store'
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 const labelMap: Record<string, string> = {
   dashboard: '대시보드',
@@ -7,20 +9,20 @@ const labelMap: Record<string, string> = {
   reports: '리포트',
   settings: '설정',
   forbidden: '접근 제한',
+  login: '로그인',
 }
 
 export function Breadcrumbs() {
-  const location = useLocation()
-  const theme = usePreferencesStore((state) => state.theme)
-  const segments = location.pathname.split('/').filter(Boolean)
+  const pathname = usePathname()
+  const segments = pathname.split('/').filter(Boolean)
 
   if (segments.length === 0) {
     return null
   }
 
   return (
-    <nav aria-label="경로" className={`flex flex-wrap items-center gap-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-      <Link to="/dashboard" className={theme === 'dark' ? 'hover:text-slate-100' : 'hover:text-slate-900'}>
+    <nav aria-label="경로" className="flex flex-wrap items-center gap-2 text-[13px] text-[var(--text-tertiary)]">
+      <Link href="/dashboard" className="focus-ring rounded-md hover:text-[var(--text-primary)]">
         홈
       </Link>
       {segments.map((segment, index) => {
@@ -30,11 +32,11 @@ export function Breadcrumbs() {
 
         return (
           <span key={href} className="flex items-center gap-2">
-            <span>/</span>
+            <span className="text-[var(--text-quaternary)]">/</span>
             {isLast ? (
-              <span className={`font-medium ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>{label}</span>
+              <span className="font-medium text-[var(--text-primary)]">{label}</span>
             ) : (
-              <Link to={href} className={theme === 'dark' ? 'hover:text-slate-100' : 'hover:text-slate-900'}>
+              <Link href={href} className="focus-ring rounded-md hover:text-[var(--text-primary)]">
                 {label}
               </Link>
             )}

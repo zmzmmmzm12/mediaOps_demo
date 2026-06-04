@@ -1,6 +1,8 @@
+'use client'
+
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ConfirmDialog } from '../components/ui/ConfirmDialog'
 import { DataTable } from '../components/ui/DataTable'
 import { DateRangePicker } from '../components/ui/DateRangePicker'
@@ -22,7 +24,6 @@ import {
   defaultCampaignFilters,
   parseCampaignFilters,
 } from '../features/campaigns/url-state'
-import { usePreferencesStore } from '../features/ui/preferences-store'
 import { useToastStore } from '../features/ui/toast-store'
 import { downloadTextFile } from '../lib/download'
 import { campaignStatusTextMap } from '../lib/labels'
@@ -43,17 +44,21 @@ import type {
 
 export function CampaignsPage() {
   const queryClient = useQueryClient()
-  const theme = usePreferencesStore((state) => state.theme)
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
-  const [searchParams, setSearchParams] = useSearchParams()
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
   const [presetName, setPresetName] = useState('')
   const [selectedPresetId, setSelectedPresetId] = useState('')
   const [selectedCampaignIds, setSelectedCampaignIds] = useState<string[]>([])
   const [bulkStatus, setBulkStatus] = useState<CampaignStatus>('paused')
   const [confirmOpen, setConfirmOpen] = useState(false)
   const showToast = useToastStore((state) => state.showToast)
-  const filters = useMemo(() => parseCampaignFilters(searchParams), [searchParams])
+  const filters = useMemo(
+    () => parseCampaignFilters(new URLSearchParams(searchParams.toString())),
+    [searchParams],
+  )
   const [searchInput, setSearchInput] = useState(filters.search)
   const debouncedSearch = useDebouncedValue(searchInput, 300)
 
@@ -128,18 +133,22 @@ export function CampaignsPage() {
     },
   })
 
+  const replaceSearchParams = useCallback((nextSearchParams: URLSearchParams) => {
+    const query = nextSearchParams.toString()
+    router.replace(query ? `${pathname}?${query}` : pathname)
+  }, [pathname, router])
+
   useEffect(() => {
     if (debouncedSearch !== filters.search) {
-      setSearchParams(
+      replaceSearchParams(
         buildCampaignSearchParams({
           ...filters,
           search: debouncedSearch,
           page: 1,
         }),
-        { replace: true },
       )
     }
-  }, [debouncedSearch, filters, setSearchParams])
+  }, [debouncedSearch, filters, replaceSearchParams])
 
   const campaignRows = useMemo(
     () => campaignsQuery.data?.campaigns ?? [],
@@ -176,7 +185,16 @@ export function CampaignsPage() {
       const modifier = filters.sortDirection === 'asc' ? 1 : -1
       return (left[filters.sortBy] - right[filters.sortBy]) * modifier
     })
-  }, [campaignRows, debouncedSearch, filters.channel, filters.endDate, filters.sortBy, filters.sortDirection, filters.startDate, filters.status])
+  }, [
+    campaignRows,
+    debouncedSearch,
+    filters.channel,
+    filters.endDate,
+    filters.sortBy,
+    filters.sortDirection,
+    filters.startDate,
+    filters.status,
+  ])
 
   const paginatedCampaigns = useMemo(() => {
     const start = (filters.page - 1) * filters.pageSize
@@ -194,7 +212,7 @@ export function CampaignsPage() {
       page: patch.page ?? (Object.keys(patch).length === 1 && 'page' in patch ? nextFilters.page : 1),
     }
 
-    setSearchParams(buildCampaignSearchParams(normalizedFilters), { replace: true })
+    replaceSearchParams(buildCampaignSearchParams(normalizedFilters))
   }
 
   function handleSort(field: 'revenue' | 'spend' | 'roas' | 'conversionRate') {
@@ -226,7 +244,7 @@ export function CampaignsPage() {
       new URLSearchParams(preset.filters),
     )
     setSearchInput(nextFilters.search)
-    setSearchParams(buildCampaignSearchParams(nextFilters), { replace: true })
+    replaceSearchParams(buildCampaignSearchParams(nextFilters))
     showToast({
       tone: 'info',
       title: `"${preset.name}" 프리셋을 불러왔습니다.`,
@@ -257,7 +275,6 @@ export function CampaignsPage() {
     sortBy: filters.sortBy,
     sortDirection: filters.sortDirection,
     onSort: handleSort,
-    theme,
   })
 
   if (campaignsQuery.isLoading) {
@@ -282,17 +299,42 @@ export function CampaignsPage() {
       <PageHeader
         eyebrow="캠페인"
         title="캠페인 탐색기"
-        description="검색, 필터, 정렬, 페이지네이션, 프리셋 저장, 일괄 상태 변경까지 한 화면에서 처리합니다."
+        description="검색, 필터, 정렬, 저장된 프리셋, CSV 다운로드, 일괄 상태 변경을 한 흐름으로 처리합니다."
       />
 
-      <section
-        className={`rounded-[28px] border p-5 ${
-          theme === 'dark'
-            ? 'border-slate-800 bg-slate-900'
-            : 'border-slate-200 bg-white'
-        }`}
-      >
-        <div className="grid gap-3 lg:grid-cols-5">
+      <section className="surface-card overflow-hidden px-6 py-6">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.2fr)_repeat(3,minmax(0,0.6fr))]">
+          <div className="surface-muted px-4 py-4 xl:col-span-1">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">운영 제어</p>
+            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+              캠페인 검색과 운영 제어
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
+              상태, 채널, 기간, 프리셋을 조합해 운영 대상을 빠르게 찾고 바로 액션할 수 있습니다.
+            </p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">검색 결과</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
+              {filteredCampaigns.length}
+            </p>
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">조건에 맞는 활성 데이터</p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">저장 프리셋</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">빠른 필터 재사용</p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">선택 항목</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{selectedCampaignIds.length}</p>
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">일괄 작업 대상</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="surface-card px-5 py-5">
+        <div className="grid gap-3 xl:grid-cols-4">
           <Input
             label="캠페인 검색"
             aria-label="캠페인 검색"
@@ -339,7 +381,7 @@ export function CampaignsPage() {
           />
         </div>
 
-        <div className="mt-4 grid gap-3 xl:grid-cols-[1fr_240px_auto_auto_auto_auto_auto]">
+        <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_220px_repeat(5,minmax(0,auto))]">
           <Input
             label="프리셋 이름"
             aria-label="프리셋 이름"
@@ -401,29 +443,23 @@ export function CampaignsPage() {
             CSV 다운로드
           </Button>
           <Button
-            variant="secondary"
+            variant="ghost"
             data-testid="reset-filters-button"
             onClick={() => {
               setSearchInput(defaultCampaignFilters.search)
-              setSearchParams(buildCampaignSearchParams(defaultCampaignFilters), {
-                replace: true,
-              })
+              replaceSearchParams(buildCampaignSearchParams(defaultCampaignFilters))
             }}
           >
             초기화
           </Button>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <p
-            className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}
-            aria-live="polite"
-            data-testid="campaign-results-count"
-          >
-            현재 조건에 맞는 캠페인 {filteredCampaigns.length}개
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-[var(--border-subtle)] pt-5">
+          <p className="text-sm leading-6 text-[var(--text-tertiary)]">
+            자주 쓰는 조건은 프리셋으로 저장하고, 결과는 CSV로 내려받을 수 있습니다.
           </p>
           {canEdit ? (
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-end gap-3">
               <Select
                 label="일괄 변경 상태"
                 value={bulkStatus}
@@ -444,7 +480,7 @@ export function CampaignsPage() {
               </Button>
             </div>
           ) : (
-            <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className="text-sm text-[var(--text-tertiary)]">
               조회 전용 계정은 데이터를 확인할 수 있지만 상태 변경은 할 수 없습니다.
             </p>
           )}
@@ -458,11 +494,21 @@ export function CampaignsPage() {
         />
       ) : (
         <>
-          <DataTable
-            columns={columns}
-            rows={paginatedCampaigns}
-            getRowKey={(campaign: Campaign) => campaign.id}
-          />
+          <section className="surface-card overflow-hidden">
+            <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-5 py-4">
+              <div>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">캠페인 목록</p>
+                <p className="mt-1 text-xs text-[var(--text-tertiary)]">선택한 조건에 맞는 캠페인을 정렬된 표로 제공합니다.</p>
+              </div>
+            </div>
+            <DataTable
+              caption="캠페인 목록 표"
+              captionClassName="sr-only"
+              columns={columns}
+              rows={paginatedCampaigns}
+              getRowKey={(campaign: Campaign) => campaign.id}
+            />
+          </section>
           <Pagination
             page={filters.page}
             pageSize={filters.pageSize}

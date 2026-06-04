@@ -1,5 +1,11 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
-import { ChannelComparisonChart, RevenueSpendTrendChart, RoasRankingChart } from '../components/charts/RechartsPanels'
+import {
+  ChannelComparisonChart,
+  RevenueSpendTrendChart,
+  RoasRankingChart,
+} from '../components/charts/RechartsPanels'
 import { ChartCard } from '../components/charts/ChartCard'
 import { DataTable, type DataTableColumn } from '../components/ui/DataTable'
 import { EmptyState } from '../components/ui/EmptyState'
@@ -18,12 +24,14 @@ const rankingColumns: Array<DataTableColumn<Campaign>> = [
   {
     id: 'name',
     header: '캠페인',
-    cell: (campaign) => campaign.name,
-  },
-  {
-    id: 'channel',
-    header: '채널',
-    cell: (campaign) => campaignChannelTextMap[campaign.channel],
+    cell: (campaign) => (
+      <div>
+        <p className="font-semibold text-[var(--text-primary)]">{campaign.name}</p>
+        <p className="text-xs text-[var(--text-tertiary)]">
+          {campaignChannelTextMap[campaign.channel]}
+        </p>
+      </div>
+    ),
   },
   {
     id: 'revenue',
@@ -84,12 +92,16 @@ export function ReportsPage() {
     )
   }
 
+  const totalRevenue = reports.revenueByPeriod.reduce((sum, item) => sum + item.revenue, 0)
+  const topChannel = [...reports.channelRevenueVsSpend].sort((left, right) => right.revenue - left.revenue)[0]
+  const topCampaign = reports.roasRanking[0]
+
   return (
     <div className="space-y-6">
       <PageHeader
         eyebrow="리포트"
         title="매출과 효율 리포트"
-        description="매출, 광고비, ROAS를 공통 차트와 테이블 패턴으로 확인할 수 있습니다."
+        description="차트와 표를 함께 보면서 채널 효율과 ROAS 순위를 빠르게 확인할 수 있습니다."
         actions={
           <Button
             variant="secondary"
@@ -106,7 +118,42 @@ export function ReportsPage() {
         }
       />
 
-      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+      <section className="surface-card overflow-hidden px-6 py-6">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="surface-muted px-5 py-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">성과 요약</p>
+            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">채널 효율과 ROAS 흐름</h3>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
+              차트와 표를 함께 보면서 이번 기간의 매출, 광고비, 상위 캠페인 효율을 한 번에 검토합니다.
+            </p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">총 매출</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{formatCompactCurrency(totalRevenue)}</p>
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">선택 기간 누적 매출</p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상위 채널</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
+              {topChannel ? campaignChannelTextMap[topChannel.channel] : '-'}
+            </p>
+            <p className="mt-2 text-xs text-[var(--text-tertiary)]">
+              {topChannel ? formatCompactCurrency(topChannel.revenue) : '집계 없음'}
+            </p>
+          </div>
+          <div className="surface-muted px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상위 캠페인</p>
+            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
+              {topCampaign ? formatRatio(topCampaign.roas) : '-'}
+            </p>
+            <p className="mt-2 truncate text-xs text-[var(--text-tertiary)]">
+              {topCampaign ? topCampaign.name : '집계 없음'}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-6 xl:grid-cols-2">
         <ChartCard title="기간별 매출 추이" description="최근 기간의 매출 흐름입니다.">
           <RevenueSpendTrendChart
             data={reports.revenueByPeriod.map((item) => ({
@@ -121,12 +168,13 @@ export function ReportsPage() {
         </ChartCard>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[0.9fr_1.1fr]">
+      <section className="grid gap-6 xl:grid-cols-[minmax(320px,0.88fr)_minmax(0,1.12fr)]">
         <ChartCard title="ROAS 순위" description="효율이 높은 캠페인 순으로 정렬했습니다.">
           <RoasRankingChart data={reports.roasRanking} />
         </ChartCard>
-        <ChartCard title="캠페인 ROAS 표" description="차트와 함께 확인할 수 있는 표 형식 데이터입니다.">
+        <ChartCard title="캠페인 ROAS 표" description="차트와 함께 확인할 수 있는 정렬형 표입니다.">
           <DataTable
+            caption="ROAS 순위 캠페인 표"
             columns={rankingColumns}
             rows={reports.roasRanking.slice(0, 8)}
             getRowKey={(campaign) => campaign.id}

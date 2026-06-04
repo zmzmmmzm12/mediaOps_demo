@@ -1,17 +1,15 @@
-import { useEffect, useRef } from 'react'
-import { usePreferencesStore } from '../../features/ui/preferences-store'
+import { useEffect, useRef, type ReactNode } from 'react'
 
 interface ModalProps {
   open: boolean
   title: string
-  children: React.ReactNode
+  children: ReactNode
   onClose: () => void
-  actions?: React.ReactNode
+  actions?: ReactNode
 }
 
 export function Modal({ open, title, children, onClose, actions }: ModalProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const theme = usePreferencesStore((state) => state.theme)
 
   useEffect(() => {
     if (!open) {
@@ -64,32 +62,28 @@ export function Modal({ open, title, children, onClose, actions }: ModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
       <div
         ref={containerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className={`w-full max-w-lg rounded-[30px] border p-6 shadow-[0_24px_80px_rgba(15,23,42,0.22)] ${
-          theme === 'dark'
-            ? 'border-slate-800 bg-slate-900'
-            : 'border-slate-200 bg-white'
-        }`}
+        className="surface-elevated w-full max-w-lg p-6"
       >
         <div className="flex items-start justify-between gap-4">
-          <h3 id="modal-title" className={`text-2xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <h3 id="modal-title" className="text-2xl font-semibold text-[var(--text-primary)]">
             {title}
           </h3>
           <button
             type="button"
             onClick={onClose}
             aria-label="대화상자 닫기"
-            className={`rounded-full p-2 ${theme === 'dark' ? 'text-slate-400 hover:bg-slate-800' : 'text-slate-500 hover:bg-slate-100'}`}
+            className="focus-ring rounded-full p-2 text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)]"
           >
             ×
           </button>
         </div>
-        <div className={`mt-4 text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>{children}</div>
+        <div className="mt-4 text-sm text-[var(--text-secondary)]">{children}</div>
         {actions ? <div className="mt-6 flex justify-end gap-3">{actions}</div> : null}
       </div>
     </div>

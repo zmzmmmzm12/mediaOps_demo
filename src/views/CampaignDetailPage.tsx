@@ -1,13 +1,17 @@
+'use client'
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { ChannelComparisonChart, RevenueSpendTrendChart } from '../components/charts/RechartsPanels'
+import Link from 'next/link'
+import {
+  ChannelComparisonChart,
+  RevenueSpendTrendChart,
+} from '../components/charts/RechartsPanels'
 import { ChartCard } from '../components/charts/ChartCard'
 import { Button } from '../components/ui/Button'
 import { DataTable, type DataTableColumn } from '../components/ui/DataTable'
 import { ErrorStatePanel } from '../components/ui/ErrorStatePanel'
 import { MetricCard } from '../components/dashboard/MetricCard'
-import { PageHeader } from '../components/ui/PageHeader'
 import { PageSkeleton } from '../components/ui/PageSkeleton'
 import { Select, SelectOption } from '../components/ui/Select'
 import { StatusBadge } from '../components/ui/StatusBadge'
@@ -46,8 +50,11 @@ type MutationContext = {
   previousList?: CampaignListResponse
 }
 
-export function CampaignDetailPage() {
-  const { campaignId } = useParams()
+interface CampaignDetailPageProps {
+  campaignId: string
+}
+
+export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
   const queryClient = useQueryClient()
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
@@ -56,15 +63,17 @@ export function CampaignDetailPage() {
   const [activeTab, setActiveTab] = useState('overview')
   const [memoOverrides, setMemoOverrides] = useState<Record<string, string>>({})
 
-  const creativeColumns: Array<DataTableColumn<CampaignDetailResponse['detail']['creatives'][number]>> = useMemo(
+  const creativeColumns: Array<
+    DataTableColumn<CampaignDetailResponse['detail']['creatives'][number]>
+  > = useMemo(
     () => [
       {
         id: 'creative',
         header: '소재',
         cell: (creative) => (
           <div>
-            <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{creative.creativeName}</p>
-            <p className={`text-xs ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className="font-semibold text-[var(--text-primary)]">{creative.creativeName}</p>
+            <p className="text-xs text-[var(--text-tertiary)]">
               노출수 {formatInteger(creative.impressions)}
             </p>
           </div>
@@ -91,12 +100,12 @@ export function CampaignDetailPage() {
         cell: (creative) => formatPercent(creative.conversionRate),
       },
     ],
-    [theme],
+    [],
   )
 
   const detailQuery = useQuery({
     queryKey: ['campaign-detail', campaignId],
-    queryFn: () => getCampaignDetail(campaignId ?? ''),
+    queryFn: () => getCampaignDetail(campaignId),
     enabled: Boolean(campaignId),
   })
 
@@ -106,7 +115,7 @@ export function CampaignDetailPage() {
     CampaignStatus,
     MutationContext
   >({
-    mutationFn: (status) => updateCampaign(campaignId ?? '', { status }),
+    mutationFn: (status) => updateCampaign(campaignId, { status }),
     onMutate: async (status) => {
       const previousDetail = queryClient.getQueryData<CampaignDetailResponse>([
         'campaign-detail',
@@ -186,7 +195,7 @@ export function CampaignDetailPage() {
     string,
     MutationContext
   >({
-    mutationFn: (memo) => updateCampaignMemo(campaignId ?? '', { memo }),
+    mutationFn: (memo) => updateCampaignMemo(campaignId, { memo }),
     onMutate: async (memo) => {
       const previousDetail = queryClient.getQueryData<CampaignDetailResponse>([
         'campaign-detail',
@@ -276,45 +285,65 @@ export function CampaignDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link
-          to="/campaigns"
-          className={`rounded-full border px-4 py-2 text-sm font-semibold ${
-            theme === 'dark'
-              ? 'border-slate-700 bg-slate-800 text-slate-200'
-              : 'border-slate-200 text-slate-700'
-          }`}
-        >
-          캠페인 목록으로
-        </Link>
-        <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={campaign.status === 'active' ? 'positive' : campaign.status === 'paused' ? 'warning' : 'neutral'} />
-        <StatusBadge label={priorityTextMap[campaign.priority]} tone={campaign.priority === 'critical' ? 'warning' : 'neutral'} />
-      </div>
-
-      <PageHeader
-        eyebrow="캠페인 상세"
-        title={campaign.name}
-        description={`${campaignChannelTextMap[campaign.channel]} · ${campaign.managerName} · ${campaign.startDate} ~ ${campaign.endDate}`}
-        actions={
-          canEdit ? (
-            <Select
-              label="캠페인 상태"
-              aria-label="캠페인 상태"
-              value={campaign.status}
-              onChange={(event) =>
-                statusMutation.mutate(event.target.value as CampaignStatus)
-              }
-              className="min-w-40"
+      <section className="surface-card overflow-hidden px-6 py-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl">
+            <Link
+              href="/campaigns"
+              className="focus-ring inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-subtle)]"
             >
-              <SelectOption value="active">운영 중</SelectOption>
-              <SelectOption value="paused">일시중지</SelectOption>
-              <SelectOption value="ended">종료</SelectOption>
-            </Select>
-          ) : null
-        }
-      />
+              캠페인 목록으로
+            </Link>
+            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-indigo-300">
+              캠페인 상세
+            </p>
+            <h2 className="mt-3 text-[30px] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{campaign.name}</h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
+              {campaignChannelTextMap[campaign.channel]} · {campaign.managerName} · {campaign.startDate} ~ {campaign.endDate}
+            </p>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <StatusBadge
+                label={campaignStatusTextMap[campaign.status]}
+                tone={campaign.status === 'active' ? 'positive' : campaign.status === 'paused' ? 'warning' : 'neutral'}
+              />
+              <StatusBadge
+                label={priorityTextMap[campaign.priority]}
+                tone={campaign.priority === 'critical' ? 'warning' : 'neutral'}
+              />
+            </div>
+          </div>
 
-      <section className="grid gap-4 lg:grid-cols-5">
+          <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
+            <div className="surface-muted px-4 py-4">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">예산 사용률</p>
+              <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{detail.summary.budgetUtilization}%</p>
+              <p className="mt-2 text-xs text-[var(--text-tertiary)]">{detail.summary.pacing}</p>
+            </div>
+            <div className="surface-muted px-4 py-4">
+              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상태 변경</p>
+              {canEdit ? (
+                <Select
+                  label={undefined}
+                  aria-label="캠페인 상태"
+                  value={campaign.status}
+                  onChange={(event) =>
+                    statusMutation.mutate(event.target.value as CampaignStatus)
+                  }
+                  className="mt-2 min-w-40"
+                >
+                  <SelectOption value="active">운영 중</SelectOption>
+                  <SelectOption value="paused">일시중지</SelectOption>
+                  <SelectOption value="ended">종료</SelectOption>
+                </Select>
+              ) : (
+                <p className="mt-2 text-sm text-slate-300">조회 전용 계정</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="grid gap-4 xl:grid-cols-5">
         <MetricCard label="매출" value={formatCompactCurrency(campaign.revenue)} delta={`전환 ${formatInteger(campaign.conversions)}건`} tone="positive" />
         <MetricCard label="광고비" value={formatCompactCurrency(campaign.spend)} delta={`예산 사용률 ${detail.summary.budgetUtilization}%`} tone="neutral" />
         <MetricCard label="ROAS" value={formatRatio(campaign.roas)} delta={detail.summary.health} tone={campaign.roas >= 2 ? 'positive' : 'warning'} />
@@ -322,13 +351,7 @@ export function CampaignDetailPage() {
         <MetricCard label="예산" value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
       </section>
 
-      <section
-        className={`rounded-[28px] border p-5 ${
-          theme === 'dark'
-            ? 'border-slate-800 bg-slate-900'
-            : 'border-slate-200 bg-white'
-        }`}
-      >
+      <section className="surface-card px-5 py-4">
         <Tabs
           value={activeTab}
           onChange={setActiveTab}
@@ -342,11 +365,8 @@ export function CampaignDetailPage() {
       </section>
 
       {activeTab === 'overview' ? (
-        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-          <ChartCard
-            title="성과 추이"
-            description="기간별 매출과 광고비 흐름입니다."
-          >
+        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+          <ChartCard title="성과 추이" description="기간별 매출과 광고비 흐름입니다.">
             <RevenueSpendTrendChart
               data={detail.delivery.map((point) => ({
                 date: point.date,
@@ -355,35 +375,25 @@ export function CampaignDetailPage() {
               }))}
             />
           </ChartCard>
-          <ChartCard
-            title="예산 소진율"
-            description="설정된 예산 대비 현재 사용량입니다."
-          >
+          <ChartCard title="예산 소진율" description="설정된 예산 대비 현재 사용량입니다.">
             <div className="space-y-4">
-              <div className={`h-4 overflow-hidden rounded-full ${theme === 'dark' ? 'bg-slate-800' : 'bg-slate-100'}`}>
+              <div className="h-3 overflow-hidden rounded-full bg-[var(--panel-subtle)]">
                 <div
-                  className="h-full rounded-full bg-teal-600"
+                  className="h-full rounded-full bg-indigo-600"
                   style={{ width: `${Math.min(100, detail.summary.budgetUtilization)}%` }}
                 />
               </div>
-              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className="text-sm text-[var(--text-tertiary)]">
                 전체 예산의 {detail.summary.budgetUtilization}%를 사용했습니다.
               </p>
               <div className="space-y-3">
                 {detail.activity.map((item) => (
-                  <article
-                    key={item.id}
-                    className={`rounded-3xl border p-4 ${
-                      theme === 'dark'
-                        ? 'border-slate-800 bg-slate-800/50'
-                        : 'border-slate-200 bg-white'
-                    }`}
-                  >
+                  <article key={item.id} className="surface-muted px-4 py-4">
                     <div className="flex items-center justify-between gap-3">
-                      <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{item.actor}</p>
-                      <p className={`text-xs uppercase tracking-[0.2em] ${theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>{item.timeLabel}</p>
+                      <p className="font-semibold text-[var(--text-primary)]">{item.actor}</p>
+                      <p className="text-xs uppercase tracking-[0.12em] text-[var(--text-quaternary)]">{item.timeLabel}</p>
                     </div>
-                    <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>{item.message}</p>
+                    <p className="mt-2 text-sm text-[var(--text-tertiary)]">{item.message}</p>
                   </article>
                 ))}
               </div>
@@ -399,6 +409,7 @@ export function CampaignDetailPage() {
             description="소재 단위의 광고비, 매출, ROAS, 전환율을 비교합니다."
           >
             <DataTable
+              caption="소재 성과 표"
               columns={creativeColumns}
               rows={detail.creatives}
               getRowKey={(creative) => creative.id}
@@ -408,40 +419,29 @@ export function CampaignDetailPage() {
       ) : null}
 
       {activeTab === 'revenue' ? (
-        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-          <ChartCard
-            title="채널별 비교"
-            description="채널별 매출과 광고비를 비교합니다."
-          >
+        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-6 xl:grid-cols-2">
+          <ChartCard title="채널별 비교" description="채널별 매출과 광고비를 비교합니다.">
             <ChannelComparisonChart data={detail.channelComparison} />
           </ChartCard>
-          <ChartCard
-            title="일별 성과 요약"
-            description="최근 일자별 재무 성과를 확인합니다."
-          >
+          <ChartCard title="일별 성과 요약" description="최근 일자별 재무 성과를 확인합니다.">
             <div className="space-y-3">
               {detail.delivery.map((point) => (
-                <div
-                  key={point.date}
-                  className={`grid grid-cols-4 gap-3 rounded-3xl px-4 py-4 text-sm ${
-                    theme === 'dark' ? 'bg-slate-800/70' : 'bg-slate-50'
-                  }`}
-                >
+                <div key={point.date} className="surface-muted grid gap-3 px-4 py-4 sm:grid-cols-4">
                   <div>
-                    <p className="text-slate-500">일자</p>
-                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{point.date}</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">일자</p>
+                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{point.date}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">매출</p>
-                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatCompactCurrency(point.revenue)}</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">매출</p>
+                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.revenue)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">광고비</p>
-                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatCompactCurrency(point.spend)}</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">광고비</p>
+                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.spend)}</p>
                   </div>
                   <div>
-                    <p className="text-slate-500">ROAS</p>
-                    <p className={`font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>{formatRatio(point.roas)}</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">ROAS</p>
+                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatRatio(point.roas)}</p>
                   </div>
                 </div>
               ))}
@@ -454,27 +454,27 @@ export function CampaignDetailPage() {
         <div id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" className="space-y-6">
           <ChartCard
             title="운영 메모"
-            description="내부 메모를 작성하고 optimistic update로 즉시 반영합니다."
+            description="메모는 optimistic update로 즉시 반영되고, 실패 시 롤백됩니다."
           >
-            <textarea
-              aria-label="운영 메모"
-              value={memoDraft}
-              onChange={(event) =>
-                setMemoOverrides((current) => ({
-                  ...current,
-                  [campaign.id]: event.target.value,
-                }))
-              }
-              disabled={!canEdit}
-              rows={8}
-              className={`w-full rounded-3xl border px-4 py-4 text-sm ${
-                theme === 'dark'
-                  ? 'border-slate-800 bg-slate-800 text-slate-100 disabled:bg-slate-800 disabled:text-slate-500'
-                  : 'border-slate-200 text-slate-700 disabled:bg-slate-100'
-              }`}
-            />
-            <div className="mt-4 flex items-center justify-between gap-3">
-              <p className={`text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`} aria-live="polite">
+            <div className="rounded-2xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+              <textarea
+                aria-label="운영 메모"
+                value={memoDraft}
+                onChange={(event) =>
+                  setMemoOverrides((current) => ({
+                    ...current,
+                    [campaign.id]: event.target.value,
+                  }))
+                }
+                disabled={!canEdit}
+                rows={8}
+                className={`field-shell focus-ring w-full resize-y border-0 bg-transparent px-0 py-0 text-sm shadow-none ${
+                  theme === 'dark' ? 'text-slate-100' : ''
+                }`}
+              />
+            </div>
+            <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-[var(--text-tertiary)]" aria-live="polite">
                 {!canEdit
                   ? '조회 전용 계정은 메모를 수정할 수 없습니다.'
                   : memoMutation.isPending

@@ -1,5 +1,5 @@
 import type { InputHTMLAttributes } from 'react'
-import { usePreferencesStore } from '../../features/ui/preferences-store'
+import { cn } from '../../lib/cn'
 
 type InputSize = 'sm' | 'md'
 
@@ -13,7 +13,7 @@ interface InputProps
 
 const sizeClassMap: Record<InputSize, string> = {
   sm: 'px-3 py-2 text-sm',
-  md: 'px-4 py-3 text-sm',
+  md: 'px-3.5 py-2.5 text-sm',
 }
 
 export function Input({
@@ -25,28 +25,21 @@ export function Input({
   fieldSize = 'md',
   ...props
 }: InputProps) {
-  const theme = usePreferencesStore((state) => state.theme)
   const inputId = id ?? props.name
 
   return (
     <label className="grid gap-2">
-      {label ? (
-        <span className={`text-sm font-medium ${theme === 'dark' ? 'text-slate-300' : 'text-slate-700'}`}>{label}</span>
-      ) : null}
+      {label ? <span className="field-label text-[13px] font-medium">{label}</span> : null}
       <input
         id={inputId}
-        className={`w-full rounded-2xl border focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:cursor-not-allowed ${
-          theme === 'dark'
-            ? 'border-slate-700 bg-slate-800 text-slate-100 placeholder:text-slate-500 disabled:bg-slate-800 disabled:text-slate-500'
-            : 'border-slate-200 bg-white text-slate-900 placeholder:text-slate-400 disabled:bg-slate-100 disabled:text-slate-400'
-        } ${sizeClassMap[fieldSize]} ${className}`.trim()}
+        className={cn('field-shell focus-ring', sizeClassMap[fieldSize], className)}
         aria-invalid={error ? 'true' : undefined}
         {...props}
       />
       {error ? (
         <span className="text-xs text-red-600">{error}</span>
       ) : hint ? (
-        <span className={`text-xs ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>{hint}</span>
+        <span className="field-hint text-xs">{hint}</span>
       ) : null}
     </label>
   )

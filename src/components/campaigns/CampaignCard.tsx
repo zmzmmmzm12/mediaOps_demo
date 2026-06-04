@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import Link from 'next/link'
 import type { Campaign } from '../../types/mediaops'
 import {
   formatCompactCurrency,
@@ -11,7 +11,6 @@ import {
   campaignStatusTextMap,
   priorityTextMap,
 } from '../../lib/labels'
-import { usePreferencesStore } from '../../features/ui/preferences-store'
 import { StatusBadge } from '../ui/StatusBadge'
 
 interface CampaignCardProps {
@@ -20,7 +19,6 @@ interface CampaignCardProps {
 }
 
 export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
-  const theme = usePreferencesStore((state) => state.theme)
   const statusTone =
     campaign.status === 'active'
       ? 'positive'
@@ -30,19 +28,15 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
 
   return (
     <Link
-      to={`/campaigns/${campaign.id}`}
+      href={`/campaigns/${campaign.id}`}
       onMouseEnter={() => onPrefetch?.(campaign.id)}
       onFocus={() => onPrefetch?.(campaign.id)}
       aria-label={`${campaign.name} 상세 보기`}
-      className={`grid gap-4 rounded-[28px] border p-5 transition hover:shadow-[0_18px_60px_rgba(15,23,42,0.06)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 lg:grid-cols-[1.3fr_0.9fr] ${
-        theme === 'dark'
-          ? 'border-slate-800 bg-slate-900 hover:border-slate-700'
-          : 'border-slate-200 bg-white hover:border-slate-300'
-      }`}
+      className="focus-ring grid gap-4 rounded-3xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-5 transition hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-sm)] lg:grid-cols-[1.3fr_0.9fr]"
     >
       <div>
         <div className="flex flex-wrap items-center gap-3">
-          <h3 className={`text-2xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <h3 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
             {campaign.name}
           </h3>
           <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={statusTone} />
@@ -51,40 +45,39 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
             tone={campaign.priority === 'critical' ? 'warning' : 'neutral'}
           />
         </div>
-        <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
+        <p className="mt-2 text-sm text-[var(--text-tertiary)]">
           {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
         </p>
-        <p className={`mt-4 text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
+        <p className="mt-4 text-sm text-[var(--text-secondary)]">
           매출: {formatCompactCurrency(campaign.revenue)}
         </p>
-        <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-300' : 'text-slate-600'}`}>
-          운영 기간:{' '}
-          {formatDateRange(campaign.startDate, campaign.endDate)}
+        <p className="mt-2 text-sm text-[var(--text-secondary)]">
+          운영 기간: {formatDateRange(campaign.startDate, campaign.endDate)}
         </p>
       </div>
 
-      <dl className={`grid grid-cols-2 gap-4 rounded-[24px] p-4 text-sm ${theme === 'dark' ? 'bg-slate-800/70' : 'bg-slate-50'}`}>
+      <dl className="surface-muted grid grid-cols-2 gap-4 p-4 text-sm">
         <div>
-          <dt className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>광고비</dt>
-          <dd className={`mt-1 text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <dt className="text-[var(--text-tertiary)]">광고비</dt>
+          <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatCompactCurrency(campaign.spend)}
           </dd>
         </div>
         <div>
-          <dt className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>예산</dt>
-          <dd className={`mt-1 text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <dt className="text-[var(--text-tertiary)]">예산</dt>
+          <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatCompactCurrency(campaign.budget)}
           </dd>
         </div>
         <div>
-          <dt className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>ROAS</dt>
-          <dd className={`mt-1 text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <dt className="text-[var(--text-tertiary)]">ROAS</dt>
+          <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatRatio(campaign.roas)}
           </dd>
         </div>
         <div>
-          <dt className={theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}>전환율</dt>
-          <dd className={`mt-1 text-xl font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-950'}`}>
+          <dt className="text-[var(--text-tertiary)]">전환율</dt>
+          <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatPercent(campaign.conversionRate)}
           </dd>
         </div>

@@ -5,19 +5,20 @@ export function ToastRegion() {
   const toasts = useToastStore((state) => state.toasts)
   const dismissToast = useToastStore((state) => state.dismissToast)
   const theme = usePreferencesStore((state) => state.theme)
+
   const toneClassMap = {
     success:
       theme === 'dark'
-        ? 'border-emerald-900 bg-emerald-950/70 text-emerald-100'
-        : 'border-emerald-200 bg-emerald-50 text-emerald-900',
+        ? 'border-emerald-900/60 bg-emerald-950/70 text-emerald-100'
+        : 'border-emerald-200 bg-emerald-50/95 text-emerald-900',
     error:
       theme === 'dark'
-        ? 'border-red-900 bg-red-950/70 text-red-100'
-        : 'border-red-200 bg-red-50 text-red-900',
+        ? 'border-red-900/60 bg-red-950/70 text-red-100'
+        : 'border-red-200 bg-red-50/95 text-red-900',
     info:
       theme === 'dark'
-        ? 'border-slate-800 bg-slate-900 text-slate-100'
-        : 'border-slate-200 bg-white text-slate-900',
+        ? 'border-slate-800 bg-slate-900/95 text-slate-100'
+        : 'border-slate-200 bg-white/95 text-slate-900',
   }
 
   return (
@@ -30,7 +31,7 @@ export function ToastRegion() {
         <section
           key={toast.id}
           role="status"
-          className={`pointer-events-auto w-full rounded-3xl border p-4 shadow-[0_18px_60px_rgba(15,23,42,0.12)] ${toneClassMap[toast.tone]}`}
+          className={`pointer-events-auto w-full rounded-2xl border p-4 shadow-[var(--shadow-md)] backdrop-blur ${toneClassMap[toast.tone]}`}
         >
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -43,7 +44,7 @@ export function ToastRegion() {
               type="button"
               onClick={() => dismissToast(toast.id)}
               aria-label="알림 닫기"
-              className="rounded-full p-1 text-current/70 transition hover:bg-black/5 hover:text-current"
+              className="focus-ring rounded-full p-1 text-current/70 transition hover:bg-black/5 hover:text-current"
             >
               ×
             </button>

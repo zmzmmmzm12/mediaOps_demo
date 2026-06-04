@@ -1,43 +1,74 @@
 import type { ButtonHTMLAttributes, PropsWithChildren } from 'react'
 import { usePreferencesStore } from '../../features/ui/preferences-store'
+import { cn } from '../../lib/cn'
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost'
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger'
+type ButtonSize = 'sm' | 'md'
 
 interface ButtonProps
   extends PropsWithChildren,
     ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant
+  buttonSize?: ButtonSize
+  loading?: boolean
 }
 
 export function Button({
   children,
   className = '',
   variant = 'primary',
+  buttonSize = 'md',
+  loading = false,
   type = 'button',
+  disabled,
   ...props
 }: ButtonProps) {
   const theme = usePreferencesStore((state) => state.theme)
+
   const variantClassMap: Record<ButtonVariant, string> = {
     primary:
       theme === 'dark'
-        ? 'border border-teal-500/70 bg-teal-600 text-white shadow-[0_10px_24px_rgba(13,148,136,0.22)] hover:bg-teal-500 disabled:border-slate-700 disabled:bg-slate-700 disabled:text-slate-400'
-        : 'border border-teal-700 bg-teal-700 text-white shadow-[0_10px_24px_rgba(13,148,136,0.18)] hover:bg-teal-600 disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-500',
+        ? 'border-transparent bg-indigo-400 text-slate-950 shadow-sm hover:bg-indigo-300'
+        : 'border-transparent bg-indigo-600 text-white shadow-sm hover:bg-indigo-500',
     secondary:
       theme === 'dark'
-        ? 'border border-slate-700 bg-slate-800 text-slate-200 shadow-sm hover:border-slate-600 hover:bg-slate-700 disabled:text-slate-500'
-        : 'border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-slate-300 hover:bg-slate-50 disabled:text-slate-400',
+        ? 'border-slate-700 bg-slate-900/90 text-slate-100 hover:border-slate-600 hover:bg-slate-800'
+        : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50',
     ghost:
       theme === 'dark'
-        ? 'bg-transparent text-slate-300 hover:bg-slate-800 disabled:text-slate-500'
-        : 'bg-transparent text-slate-700 hover:bg-slate-100 disabled:text-slate-400',
+        ? 'border-transparent bg-transparent text-slate-300 hover:bg-white/5 hover:text-slate-100'
+        : 'border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+    danger:
+      theme === 'dark'
+        ? 'border-transparent bg-red-400 text-slate-950 shadow-sm hover:bg-red-300'
+        : 'border-transparent bg-red-600 text-white shadow-sm hover:bg-red-500',
+  }
+
+  const sizeClassMap: Record<ButtonSize, string> = {
+    sm: 'h-9 px-3.5 text-sm',
+    md: 'h-10 px-4 text-sm',
   }
 
   return (
     <button
       type={type}
-      className={`inline-flex cursor-pointer items-center justify-center rounded-2xl px-4 py-3 text-sm font-semibold transition duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 disabled:cursor-not-allowed ${variantClassMap[variant]} ${className}`.trim()}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={cn(
+        'focus-ring inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-xl border font-medium leading-none',
+        'disabled:cursor-not-allowed disabled:opacity-45',
+        sizeClassMap[buttonSize],
+        variantClassMap[variant],
+        className,
+      )}
       {...props}
     >
+      {loading ? (
+        <span
+          aria-hidden="true"
+          className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-r-transparent"
+        />
+      ) : null}
       {children}
     </button>
   )

@@ -15,7 +15,12 @@ export function Tabs({ value, options, onChange }: TabsProps) {
   const theme = usePreferencesStore((state) => state.theme)
 
   function handleKeyDown(currentIndex: number, event: React.KeyboardEvent<HTMLButtonElement>) {
-    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft' && event.key !== 'Home' && event.key !== 'End') {
+    if (
+      event.key !== 'ArrowRight' &&
+      event.key !== 'ArrowLeft' &&
+      event.key !== 'Home' &&
+      event.key !== 'End'
+    ) {
       return
     }
 
@@ -43,9 +48,9 @@ export function Tabs({ value, options, onChange }: TabsProps) {
     <div
       role="tablist"
       aria-label="콘텐츠 구역"
-      className="flex flex-wrap gap-2"
+      className="inline-flex flex-wrap gap-1 rounded-[14px] border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-1"
     >
-      {options.map((option) => {
+      {options.map((option, index) => {
         const isActive = option.id === value
 
         return (
@@ -58,15 +63,15 @@ export function Tabs({ value, options, onChange }: TabsProps) {
             id={`tab-${option.id}`}
             tabIndex={isActive ? 0 : -1}
             onClick={() => onChange(option.id)}
-            onKeyDown={(event) => handleKeyDown(options.indexOf(option), event)}
-            className={`rounded-full px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700 ${
+            onKeyDown={(event) => handleKeyDown(index, event)}
+            className={`focus-ring rounded-[10px] px-3.5 py-2 text-sm font-medium transition ${
               isActive
                 ? theme === 'dark'
-                  ? 'bg-slate-700 text-slate-100'
-                  : 'bg-slate-900 text-white'
+                  ? 'bg-slate-800 text-slate-50'
+                  : 'bg-white text-slate-950 shadow-sm'
                 : theme === 'dark'
-                  ? 'bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                  ? 'text-slate-400 hover:bg-slate-800/60 hover:text-slate-100'
+                  : 'text-slate-500 hover:bg-white/80 hover:text-slate-900'
             }`}
           >
             {option.label}

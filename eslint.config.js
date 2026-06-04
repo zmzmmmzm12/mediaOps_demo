@@ -6,17 +6,20 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist', 'storybook-static', 'public/mockServiceWorker.js']),
+  globalIgnores(['.next', 'dist', 'storybook-static', 'public/mockServiceWorker.js']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
     ],
     languageOptions: {
       globals: globals.browser,
     },
+  },
+  {
+    files: ['src/**/*.{ts,tsx}'],
+    extends: [reactRefresh.configs.vite],
   },
 ])

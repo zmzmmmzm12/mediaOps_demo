@@ -1,5 +1,8 @@
-import { startTransition } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+'use client'
+
+import { type ReactNode, useEffect, useMemo, useSyncExternalStore } from 'react'
+import Link from 'next/link'
+import { usePathname, useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../features/auth/auth-store'
 import { usePreferencesStore } from '../../features/ui/preferences-store'
@@ -10,267 +13,296 @@ import {
   roleLabels,
 } from '../../features/auth/permissions'
 import { Button } from '../ui/Button'
+import { cn } from '../../lib/cn'
 
-export function AppShell() {
+function DashboardIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M3 3h6v6H3zM11 3h6v10h-6zM3 11h6v6H3z" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+  )
+}
+
+function CampaignIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M4 5h12M4 10h12M4 15h8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+      <circle cx="14.5" cy="15" r="1.5" fill="currentColor" />
+    </svg>
+  )
+}
+
+function ReportsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M4 16V8m6 8V4m6 12v-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function SettingsIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M10 4.2a1 1 0 0 1 .96.72l.3.97a4.8 4.8 0 0 1 1.08.62l.95-.31a1 1 0 0 1 1.14.4l.9 1.55a1 1 0 0 1-.18 1.19l-.72.69c.04.24.07.48.07.73 0 .25-.03.49-.07.73l.72.69a1 1 0 0 1 .18 1.19l-.9 1.55a1 1 0 0 1-1.14.4l-.95-.31c-.33.25-.69.46-1.08.62l-.3.97a1 1 0 0 1-.96.72H8.98a1 1 0 0 1-.96-.72l-.3-.97a4.8 4.8 0 0 1-1.08-.62l-.95.31a1 1 0 0 1-1.14-.4l-.9-1.55a1 1 0 0 1 .18-1.19l.72-.69a4.72 4.72 0 0 1 0-1.46l-.72-.69a1 1 0 0 1-.18-1.19l.9-1.55a1 1 0 0 1 1.14-.4l.95.31c.33-.25.69-.46 1.08-.62l.3-.97A1 1 0 0 1 8.98 4.2H10Z" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="9.99" cy="10" r="2.3" stroke="currentColor" strokeWidth="1.2" />
+    </svg>
+  )
+}
+
+function SearchIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <circle cx="9" cy="9" r="5.5" stroke="currentColor" strokeWidth="1.5" />
+      <path d="M13.5 13.5 17 17" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function BellIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M10 3.5a3.5 3.5 0 0 0-3.5 3.5v1.14c0 .7-.2 1.39-.58 1.98L4.8 11.8A1 1 0 0 0 5.66 13h8.68a1 1 0 0 0 .85-1.52l-1.1-1.68a3.63 3.63 0 0 1-.59-1.98V7A3.5 3.5 0 0 0 10 3.5Z" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8.5 15a1.5 1.5 0 0 0 3 0" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function SparkIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="m10 2 1.7 4.3L16 8l-4.3 1.7L10 14l-1.7-4.3L4 8l4.3-1.7L10 2Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+const menuIconMap: Record<string, ReactNode> = {
+  '/dashboard': <DashboardIcon />,
+  '/campaigns': <CampaignIcon />,
+  '/reports': <ReportsIcon />,
+  '/settings': <SettingsIcon />,
+}
+
+interface AppShellProps {
+  children: ReactNode
+}
+
+export function AppShell({ children }: AppShellProps) {
   const session = useAuthStore((state) => state.session)
   const clearSession = useAuthStore((state) => state.clearSession)
-  const sidebarCollapsed = usePreferencesStore((state) => state.sidebarCollapsed)
-  const toggleSidebar = usePreferencesStore((state) => state.toggleSidebar)
   const theme = usePreferencesStore((state) => state.theme)
   const toggleTheme = usePreferencesStore((state) => state.toggleTheme)
-  const navigate = useNavigate()
+  const router = useRouter()
+  const pathname = usePathname()
   const queryClient = useQueryClient()
-  const menuIconMap: Record<string, string> = {
-    '/dashboard': '◫',
-    '/campaigns': '◩',
-    '/reports': '▤',
-    '/settings': '⌘',
-  }
+  const hydrated = useSyncExternalStore(
+    (callback) => {
+      const unsubscribeHydrate = useAuthStore.persist.onHydrate(callback)
+      const unsubscribeFinishHydration = useAuthStore.persist.onFinishHydration(callback)
+      return () => {
+        unsubscribeHydrate()
+        unsubscribeFinishHydration()
+      }
+    },
+    () => useAuthStore.persist.hasHydrated(),
+    () => true,
+  )
 
-  if (!session) {
-    return null
-  }
+  useEffect(() => {
+    if (hydrated && !session) {
+      router.replace('/login')
+    }
+  }, [hydrated, router, session])
 
-  const filteredMenu = menuEntries.filter((entry) =>
-    hasPermission(session.role, entry.permission),
+  const filteredMenu = useMemo(
+    () => (session
+      ? menuEntries.filter((entry) => hasPermission(session.role, entry.permission))
+      : []),
+    [session],
   )
 
   function handleLogout() {
     clearSession()
     queryClient.clear()
-    startTransition(() => navigate('/login', { replace: true }))
+    router.replace('/login')
+  }
+
+  if (!hydrated || !session) {
+    return (
+      <div className="min-h-screen bg-[var(--app-bg)] px-4 py-6" data-theme={theme}>
+        <div className="mx-auto max-w-6xl">
+          <div className="surface-card h-32 animate-pulse" />
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div
-      className={`min-h-screen ${
-        theme === 'dark'
-          ? 'bg-[#0f1724] text-slate-100'
-          : 'bg-slate-100 text-slate-900'
-      }`}
-      data-theme={theme}
-    >
+    <div className="min-h-screen bg-[var(--app-bg)] text-[var(--text-primary)]" data-theme={theme}>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-slate-800 focus:px-4 focus:py-2 focus:text-white"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:bg-[var(--panel-strong)] focus:px-4 focus:py-2"
       >
         본문으로 건너뛰기
       </a>
 
-      <div className="mx-auto flex min-h-screen max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:px-8">
-        <aside
-          className={`flex shrink-0 flex-col rounded-[32px] border p-4 shadow-[0_18px_60px_rgba(15,23,42,0.08)] lg:p-5 ${
-            theme === 'dark'
-              ? 'border-slate-800 bg-slate-900/96'
-              : 'border-slate-200 bg-white'
-          } ${sidebarCollapsed ? 'lg:w-24' : 'lg:w-[18.5rem]'}`}
-        >
-          <div className="flex items-start justify-between gap-3">
-            <Link
-              to="/dashboard"
-              className={`rounded-[28px] border px-4 py-4 ${
-                theme === 'dark'
-                  ? 'border-slate-800 bg-slate-800 text-slate-100'
-                  : 'border-slate-200 bg-slate-50 text-slate-900'
-              } ${sidebarCollapsed ? 'w-full' : ''}`}
-            >
-              <p
-                className={`text-[11px] font-semibold uppercase tracking-[0.28em] ${
-                  theme === 'dark' ? 'text-teal-300' : 'text-teal-700'
-                }`}
-              >
-                MediaOps
-              </p>
-              {!sidebarCollapsed ? (
-                <>
-                  <h1
-                    className={`mt-3 text-[28px] font-semibold leading-none tracking-tight ${
-                      theme === 'dark' ? 'text-white' : 'text-slate-950'
-                    }`}
-                  >
-                    MediaOps
-                  </h1>
-                  <p
-                    className={`mt-3 max-w-48 text-sm ${
-                      theme === 'dark' ? 'text-slate-400' : 'text-slate-500'
-                    }`}
-                  >
-                    광고 운영과 성과 확인을 한 흐름으로 정리했습니다.
-                  </p>
-                </>
-              ) : null}
-            </Link>
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              aria-label={sidebarCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
-              className={`inline-flex h-10 w-10 items-center justify-center rounded-2xl border ${
-                theme === 'dark'
-                  ? 'border-slate-800 bg-slate-800 text-slate-300 hover:bg-slate-700'
-                  : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              {sidebarCollapsed ? '→' : '←'}
-            </button>
-          </div>
-
-          {!sidebarCollapsed ? (
-            <div
-              className={`mt-5 rounded-[28px] border px-4 py-4 ${
-                theme === 'dark'
-                  ? 'border-slate-800 bg-slate-800/60'
-                  : 'border-slate-200 bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className={`inline-flex h-11 w-11 items-center justify-center rounded-2xl text-sm font-semibold ${
-                    theme === 'dark'
-                      ? 'bg-slate-700 text-slate-100'
-                      : 'bg-white text-slate-700 ring-1 ring-slate-200'
-                  }`}
-                >
-                  {session.name.slice(0, 1)}
-                </span>
-                <div className="min-w-0">
-                  <p className={`truncate text-base font-semibold ${theme === 'dark' ? 'text-slate-100' : 'text-slate-900'}`}>{session.name}</p>
-                  <p className={`truncate text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {session.email}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 flex items-center justify-between gap-3">
-                <span className={`text-xs ${theme === 'dark' ? 'text-slate-500' : 'text-slate-500'}`}>
-                  현재 권한
-                </span>
-                <span className={`rounded-full px-3 py-1 text-xs font-medium ${theme === 'dark' ? 'bg-slate-700 text-slate-100 ring-1 ring-slate-600' : 'bg-white text-slate-700 ring-1 ring-slate-200'}`}>
-                  {roleLabels[session.role]}
-                </span>
+      <div className="mx-auto grid min-h-screen max-w-[1480px] gap-6 px-4 py-4 lg:grid-cols-[248px_minmax(0,1fr)] lg:px-6 lg:py-6">
+        <aside className="surface-card flex h-full flex-col overflow-hidden rounded-[28px] px-4 py-4 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:overflow-y-auto">
+          <Link href="/dashboard" className="focus-ring rounded-2xl">
+            <div className="flex items-center gap-3 rounded-2xl px-3 py-3">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-[var(--brand)]">
+                <DashboardIcon />
+              </span>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
+                  MediaOps
+                </p>
+                <p className="mt-0.5 text-base font-semibold text-[var(--text-primary)]">
+                  운영 대시보드
+                </p>
               </div>
             </div>
-          ) : null}
+          </Link>
 
-          <nav className="mt-5 space-y-2" aria-label="주요 메뉴">
-            {filteredMenu.map((entry) => (
-              <NavLink
-                key={entry.to}
-                to={entry.to}
-                className={({ isActive }) =>
-                  `group flex items-center gap-3 rounded-[24px] px-3 py-3 transition ${
+          <div className="surface-muted mt-5 rounded-[22px] px-4 py-4">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--panel-strong)] text-sm font-semibold text-[var(--text-primary)] shadow-sm">
+                {session.name.slice(0, 1)}
+              </span>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{session.name}</p>
+                <p className="truncate text-xs text-[var(--text-tertiary)]">{session.email}</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-between rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
+              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-tertiary)]">권한</span>
+              <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">
+                {roleLabels[session.role]}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-6 px-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
+              메뉴
+            </p>
+          </div>
+
+          <nav className="mt-2 space-y-1.5" aria-label="주요 메뉴">
+            {filteredMenu.map((entry) => {
+              const isActive = pathname === entry.to || pathname.startsWith(`${entry.to}/`)
+
+              return (
+                <Link
+                  key={entry.to}
+                  href={entry.to}
+                  className={cn(
+                    'focus-ring group flex items-center gap-3 rounded-2xl px-3 py-3.5',
                     isActive
-                      ? theme === 'dark'
-                        ? 'bg-slate-800 text-white'
-                        : 'bg-slate-900 text-white'
-                      : theme === 'dark'
-                        ? 'text-slate-200 hover:bg-slate-800/80'
-                        : 'text-slate-700 hover:bg-slate-100'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    <span
-                      className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-semibold ${
-                        isActive
-                          ? theme === 'dark'
-                            ? 'bg-slate-700 text-white'
-                            : 'bg-white/12 text-white'
-                          : theme === 'dark'
-                            ? 'bg-slate-800 text-slate-300'
-                            : 'bg-white text-slate-600 ring-1 ring-slate-200'
-                      }`}
-                      aria-hidden="true"
-                    >
-                      {menuIconMap[entry.to] ?? '•'}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p
-                        className={`truncate font-semibold ${
-                          isActive
-                            ? 'text-white'
-                            : theme === 'dark'
-                              ? 'text-slate-100'
-                              : 'text-slate-900'
-                        }`}
-                      >
-                        {sidebarCollapsed ? entry.label.slice(0, 1) : entry.label}
-                      </p>
-                      {!sidebarCollapsed ? (
-                        <p
-                          className={`text-sm ${
-                            isActive
-                              ? 'text-slate-300'
-                              : theme === 'dark'
-                                ? 'text-slate-400'
-                                : 'text-slate-500'
-                          }`}
-                        >
-                          {entry.description}
-                        </p>
-                      ) : null}
-                    </div>
-                    {!sidebarCollapsed ? (
-                      <span className={`text-sm ${isActive ? 'text-slate-300' : theme === 'dark' ? 'text-slate-500' : 'text-slate-400'}`}>↗</span>
-                    ) : null}
-                  </>
-                )}
-              </NavLink>
-            ))}
+                      ? 'bg-[var(--brand-soft)] text-[var(--text-primary)] shadow-sm'
+                      : 'text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]',
+                  )}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  <span
+                    className={cn(
+                      'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl',
+                      isActive
+                        ? 'bg-[var(--panel-strong)] text-[var(--brand)] shadow-sm'
+                        : 'bg-transparent text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]',
+                    )}
+                    aria-hidden="true"
+                  >
+                    {menuIconMap[entry.to] ?? <DashboardIcon />}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-current">{entry.label}</p>
+                    <p className={cn('mt-1 truncate text-[11px]', isActive ? 'text-[var(--text-secondary)]' : 'text-[var(--text-tertiary)]')}>
+                      {entry.description}
+                    </p>
+                  </div>
+                  {isActive ? <span className="h-2.5 w-2.5 rounded-full bg-[var(--brand)]" aria-hidden="true" /> : null}
+                </Link>
+              )
+            })}
           </nav>
 
-          <div
-            className={`mt-auto grid gap-2 pt-5 ${
-              sidebarCollapsed ? 'grid-cols-1' : 'grid-cols-2'
-            }`}
-          >
+          <div className="mt-auto border-t border-[var(--border-subtle)] px-2 pt-4">
+            <div className="surface-muted mb-3 rounded-[20px] px-4 py-4">
+              <div className="flex items-center gap-2 text-[var(--brand)]">
+                <SparkIcon />
+                <p className="text-xs font-semibold uppercase tracking-[0.12em]">작업 공간</p>
+              </div>
+              <p className="mt-2 text-sm font-medium text-[var(--text-primary)]">캠페인 운영 상태 양호</p>
+              <p className="mt-1 text-xs leading-5 text-[var(--text-tertiary)]">오늘 기준 핵심 캠페인 4개가 목표 ROAS를 상회합니다.</p>
+            </div>
             <Button
-              variant="secondary"
+              variant="ghost"
               onClick={toggleTheme}
-              className={`${sidebarCollapsed ? 'px-0' : ''}`}
+              className="w-full justify-start px-3 text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
               aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
             >
-              {sidebarCollapsed ? '◐' : theme === 'dark' ? '라이트' : '다크'}
+              <span>{theme === 'dark' ? '라이트 모드' : '다크 모드'}</span>
             </Button>
             <Button
-              variant="secondary"
+              variant="ghost"
               onClick={handleLogout}
-              className={`${sidebarCollapsed ? 'px-0' : ''} ${sidebarCollapsed ? '' : 'col-span-1'}`}
+              className="mt-1 w-full justify-start px-3 text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
               aria-label="로그아웃"
             >
-              {sidebarCollapsed ? '↘' : '로그아웃'}
+              <span>로그아웃</span>
             </Button>
           </div>
         </aside>
 
-        <main id="main-content" className="flex-1" tabIndex={-1}>
-          <div
-            className={`min-h-full rounded-[32px] border p-5 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-6 ${
-              theme === 'dark'
-                ? 'border-slate-800 bg-slate-900'
-                : 'border-slate-200 bg-white'
-            }`}
-          >
-            <header
-              className={`mb-6 flex flex-col gap-4 rounded-[24px] border px-4 py-4 sm:flex-row sm:items-center sm:justify-between ${
-                theme === 'dark'
-                  ? 'border-slate-800 bg-slate-800/70'
-                  : 'border-slate-200 bg-slate-50'
-              }`}
-            >
-              <div>
+        <main id="main-content" className="min-w-0 overflow-x-hidden" tabIndex={-1}>
+          <div className="mx-auto flex min-h-full max-w-[1180px] flex-col gap-6 pb-8">
+            <header className="surface-card flex flex-col gap-4 rounded-[24px] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <div className="min-w-0">
                 <Breadcrumbs />
-                <p className={`mt-2 text-sm ${theme === 'dark' ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {session.name} · {roleLabels[session.role]}
+                <p className="mt-2 text-sm text-[var(--text-tertiary)]">
+                  광고 운영 현황과 의사결정을 한 화면에서 정리합니다.
                 </p>
               </div>
-              <div className={`flex items-center gap-3 rounded-full px-4 py-2 text-sm font-semibold ${theme === 'dark' ? 'bg-slate-700 text-slate-100' : 'bg-slate-900 text-white'}`}>
-                <span className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${theme === 'dark' ? 'bg-slate-600' : 'bg-white/10'}`}>
-                  {session.name.slice(0, 1)}
-                </span>
-                <span>{session.email}</span>
+              <div className="flex items-center gap-3">
+                <div className="hidden items-center gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-2 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[280px]">
+                  <SearchIcon />
+                  <span>캠페인, 채널, 담당자 검색</span>
+                </div>
+                <button
+                  type="button"
+                  className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  aria-label="알림"
+                >
+                  <BellIcon />
+                </button>
+                <button
+                  type="button"
+                  className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  aria-label="도구"
+                >
+                  <SparkIcon />
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleTheme}
+                  className="focus-ring inline-flex h-10 items-center rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-muted)]"
+                  aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
+                >
+                  {theme === 'dark' ? '라이트' : '다크'}
+                </button>
+                <div className="flex items-center gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
+                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--panel-muted)] text-sm font-semibold text-[var(--text-primary)]">
+                    {session.name.slice(0, 1)}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-[var(--text-primary)]">{session.name}</p>
+                    <p className="truncate text-xs text-[var(--text-tertiary)]">{roleLabels[session.role]}</p>
+                  </div>
+                </div>
               </div>
             </header>
-            <Outlet />
+
+            {children}
           </div>
         </main>
       </div>

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { MemoryRouter } from 'react-router-dom'
 import { CampaignCard } from './CampaignCard'
 
 const meta = {
@@ -28,11 +27,9 @@ const meta = {
   },
   decorators: [
     (Story) => (
-      <MemoryRouter>
-        <div className="min-h-screen bg-sand p-8">
-          <Story />
-        </div>
-      </MemoryRouter>
+      <div className="min-h-screen bg-sand p-8">
+        <Story />
+      </div>
     ),
   ],
 } satisfies Meta<typeof CampaignCard>
