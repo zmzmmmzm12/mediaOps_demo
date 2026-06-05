@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, useEffect, useMemo, useSyncExternalStore } from 'react'
+import { type FormEvent, type ReactNode, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
@@ -10,10 +10,15 @@ import { Breadcrumbs } from './Breadcrumbs'
 import {
   hasPermission,
   menuEntries,
-  roleLabels,
 } from '../../features/auth/permissions'
+import {
+  buildCampaignSearchParams,
+  defaultCampaignFilters,
+} from '../../features/campaigns/url-state'
 import { Button } from '../ui/Button'
 import { cn } from '../../lib/cn'
+import { localeOptions, useI18n } from '../../i18n'
+import type { Locale } from '../../i18n/types'
 
 function DashboardIcon() {
   return (
@@ -67,10 +72,36 @@ function BellIcon() {
   )
 }
 
+function LanguageIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.45" />
+      <path d="M3.8 8h12.4M3.8 12h12.4M10 3c1.85 1.9 2.8 4.23 2.8 7S11.85 15.1 10 17M10 3C8.15 4.9 7.2 7.23 7.2 10s.95 5.1 2.8 7" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 function SparkIcon() {
   return (
     <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
       <path d="m10 2 1.7 4.3L16 8l-4.3 1.7L10 14l-1.7-4.3L4 8l4.3-1.7L10 2Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+function ThemeIcon({ theme }: { theme: 'light' | 'dark' }) {
+  if (theme === 'dark') {
+    return (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+        <path d="M10 2.8v1.6M10 15.6v1.6M4.4 4.4l1.1 1.1M14.5 14.5l1.1 1.1M2.8 10h1.6M15.6 10h1.6M4.4 15.6l1.1-1.1M14.5 5.5l1.1-1.1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="10" r="3.2" stroke="currentColor" strokeWidth="1.5" />
+      </svg>
+    )
+  }
+
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4">
+      <path d="M15.8 12.4A6.5 6.5 0 0 1 7.6 4.2 6.5 6.5 0 1 0 15.8 12.4Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
     </svg>
   )
 }
@@ -91,6 +122,10 @@ export function AppShell({ children }: AppShellProps) {
   const clearSession = useAuthStore((state) => state.clearSession)
   const theme = usePreferencesStore((state) => state.theme)
   const toggleTheme = usePreferencesStore((state) => state.toggleTheme)
+  const { locale, setLocale, t } = useI18n()
+  const [headerSearch, setHeaderSearch] = useState('')
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const languageMenuRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
   const queryClient = useQueryClient()
@@ -113,6 +148,28 @@ export function AppShell({ children }: AppShellProps) {
     }
   }, [hydrated, router, session])
 
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!languageMenuRef.current?.contains(event.target as Node)) {
+        setLanguageMenuOpen(false)
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setLanguageMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   const filteredMenu = useMemo(
     () => (session
       ? menuEntries.filter((entry) => hasPermission(session.role, entry.permission))
@@ -125,6 +182,20 @@ export function AppShell({ children }: AppShellProps) {
     queryClient.clear()
     router.replace('/login')
   }
+
+  function handleHeaderSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
+    const query = buildCampaignSearchParams({
+      ...defaultCampaignFilters,
+      search: headerSearch.trim(),
+      page: 1,
+    })
+
+    router.push(`/campaigns?${query.toString()}`)
+  }
+
+  const currentLocaleOption = localeOptions.find((option) => option.value === locale) ?? localeOptions[0]
 
   if (!hydrated || !session) {
     return (
@@ -145,8 +216,8 @@ export function AppShell({ children }: AppShellProps) {
         본문으로 건너뛰기
       </a>
 
-      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-4 px-4 py-4 lg:grid-cols-[228px_minmax(0,1fr)] lg:px-5 lg:py-5">
-        <aside className="flex h-full flex-col overflow-hidden rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 py-3 shadow-[0_14px_42px_rgba(15,23,42,0.05)] lg:sticky lg:top-5 lg:max-h-[calc(100vh-2.5rem)] lg:overflow-y-auto">
+      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-4 px-4 py-4 lg:grid-cols-[244px_minmax(0,1fr)] lg:px-5 lg:py-5">
+        <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 py-3 shadow-[0_14px_42px_rgba(15,23,42,0.06)] lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
           <Link href="/dashboard" className="focus-ring rounded-xl">
             <div className="flex items-center gap-3 rounded-xl px-2.5 py-2.5">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -156,102 +227,94 @@ export function AppShell({ children }: AppShellProps) {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
                   MediaOps
                 </p>
-                <p className="mt-0.5 text-[15px] font-semibold text-[var(--text-primary)]">
-                  운영 대시보드
+                <p className="mt-0.5 text-[15px] font-semibold text-[var(--sidebar-text)]">
+                  {t('sidebar.title')}
                 </p>
               </div>
             </div>
           </Link>
 
-          <div className="mt-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--sidebar-panel)] px-3 py-3">
+          <div className="mt-3 rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3">
             <div className="flex items-center gap-3">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--panel-strong)] text-sm font-semibold text-[var(--text-primary)] shadow-sm">
-                {session.name.slice(0, 1)}
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--sidebar-panel-strong)] text-sm font-semibold text-[var(--brand)] shadow-sm">
+                M
               </span>
               <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-[var(--text-primary)]">{session.name}</p>
-                <p className="truncate text-xs text-[var(--text-tertiary)]">{session.email}</p>
+                <p className="truncate text-sm font-semibold text-[var(--sidebar-text)]">{t('sidebar.team')}</p>
+                <p className="truncate text-xs text-[var(--sidebar-muted)]">{t('nav.workspace')}</p>
               </div>
             </div>
-            <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 py-2">
-              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--text-tertiary)]">권한</span>
-              <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">
-                {roleLabels[session.role]}
+            <div className="mt-3 flex items-center justify-between rounded-lg border border-[var(--sidebar-border)] bg-[var(--sidebar-panel-strong)] px-3 py-2">
+              <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--sidebar-muted)]">{t('nav.role')}</span>
+              <span className="rounded-full bg-[var(--brand)] px-2.5 py-1 text-[11px] font-semibold text-white">
+                {t(`labels.role.${session.role}`)}
               </span>
             </div>
           </div>
 
-          <div className="mt-6 px-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--text-tertiary)]">
-              메뉴
+          <div className="mt-5 px-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">
+              {t('nav.menu')}
             </p>
           </div>
 
-          <nav className="mt-2 space-y-1" aria-label="주요 메뉴">
-            {filteredMenu.map((entry) => {
-              const isActive = pathname === entry.to || pathname.startsWith(`${entry.to}/`)
+          <div className="scrollbar-subtle mt-2 min-h-0 flex-1 overflow-y-auto pr-1">
+            <nav className="space-y-1" aria-label={t('nav.menu')}>
+              {filteredMenu.map((entry) => {
+                const isActive = pathname === entry.to || pathname.startsWith(`${entry.to}/`)
+                const navKey = entry.to.replace('/', '') || 'dashboard'
 
-              return (
-                <Link
-                  key={entry.to}
-                  href={entry.to}
-                  className={cn(
-                    'focus-ring group relative flex items-center gap-3 rounded-xl px-3 py-2.5',
-                    isActive
-                      ? 'bg-[var(--brand-soft)] text-[var(--text-primary)]'
-                      : 'text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]',
-                  )}
-                  aria-current={isActive ? 'page' : undefined}
-                >
-                  {isActive ? (
-                    <span className="absolute left-0 top-1/2 h-7 w-1 -translate-y-1/2 rounded-full bg-[var(--brand)]" aria-hidden="true" />
-                  ) : null}
-                  <span
+                return (
+                  <Link
+                    key={entry.to}
+                    href={entry.to}
                     className={cn(
-                      'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                      'focus-ring group relative flex items-center gap-3 rounded-lg px-3 py-2.5',
                       isActive
-                        ? 'bg-[var(--panel-strong)] text-[var(--brand)] shadow-sm'
-                        : 'bg-transparent text-[var(--text-tertiary)] group-hover:text-[var(--text-primary)]',
+                        ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text)]'
+                        : 'text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]',
                     )}
-                    aria-hidden="true"
+                    aria-current={isActive ? 'page' : undefined}
                   >
-                    {menuIconMap[entry.to] ?? <DashboardIcon />}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-current">{entry.label}</p>
-                    <p className={cn('mt-1 truncate text-[11px]', isActive ? 'text-[var(--text-secondary)]' : 'text-[var(--text-tertiary)]')}>
-                      {entry.description}
-                    </p>
-                  </div>
-                </Link>
-              )
-            })}
-          </nav>
+                    {isActive ? (
+                      <span className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-[var(--brand)]" aria-hidden="true" />
+                    ) : null}
+                    <span
+                      className={cn(
+                        'inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg',
+                        isActive
+                          ? 'bg-[var(--brand)] text-white shadow-sm'
+                          : 'bg-transparent text-[var(--sidebar-muted)] group-hover:text-[var(--sidebar-text)]',
+                      )}
+                      aria-hidden="true"
+                    >
+                      {menuIconMap[entry.to] ?? <DashboardIcon />}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-current">{t(`nav.${navKey}`)}</p>
+                    </div>
+                  </Link>
+                )
+              })}
+            </nav>
+          </div>
 
-          <div className="mt-auto border-t border-[var(--border-subtle)] px-1 pt-4">
-            <div className="mb-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--sidebar-panel)] px-3 py-3">
+          <div className="mt-3 shrink-0 border-t border-[var(--sidebar-border)] px-1 pt-3">
+            <div className="mb-3 rounded-lg border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3">
               <div className="flex items-center gap-2 text-[var(--brand)]">
                 <SparkIcon />
-                <p className="text-xs font-semibold uppercase tracking-[0.12em]">작업 공간</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.12em]">{t('nav.workspace')}</p>
               </div>
-              <p className="mt-2 text-sm font-medium text-[var(--text-primary)]">캠페인 운영 상태 양호</p>
-              <p className="mt-1 text-xs leading-5 text-[var(--text-tertiary)]">오늘 기준 핵심 캠페인 4개가 목표 ROAS를 상회합니다.</p>
+              <p className="mt-2 text-sm font-medium text-[var(--sidebar-text)]">{t('sidebar.workspaceTitle')}</p>
+              <p className="mt-1 text-xs leading-5 text-[var(--sidebar-muted)]">{t('sidebar.workspaceDesc')}</p>
             </div>
             <Button
               variant="ghost"
-              onClick={toggleTheme}
-              className="w-full justify-start px-3 text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
-              aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
-            >
-              <span>{theme === 'dark' ? '라이트 모드' : '다크 모드'}</span>
-            </Button>
-            <Button
-              variant="ghost"
               onClick={handleLogout}
-              className="mt-1 w-full justify-start px-3 text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
-              aria-label="로그아웃"
+              className="mt-1 w-full justify-start px-3 text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]"
+              aria-label={t('nav.logout')}
             >
-              <span>로그아웃</span>
+              <span>{t('nav.logout')}</span>
             </Button>
           </div>
         </aside>
@@ -262,45 +325,87 @@ export function AppShell({ children }: AppShellProps) {
               <div className="min-w-0">
                 <Breadcrumbs />
                 <p className="mt-1.5 text-sm text-[var(--text-tertiary)]">
-                  광고 운영 현황과 의사결정을 한 화면에서 정리합니다.
+                  {t('header.subtitle')}
                 </p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="hidden h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[270px]">
+              <div className="flex items-center gap-2">
+                <form
+                  role="search"
+                  onSubmit={handleHeaderSearchSubmit}
+                  className="field-shell focus-within:focus-ring hidden h-9 min-h-9 items-center gap-2 px-3 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[310px]"
+                >
+                  <label htmlFor="global-campaign-search" className="sr-only">{t('header.searchLabel')}</label>
                   <SearchIcon />
-                  <span>캠페인, 채널, 담당자 검색</span>
-                </div>
+                  <input
+                    id="global-campaign-search"
+                    type="search"
+                    value={headerSearch}
+                    onChange={(event) => setHeaderSearch(event.target.value)}
+                    onFocus={(event) => event.currentTarget.select()}
+                    placeholder={t('header.searchPlaceholder')}
+                    className="min-w-0 flex-1 bg-transparent text-sm text-[var(--text-primary)] outline-none placeholder:text-[var(--text-quaternary)]"
+                  />
+                </form>
                 <button
                   type="button"
                   className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
-                  aria-label="알림"
+                  aria-label={t('header.notifications')}
                 >
                   <BellIcon />
                 </button>
-                <button
-                  type="button"
-                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
-                  aria-label="도구"
-                >
-                  <SparkIcon />
-                </button>
+                <div ref={languageMenuRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setLanguageMenuOpen((open) => !open)}
+                    className="focus-ring inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                    aria-label={t('header.languageLabel')}
+                    aria-haspopup="menu"
+                    aria-expanded={languageMenuOpen}
+                  >
+                    <LanguageIcon />
+                    <span>{currentLocaleOption.value.toUpperCase()}</span>
+                  </button>
+                  {languageMenuOpen ? (
+                    <div
+                      role="menu"
+                      className="absolute right-0 top-full z-[120] mt-2 w-40 overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-bg)] py-1 shadow-[var(--shadow-md)]"
+                    >
+                      {localeOptions.map((option) => {
+                        const selected = option.value === locale
+
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="menuitemradio"
+                            aria-checked={selected}
+                            onClick={() => {
+                              setLocale(option.value as Locale)
+                              setLanguageMenuOpen(false)
+                            }}
+                            className={cn(
+                              'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition',
+                              selected
+                                ? 'bg-[var(--panel-muted)] font-semibold text-[var(--text-primary)]'
+                                : 'text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]',
+                            )}
+                          >
+                            <span>{option.label}</span>
+                            {selected ? <span className="text-xs text-[var(--brand)]">✓</span> : null}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : null}
+                </div>
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="focus-ring inline-flex h-9 items-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-sm font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-muted)]"
-                  aria-label={theme === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환'}
+                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  aria-label={theme === 'dark' ? t('header.switchToLight') : t('header.switchToDark')}
                 >
-                  {theme === 'dark' ? '라이트' : '다크'}
+                  <ThemeIcon theme={theme} />
                 </button>
-                <div className="flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-[var(--panel-muted)] text-xs font-semibold text-[var(--text-primary)]">
-                    {session.name.slice(0, 1)}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-[var(--text-primary)]">{session.name}</p>
-                    <p className="truncate text-xs text-[var(--text-tertiary)]">{roleLabels[session.role]}</p>
-                  </div>
-                </div>
               </div>
             </header>
 

@@ -6,12 +6,8 @@ import {
   formatPercent,
   formatRatio,
 } from '../../lib/format'
-import {
-  campaignChannelTextMap,
-  campaignStatusTextMap,
-  priorityTextMap,
-} from '../../lib/labels'
 import { StatusBadge } from '../ui/StatusBadge'
+import { useI18n } from '../../i18n'
 
 interface CampaignCardProps {
   campaign: Campaign
@@ -19,6 +15,7 @@ interface CampaignCardProps {
 }
 
 export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
+  const { t } = useI18n()
   const statusTone =
     campaign.status === 'active'
       ? 'positive'
@@ -31,7 +28,7 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
       href={`/campaigns/${campaign.id}`}
       onMouseEnter={() => onPrefetch?.(campaign.id)}
       onFocus={() => onPrefetch?.(campaign.id)}
-      aria-label={`${campaign.name} 상세 보기`}
+      aria-label={`${campaign.name} ${t('detail.eyebrow')}`}
       className="focus-ring grid gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 transition hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-sm)] lg:grid-cols-[1.3fr_0.9fr]"
     >
       <div>
@@ -39,17 +36,17 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
           <h3 className="text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
             {campaign.name}
           </h3>
-          <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={statusTone} />
+          <StatusBadge label={t(`labels.status.${campaign.status}`)} tone={statusTone} />
           <StatusBadge
-            label={priorityTextMap[campaign.priority]}
+            label={t(`labels.priority.${campaign.priority}`)}
             tone={campaign.priority === 'critical' ? 'warning' : 'neutral'}
           />
         </div>
         <p className="mt-2 text-sm text-[var(--text-tertiary)]">
-          {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
+          {t(`labels.channel.${campaign.channel}`)} · {campaign.managerName}
         </p>
         <p className="mt-4 text-sm text-[var(--text-secondary)]">
-          매출: {formatCompactCurrency(campaign.revenue)}
+          {t('labels.table.revenue')}: {formatCompactCurrency(campaign.revenue)}
         </p>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
           운영 기간: {formatDateRange(campaign.startDate, campaign.endDate)}
@@ -58,13 +55,13 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
 
       <dl className="surface-muted grid grid-cols-2 gap-4 p-4 text-sm">
         <div>
-          <dt className="text-[var(--text-tertiary)]">광고비</dt>
+          <dt className="text-[var(--text-tertiary)]">{t('labels.table.spend')}</dt>
           <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatCompactCurrency(campaign.spend)}
           </dd>
         </div>
         <div>
-          <dt className="text-[var(--text-tertiary)]">예산</dt>
+          <dt className="text-[var(--text-tertiary)]">{t('labels.table.budget')}</dt>
           <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatCompactCurrency(campaign.budget)}
           </dd>
@@ -76,7 +73,7 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
           </dd>
         </div>
         <div>
-          <dt className="text-[var(--text-tertiary)]">전환율</dt>
+          <dt className="text-[var(--text-tertiary)]">{t('labels.table.conversionRate')}</dt>
           <dd className="mt-1 text-xl font-semibold text-[var(--text-primary)]">
             {formatPercent(campaign.conversionRate)}
           </dd>

@@ -34,8 +34,6 @@ import {
 } from '../lib/format'
 import {
   campaignChannelTextMap,
-  campaignStatusTextMap,
-  priorityTextMap,
 } from '../lib/labels'
 import type {
   CampaignDetailResponse,
@@ -44,6 +42,7 @@ import type {
   CampaignStatus,
   CampaignUpdateResponse,
 } from '../types/mediaops'
+import { useI18n } from '../i18n'
 
 type MutationContext = {
   previousDetail?: CampaignDetailResponse
@@ -55,6 +54,7 @@ interface CampaignDetailPageProps {
 }
 
 export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
+  const { t } = useI18n()
   const queryClient = useQueryClient()
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
@@ -69,24 +69,24 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
     () => [
       {
         id: 'creative',
-        header: '소재',
+        header: t('labels.table.creative'),
         cell: (creative) => (
           <div>
             <p className="font-semibold text-[var(--text-primary)]">{creative.creativeName}</p>
             <p className="text-xs text-[var(--text-tertiary)]">
-              노출수 {formatInteger(creative.impressions)}
+              {t('labels.table.impressions')} {formatInteger(creative.impressions)}
             </p>
           </div>
         ),
       },
       {
         id: 'spend',
-        header: '광고비',
+        header: t('labels.table.spend'),
         cell: (creative) => formatCompactCurrency(creative.spend),
       },
       {
         id: 'revenue',
-        header: '매출',
+        header: t('labels.table.revenue'),
         cell: (creative) => formatCompactCurrency(creative.revenue),
       },
       {
@@ -96,11 +96,11 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       },
       {
         id: 'conversionRate',
-        header: '전환율',
+        header: t('labels.table.conversionRate'),
         cell: (creative) => formatPercent(creative.conversionRate),
       },
     ],
-    [],
+    [t],
   )
 
   const detailQuery = useQuery({
@@ -269,7 +269,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
         message={detailQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => detailQuery.refetch()}>
-            다시 시도
+            {t('common.retry')}
           </Button>
         }
       />
@@ -277,7 +277,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
   }
 
   if (!detail) {
-    return <ErrorStatePanel message="캠페인 상세 데이터를 표시할 수 없습니다." />
+    return <ErrorStatePanel message={t('detail.eyebrow')} />
   }
 
   const campaign = detail.campaign
@@ -292,10 +292,10 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
               href="/campaigns"
               className="focus-ring inline-flex items-center rounded-full border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] hover:bg-[var(--panel-subtle)]"
             >
-              캠페인 목록으로
+              {t('detail.back')}
             </Link>
             <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-              캠페인 상세
+              {t('detail.eyebrow')}
             </p>
             <h2 className="mt-3 text-[30px] font-semibold leading-tight tracking-[-0.03em] text-[var(--text-primary)]">{campaign.name}</h2>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
@@ -303,11 +303,11 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <StatusBadge
-                label={campaignStatusTextMap[campaign.status]}
+                label={t(`labels.status.${campaign.status}`)}
                 tone={campaign.status === 'active' ? 'positive' : campaign.status === 'paused' ? 'warning' : 'neutral'}
               />
               <StatusBadge
-                label={priorityTextMap[campaign.priority]}
+                label={t(`labels.priority.${campaign.priority}`)}
                 tone={campaign.priority === 'critical' ? 'warning' : 'neutral'}
               />
             </div>
@@ -315,28 +315,28 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
 
           <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
             <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
-              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">예산 사용률</p>
+              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('detail.budgetUsage')}</p>
               <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{detail.summary.budgetUtilization}%</p>
               <p className="mt-2 text-xs text-[var(--text-tertiary)]">{detail.summary.pacing}</p>
             </div>
             <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
-              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">상태 변경</p>
+              <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('detail.statusChange')}</p>
               {canEdit ? (
                 <Select
                   label={undefined}
-                  aria-label="캠페인 상태"
+                  aria-label={t('detail.statusChange')}
                   value={campaign.status}
                   onChange={(event) =>
                     statusMutation.mutate(event.target.value as CampaignStatus)
                   }
                   className="mt-2 min-w-40"
                 >
-                  <SelectOption value="active">운영 중</SelectOption>
-                  <SelectOption value="paused">일시중지</SelectOption>
-                  <SelectOption value="ended">종료</SelectOption>
+                  <SelectOption value="active">{t('labels.status.active')}</SelectOption>
+                  <SelectOption value="paused">{t('labels.status.paused')}</SelectOption>
+                  <SelectOption value="ended">{t('labels.status.ended')}</SelectOption>
                 </Select>
               ) : (
-                <p className="mt-2 text-sm text-[var(--text-tertiary)]">조회 전용 계정</p>
+                <p className="mt-2 text-sm text-[var(--text-tertiary)]">{t('detail.readonly')}</p>
               )}
             </div>
           </div>
@@ -344,11 +344,11 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       </section>
 
       <section className="grid gap-4 xl:grid-cols-5">
-        <MetricCard label="매출" value={formatCompactCurrency(campaign.revenue)} delta={`전환 ${formatInteger(campaign.conversions)}건`} tone="positive" />
-        <MetricCard label="광고비" value={formatCompactCurrency(campaign.spend)} delta={`예산 사용률 ${detail.summary.budgetUtilization}%`} tone="neutral" />
+        <MetricCard label={t('detail.revenue')} value={formatCompactCurrency(campaign.revenue)} delta={`전환 ${formatInteger(campaign.conversions)}건`} tone="positive" />
+        <MetricCard label={t('labels.table.spend')} value={formatCompactCurrency(campaign.spend)} delta={`${t('detail.budgetUsage')} ${detail.summary.budgetUtilization}%`} tone="neutral" />
         <MetricCard label="ROAS" value={formatRatio(campaign.roas)} delta={detail.summary.health} tone={campaign.roas >= 2 ? 'positive' : 'warning'} />
-        <MetricCard label="전환율" value={formatPercent(campaign.conversionRate)} delta={detail.summary.pacing} tone="positive" />
-        <MetricCard label="예산" value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
+        <MetricCard label={t('labels.table.conversionRate')} value={formatPercent(campaign.conversionRate)} delta={detail.summary.pacing} tone="positive" />
+        <MetricCard label={t('labels.table.budget')} value={formatCompactCurrency(campaign.budget)} delta={detail.summary.nextMilestone} tone="neutral" />
       </section>
 
       <section className="surface-card px-3 py-3">
@@ -356,17 +356,17 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
           value={activeTab}
           onChange={setActiveTab}
           options={[
-            { id: 'overview', label: '개요' },
-            { id: 'creatives', label: '소재' },
-            { id: 'revenue', label: '매출' },
-            { id: 'memo', label: '메모' },
+            { id: 'overview', label: t('detail.overview') },
+            { id: 'creatives', label: t('detail.creatives') },
+            { id: 'revenue', label: t('detail.revenue') },
+            { id: 'memo', label: t('detail.memo') },
           ]}
         />
       </section>
 
       {activeTab === 'overview' ? (
         <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-          <ChartCard title="성과 추이" description="기간별 매출과 광고비 흐름입니다.">
+          <ChartCard title={t('detail.performanceTrend')} description={t('detail.performanceTrendDesc')}>
             <RevenueSpendTrendChart
               data={detail.delivery.map((point) => ({
                 date: point.date,
@@ -375,7 +375,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
               }))}
             />
           </ChartCard>
-          <ChartCard title="예산 소진율" description="설정된 예산 대비 현재 사용량입니다.">
+          <ChartCard title={t('detail.budgetPacing')} description={t('detail.budgetPacingDesc')}>
             <div className="space-y-4">
               <div className="h-3 overflow-hidden rounded-full bg-[var(--panel-subtle)]">
                 <div
@@ -384,7 +384,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
                 />
               </div>
               <p className="text-sm text-[var(--text-tertiary)]">
-                전체 예산의 {detail.summary.budgetUtilization}%를 사용했습니다.
+                {t('detail.budgetUsageSentence', { value: detail.summary.budgetUtilization })}
               </p>
               <div className="space-y-3">
                 {detail.activity.map((item) => (
@@ -405,8 +405,8 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       {activeTab === 'creatives' ? (
         <div id="panel-creatives" role="tabpanel" aria-labelledby="tab-creatives" className="space-y-5">
           <ChartCard
-            title="소재 성과"
-            description="소재 단위의 광고비, 매출, ROAS, 전환율을 비교합니다."
+            title={t('detail.creativePerformance')}
+            description={t('detail.creativePerformanceDesc')}
           >
             <DataTable
               caption="소재 성과 표"
@@ -420,23 +420,23 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
 
       {activeTab === 'revenue' ? (
         <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-5 xl:grid-cols-2">
-          <ChartCard title="채널별 비교" description="채널별 매출과 광고비를 비교합니다.">
+          <ChartCard title={t('detail.channelComparison')} description={t('detail.channelComparisonDesc')}>
             <ChannelComparisonChart data={detail.channelComparison} />
           </ChartCard>
-          <ChartCard title="일별 성과 요약" description="최근 일자별 재무 성과를 확인합니다.">
+          <ChartCard title={t('detail.dailySummary')} description={t('detail.dailySummaryDesc')}>
             <div className="space-y-3">
               {detail.delivery.map((point) => (
                 <div key={point.date} className="surface-muted grid gap-3 p-4 sm:grid-cols-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">일자</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.date')}</p>
                     <p className="mt-1 font-semibold text-[var(--text-primary)]">{point.date}</p>
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">매출</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.revenue')}</p>
                     <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.revenue)}</p>
                   </div>
                   <div>
-                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">광고비</p>
+                    <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.spend')}</p>
                     <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.spend)}</p>
                   </div>
                   <div>
@@ -453,12 +453,12 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       {activeTab === 'memo' ? (
         <div id="panel-memo" role="tabpanel" aria-labelledby="tab-memo" className="space-y-5">
           <ChartCard
-            title="운영 메모"
-            description="메모는 optimistic update로 즉시 반영되고, 실패 시 롤백됩니다."
+            title={t('detail.memoTitle')}
+            description={t('detail.memoDesc')}
           >
             <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <textarea
-                aria-label="운영 메모"
+                aria-label={t('detail.memoTitle')}
                 value={memoDraft}
                 onChange={(event) =>
                   setMemoOverrides((current) => ({
@@ -476,14 +476,14 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
             <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-[var(--text-tertiary)]" aria-live="polite">
                 {!canEdit
-                  ? '조회 전용 계정은 메모를 수정할 수 없습니다.'
+                  ? t('detail.memoReadonly')
                   : memoMutation.isPending
-                    ? '메모 저장 중...'
+                    ? t('detail.memoSaving')
                     : memoMutation.isSuccess
-                      ? '메모가 저장되었습니다.'
+                      ? t('detail.memoSaved')
                       : memoMutation.isError
                         ? memoMutation.error.message
-                        : '즉시 반영 후 실패 시 롤백되는 방식으로 저장됩니다.'}
+                        : t('detail.memoIdle')}
               </p>
               {canEdit ? (
                 <Button
@@ -503,7 +503,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
                     })
                   }
                 >
-                  메모 저장
+                  {t('detail.saveMemo')}
                 </Button>
               ) : null}
             </div>

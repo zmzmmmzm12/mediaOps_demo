@@ -14,32 +14,34 @@ import { EmptyState } from '../components/ui/EmptyState'
 import { ErrorStatePanel } from '../components/ui/ErrorStatePanel'
 import { PageHeader } from '../components/ui/PageHeader'
 import { PageSkeleton } from '../components/ui/PageSkeleton'
+import { StatusBadge } from '../components/ui/StatusBadge'
 import { getDashboard } from '../lib/api/mediaops'
 import { formatCompactCurrency, formatPercent, formatRatio } from '../lib/format'
-import { campaignChannelTextMap } from '../lib/labels'
 import type { Campaign } from '../types/mediaops'
+import { useI18n } from '../i18n'
 
-const topCampaignColumns: Array<DataTableColumn<Campaign>> = [
+function createTopCampaignColumns(t: (key: string) => string): Array<DataTableColumn<Campaign>> {
+  return [
   {
     id: 'name',
-    header: '캠페인',
+    header: t('labels.table.campaign'),
     cell: (campaign) => (
       <div>
         <p className="font-semibold text-[var(--text-primary)]">{campaign.name}</p>
         <p className="text-xs text-[var(--text-tertiary)]">
-          {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
+          {t(`labels.channel.${campaign.channel}`)} · {campaign.managerName}
         </p>
       </div>
     ),
   },
   {
     id: 'revenue',
-    header: '매출',
+    header: t('labels.table.revenue'),
     cell: (campaign) => formatCompactCurrency(campaign.revenue),
   },
   {
     id: 'spend',
-    header: '광고비',
+    header: t('labels.table.spend'),
     cell: (campaign) => formatCompactCurrency(campaign.spend),
   },
   {
@@ -49,12 +51,34 @@ const topCampaignColumns: Array<DataTableColumn<Campaign>> = [
   },
   {
     id: 'conversionRate',
-    header: '전환율',
+    header: t('labels.table.conversionRate'),
     cell: (campaign) => formatPercent(campaign.conversionRate),
   },
-]
+  ]
+}
+
+const metricAccentClasses = [
+  'bg-[#6d5dfc] text-white',
+  'bg-[#20c4d8] text-white',
+  'bg-[#22c55e] text-white',
+  'bg-[#ef4444] text-white',
+] as const
+
+const dashboardMetricLabelKeyMap: Record<string, string> = {
+  '총 매출': 'labels.metric.totalRevenue',
+  '총 광고비': 'labels.metric.totalSpend',
+  '평균 ROAS': 'labels.metric.averageRoas',
+  '평균 전환율': 'labels.metric.averageConversionRate',
+  '운영 중 캠페인': 'labels.metric.activeCampaigns',
+}
+
+function translateDashboardMetricLabel(label: string, t: (key: string) => string) {
+  const key = dashboardMetricLabelKeyMap[label]
+  return key ? t(key) : label
+}
 
 export function DashboardPage() {
+  const { t } = useI18n()
   const dashboardQuery = useQuery({
     queryKey: ['dashboard'],
     queryFn: getDashboard,
@@ -70,7 +94,7 @@ export function DashboardPage() {
         message={dashboardQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => dashboardQuery.refetch()}>
-            다시 시도
+            {t('common.retry')}
           </Button>
         }
       />
@@ -80,46 +104,66 @@ export function DashboardPage() {
   const dashboard = dashboardQuery.data?.dashboard
 
   if (!dashboard) {
-    return <ErrorStatePanel message="대시보드 데이터를 표시할 수 없습니다." />
+    return <ErrorStatePanel message={t('dashboard.error')} />
   }
+
+  const topCampaignColumns = createTopCampaignColumns(t)
 
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow="대시보드"
-        title={dashboard.headline}
-        description={dashboard.subheadline}
+        eyebrow={t('dashboard.eyebrow')}
+        title={t('dashboard.title')}
+        description={t('dashboard.description')}
       />
 
       {dashboard.metrics.length === 0 ? (
         <EmptyState
-          title="표시할 대시보드 데이터가 없습니다"
-          description="현재 조건에서는 KPI나 차트 데이터를 불러오지 못했습니다."
+          title={t('dashboard.emptyTitle')}
+          description={t('dashboard.emptyDesc')}
         />
       ) : (
         <>
+          <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            {dashboard.metrics.slice(0, 4).map((metric, index) => (
+              <article
+                key={`accent-${metric.id}`}
+                className={`relative overflow-hidden rounded-xl p-4 shadow-[0_14px_34px_rgba(15,23,42,0.1)] ${metricAccentClasses[index % metricAccentClasses.length]}`}
+              >
+                <div className="absolute right-[-22px] top-[-28px] h-24 w-24 rounded-full bg-white/15" />
+                <div className="relative">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80">
+                    {translateDashboardMetricLabel(metric.label, t)}
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold tracking-[-0.03em]">
+                    {metric.value}
+                  </p>
+                  <p className="mt-2 text-xs font-medium text-white/80">{metric.delta}</p>
+                </div>
+              </article>
+            ))}
+          </section>
+
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.78fr)]">
             <article className="surface-card overflow-hidden p-4 sm:p-5">
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
                 <div>
                   <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">
                     <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
-                    운영 대시보드
+                    {t('dashboard.heroEyebrow')}
                   </div>
                   <h3 className="mt-5 text-[28px] font-semibold leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
-                    운영 팀이 바로 확인해야 할
-                    <br />
-                    핵심 성과 요약
+                    {t('dashboard.heroTitle')}
                   </h3>
                   <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--text-tertiary)]">
-                    매출, 광고비, 상태 분포, 상위 캠페인 성과를 관리자형 화면 밀도로 정리했습니다.
+                    {t('dashboard.heroDesc')}
                   </p>
 
                   <div className="mt-7 grid gap-3 sm:grid-cols-3">
                     {dashboard.metrics.slice(0, 3).map((metric) => (
-                      <div key={metric.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-3.5">
+                      <div key={metric.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3.5">
                         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-                          {metric.label}
+                          {translateDashboardMetricLabel(metric.label, t)}
                         </p>
                         <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
                           {metric.value}
@@ -134,19 +178,19 @@ export function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
-                        주간 개요
+                        {t('dashboard.weeklyOverview')}
                       </p>
-                      <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">운영 흐름</p>
+                      <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">{t('dashboard.operationFlow')}</p>
                     </div>
                     <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
-                      실시간
+                      {t('dashboard.realtime')}
                     </span>
                   </div>
                   <div className="mt-6 flex h-40 items-end gap-2">
                     {dashboard.trend.map((point, index) => (
                       <div key={point.date} className="flex w-full flex-col items-center gap-2">
                         <span
-                      className="w-full rounded-full bg-indigo-400/80"
+                          className="w-full rounded-full bg-[var(--brand)]/80"
                           style={{ height: `${38 + ((point.revenue + index * 17) % 58)}%` }}
                         />
                         <span className="text-[10px] text-[var(--text-quaternary)]">
@@ -163,7 +207,7 @@ export function DashboardPage() {
               {dashboard.metrics.slice(3).map((metric) => (
                 <MetricCard
                   key={metric.id}
-                  label={metric.label}
+                  label={translateDashboardMetricLabel(metric.label, t)}
                   value={metric.value}
                   delta={metric.delta}
                   tone={metric.tone}
@@ -172,28 +216,16 @@ export function DashboardPage() {
             </div>
           </section>
 
-          <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {dashboard.metrics.map((metric) => (
-              <MetricCard
-                key={`summary-${metric.id}`}
-                label={metric.label}
-                value={metric.value}
-                delta={metric.delta}
-                tone={metric.tone}
-              />
-            ))}
-          </section>
-
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
             <ChartCard
-              title="매출 대비 광고비 추이"
-              description="최근 기간의 매출과 광고비 흐름을 확인합니다."
+              title={t('dashboard.revenueSpendTrend')}
+              description={t('dashboard.revenueSpendTrendDesc')}
             >
               <RevenueSpendTrendChart data={dashboard.trend} />
             </ChartCard>
             <ChartCard
-              title="캠페인 상태 분포"
-              description="운영 중, 일시중지, 종료 상태의 비중입니다."
+              title={t('dashboard.statusDistribution')}
+              description={t('dashboard.statusDistributionDesc')}
             >
               <CampaignStatusChart data={dashboard.statusDistribution} />
             </ChartCard>
@@ -201,11 +233,11 @@ export function DashboardPage() {
 
           <section className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.8fr)]">
             <ChartCard
-              title="성과 상위 캠페인"
-              description="ROAS 기준으로 상위 캠페인을 빠르게 비교합니다."
+              title={t('dashboard.topCampaigns')}
+              description={t('dashboard.topCampaignsDesc')}
             >
               <DataTable
-                caption="성과 상위 캠페인 표"
+                caption={t('dashboard.topCampaignsCaption')}
                 columns={topCampaignColumns}
                 rows={dashboard.topCampaigns}
                 getRowKey={(campaign) => campaign.id}
@@ -213,21 +245,30 @@ export function DashboardPage() {
             </ChartCard>
 
             <ChartCard
-              title="운영 알림"
-              description="우선 확인이 필요한 캠페인을 정리했습니다."
+              title={t('dashboard.alerts')}
+              description={t('dashboard.alertsDesc')}
             >
               <div className="space-y-3">
                 {dashboard.alerts.map((alert) => (
                   <article key={alert.id} className="surface-muted p-4">
                     <div className="flex items-start justify-between gap-3">
                       <p className="font-semibold text-[var(--text-primary)]">{alert.title}</p>
-                      <span className="rounded-full bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--text-tertiary)] ring-1 ring-inset ring-[var(--border-subtle)]">
-                        {alert.tone === 'warning'
-                          ? '주의'
-                          : alert.tone === 'positive'
-                            ? '양호'
-                            : '참고'}
-                      </span>
+                      <StatusBadge
+                        label={
+                          alert.tone === 'warning'
+                            ? t('common.warning')
+                            : alert.tone === 'positive'
+                              ? t('common.healthy')
+                              : t('common.info')
+                        }
+                        tone={
+                          alert.tone === 'warning'
+                            ? 'warning'
+                            : alert.tone === 'positive'
+                              ? 'positive'
+                              : 'neutral'
+                        }
+                      />
                     </div>
                     <p className="mt-2 text-sm leading-6 text-[var(--text-tertiary)]">
                       {alert.detail}
@@ -240,8 +281,8 @@ export function DashboardPage() {
 
           <section>
             <ChartCard
-              title="상위 캠페인 매출/광고비 비교"
-              description="주요 캠페인의 현재 성과를 빠르게 비교합니다."
+              title={t('dashboard.comparison')}
+              description={t('dashboard.comparisonDesc')}
             >
               <ChannelComparisonChart
                 data={dashboard.topCampaigns.map((campaign) => ({

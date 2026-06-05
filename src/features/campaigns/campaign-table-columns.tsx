@@ -3,7 +3,6 @@ import Link from 'next/link'
 import type { DataTableColumn } from '../../components/ui/DataTable'
 import { StatusBadge } from '../../components/ui/StatusBadge'
 import { formatCompactCurrency, formatPercent, formatRatio } from '../../lib/format'
-import { campaignChannelTextMap, campaignStatusTextMap } from '../../lib/labels'
 import type { Campaign, CampaignStatus } from '../../types/mediaops'
 
 interface CampaignTableColumnOptions {
@@ -14,6 +13,7 @@ interface CampaignTableColumnOptions {
   sortBy: string
   sortDirection: string
   onSort: (field: 'revenue' | 'spend' | 'roas' | 'conversionRate') => void
+  t: (key: string) => string
 }
 
 function SortButton({
@@ -60,6 +60,7 @@ export function createCampaignTableColumns({
   sortBy,
   sortDirection,
   onSort,
+  t,
 }: CampaignTableColumnOptions): Array<DataTableColumn<Campaign>> {
   return [
     {
@@ -69,7 +70,7 @@ export function createCampaignTableColumns({
       cell: (campaign) => (
         <input
           type="checkbox"
-          aria-label={`${campaign.name} 선택`}
+          aria-label={`${campaign.name} ${t('common.select')}`}
           checked={selectedIds.includes(campaign.id)}
           disabled={!canEdit}
           onChange={() => onToggleSelected(campaign.id)}
@@ -79,29 +80,29 @@ export function createCampaignTableColumns({
     },
     {
       id: 'campaign',
-      header: '캠페인',
+      header: t('labels.table.campaign'),
       cell: (campaign) => (
         <div>
           <Link
             href={`/campaigns/${campaign.id}`}
             onMouseEnter={() => onPrefetch(campaign.id)}
             onFocus={() => onPrefetch(campaign.id)}
-            aria-label={`${campaign.name} 상세 보기`}
+            aria-label={`${campaign.name} ${t('detail.eyebrow')}`}
             className="focus-ring font-semibold text-[var(--text-primary)] hover:text-[var(--brand)]"
           >
             {campaign.name}
           </Link>
           <p className="mt-1 text-xs text-[var(--text-tertiary)]">
-            {campaignChannelTextMap[campaign.channel]} · {campaign.managerName}
+            {t(`labels.channel.${campaign.channel}`)} · {campaign.managerName}
           </p>
         </div>
       ),
     },
     {
       id: 'status',
-      header: '상태',
+      header: t('labels.table.status'),
       cell: (campaign) => (
-        <StatusBadge label={campaignStatusTextMap[campaign.status]} tone={mapStatusTone(campaign.status)} />
+        <StatusBadge label={t(`labels.status.${campaign.status}`)} tone={mapStatusTone(campaign.status)} />
       ),
     },
     {
@@ -109,7 +110,7 @@ export function createCampaignTableColumns({
       className: 'text-right',
       header: (
         <SortButton
-          label="매출"
+          label={t('labels.table.revenue')}
           active={sortBy === 'revenue'}
           direction={sortDirection}
           onClick={() => onSort('revenue')}
@@ -122,7 +123,7 @@ export function createCampaignTableColumns({
       className: 'text-right',
       header: (
         <SortButton
-          label="광고비"
+          label={t('labels.table.spend')}
           active={sortBy === 'spend'}
           direction={sortDirection}
           onClick={() => onSort('spend')}
@@ -148,7 +149,7 @@ export function createCampaignTableColumns({
       className: 'text-right',
       header: (
         <SortButton
-          label="전환율"
+          label={t('labels.table.conversionRate')}
           active={sortBy === 'conversionRate'}
           direction={sortDirection}
           onClick={() => onSort('conversionRate')}

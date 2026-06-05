@@ -11,7 +11,7 @@ export function MetricCard({ label, value, delta, tone }: MetricCardProps) {
   const toneAccentClassMap = {
     positive: 'bg-emerald-500/12 text-emerald-600',
     warning: 'bg-amber-500/12 text-amber-600',
-    neutral: 'bg-indigo-500/12 text-indigo-600',
+    neutral: 'bg-[var(--brand-soft)] text-[var(--brand)]',
   } as const
 
   return (

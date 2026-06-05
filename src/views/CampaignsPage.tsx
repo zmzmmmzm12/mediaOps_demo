@@ -26,7 +26,8 @@ import {
 } from '../features/campaigns/url-state'
 import { useToastStore } from '../features/ui/toast-store'
 import { downloadTextFile } from '../lib/download'
-import { campaignStatusTextMap } from '../lib/labels'
+import { campaignChannelTextMap } from '../lib/labels'
+import { useI18n } from '../i18n'
 import {
   createFilterPreset,
   deleteFilterPreset,
@@ -43,6 +44,7 @@ import type {
 } from '../types/mediaops'
 
 export function CampaignsPage() {
+  const { t } = useI18n()
   const queryClient = useQueryClient()
   const session = useAuthStore((state) => state.session)
   const canEdit = session ? hasPermission(session.role, 'campaigns:edit') : false
@@ -159,10 +161,13 @@ export function CampaignsPage() {
   const filteredCampaigns = useMemo(() => {
     const lowerSearch = debouncedSearch.toLowerCase()
     const filtered = campaignRows.filter((campaign) => {
+      const channelLabel = campaignChannelTextMap[campaign.channel].toLowerCase()
       const matchesSearch =
         lowerSearch.length === 0 ||
         campaign.name.toLowerCase().includes(lowerSearch) ||
-        campaign.managerName.toLowerCase().includes(lowerSearch)
+        campaign.managerName.toLowerCase().includes(lowerSearch) ||
+        campaign.channel.toLowerCase().includes(lowerSearch) ||
+        channelLabel.includes(lowerSearch)
       const matchesStatus =
         filters.status === 'all' || campaign.status === filters.status
       const matchesChannel =
@@ -275,6 +280,7 @@ export function CampaignsPage() {
     sortBy: filters.sortBy,
     sortDirection: filters.sortDirection,
     onSort: handleSort,
+    t,
   })
 
   if (campaignsQuery.isLoading) {
@@ -287,7 +293,7 @@ export function CampaignsPage() {
         message={campaignsQuery.error.message}
         action={
           <Button variant="secondary" onClick={() => campaignsQuery.refetch()}>
-            다시 시도
+            {t('common.retry')}
           </Button>
         }
       />
@@ -297,36 +303,36 @@ export function CampaignsPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow="캠페인"
-        title="캠페인 탐색기"
-        description="검색, 필터, 정렬, 저장된 프리셋, CSV 다운로드, 일괄 상태 변경을 한 흐름으로 처리합니다."
+        eyebrow={t('campaigns.eyebrow')}
+        title={t('campaigns.title')}
+        description={t('campaigns.description')}
       />
 
       <section className="surface-card overflow-hidden p-4">
         <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,0.55fr))]">
           <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4 xl:col-span-1">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">운영 제어</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">{t('campaigns.control')}</p>
             <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
-              캠페인 검색과 운영 제어
+              {t('campaigns.controlTitle')}
             </h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
-              상태, 채널, 기간, 프리셋을 조합해 운영 대상을 빠르게 찾고 바로 액션할 수 있습니다.
+              {t('campaigns.controlDesc')}
             </p>
           </div>
           <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">검색 결과</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.resultCount')}</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
               {filteredCampaigns.length}
             </p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">조건에 맞는 활성 데이터</p>
           </div>
           <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">저장 프리셋</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.savedPresets')}</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">빠른 필터 재사용</p>
           </div>
           <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
-            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">선택 항목</p>
+            <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.selectedItems')}</p>
             <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{selectedCampaignIds.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">일괄 작업 대상</p>
           </div>
@@ -336,21 +342,21 @@ export function CampaignsPage() {
       <section className="surface-card p-4">
         <div className="mb-4 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-[var(--text-primary)]">필터 툴바</p>
-            <p className="text-xs text-[var(--text-tertiary)]">검색 조건과 프리셋을 한 번에 조정합니다.</p>
+            <p className="text-sm font-semibold text-[var(--text-primary)]">{t('campaigns.filterToolbar')}</p>
+            <p className="text-xs text-[var(--text-tertiary)]">{t('campaigns.filterToolbarDesc')}</p>
           </div>
         </div>
         <div className="grid gap-3 xl:grid-cols-4">
           <Input
-            label="캠페인 검색"
-            aria-label="캠페인 검색"
+            label={t('campaigns.search')}
+            aria-label={t('campaigns.search')}
             value={searchInput}
             onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="캠페인명 또는 담당자로 검색"
+            placeholder={t('campaigns.searchPlaceholder')}
           />
           <Select
-            label="상태"
-            aria-label="상태"
+            label={t('campaigns.status')}
+            aria-label={t('campaigns.status')}
             value={filters.status}
             onChange={(event) =>
               updateFilters({
@@ -358,14 +364,14 @@ export function CampaignsPage() {
               })
             }
           >
-            <SelectOption value="all">전체 상태</SelectOption>
-            <SelectOption value="active">운영 중</SelectOption>
-            <SelectOption value="paused">일시중지</SelectOption>
-            <SelectOption value="ended">종료</SelectOption>
+            <SelectOption value="all">{t('campaigns.allStatus')}</SelectOption>
+            <SelectOption value="active">{t('labels.status.active')}</SelectOption>
+            <SelectOption value="paused">{t('labels.status.paused')}</SelectOption>
+            <SelectOption value="ended">{t('labels.status.ended')}</SelectOption>
           </Select>
           <Select
-            label="채널"
-            aria-label="채널"
+            label={t('campaigns.channel')}
+            aria-label={t('campaigns.channel')}
             value={filters.channel}
             onChange={(event) =>
               updateFilters({
@@ -373,11 +379,11 @@ export function CampaignsPage() {
               })
             }
           >
-            <SelectOption value="all">전체 채널</SelectOption>
-            <SelectOption value="google">구글</SelectOption>
-            <SelectOption value="meta">메타</SelectOption>
-            <SelectOption value="naver">네이버</SelectOption>
-            <SelectOption value="kakao">카카오</SelectOption>
+            <SelectOption value="all">{t('campaigns.allChannels')}</SelectOption>
+            <SelectOption value="google">{t('labels.channel.google')}</SelectOption>
+            <SelectOption value="meta">{t('labels.channel.meta')}</SelectOption>
+            <SelectOption value="naver">{t('labels.channel.naver')}</SelectOption>
+            <SelectOption value="kakao">{t('labels.channel.kakao')}</SelectOption>
           </Select>
           <DateRangePicker
             startDate={filters.startDate}
@@ -389,19 +395,19 @@ export function CampaignsPage() {
 
         <div className="mt-4 grid gap-3 xl:grid-cols-[minmax(0,1fr)_220px_repeat(5,minmax(0,auto))] xl:items-end">
           <Input
-            label="프리셋 이름"
-            aria-label="프리셋 이름"
+            label={t('campaigns.presetName')}
+            aria-label={t('campaigns.presetName')}
             value={presetName}
             onChange={(event) => setPresetName(event.target.value)}
-            placeholder="프리셋 이름 입력"
+            placeholder={t('campaigns.presetPlaceholder')}
           />
           <Select
-            label="저장된 프리셋"
-            aria-label="저장된 프리셋"
+            label={t('campaigns.savedPresets')}
+            aria-label={t('campaigns.savedPresets')}
             value={selectedPresetId}
             onChange={(event) => setSelectedPresetId(event.target.value)}
           >
-            <SelectOption value="">저장된 프리셋 선택</SelectOption>
+            <SelectOption value="">{t('campaigns.savedPresetSelect')}</SelectOption>
             {presets.map((preset: FilterPreset) => (
               <SelectOption key={preset.id} value={preset.id}>
                 {preset.name}
@@ -423,7 +429,7 @@ export function CampaignsPage() {
               })
             }
           >
-            프리셋 저장
+            {t('campaigns.savePreset')}
           </Button>
           <Button
             variant="secondary"
@@ -431,7 +437,7 @@ export function CampaignsPage() {
             onClick={handleLoadPreset}
             disabled={!selectedPresetId}
           >
-            불러오기
+            {t('campaigns.loadPreset')}
           </Button>
           <Button
             variant="secondary"
@@ -439,14 +445,14 @@ export function CampaignsPage() {
             onClick={() => deletePresetMutation.mutate(selectedPresetId)}
             disabled={!selectedPresetId}
           >
-            삭제
+            {t('campaigns.deletePreset')}
           </Button>
           <Button
             variant="secondary"
             data-testid="download-csv-button"
             onClick={handleDownloadCsv}
           >
-            CSV 다운로드
+            {t('common.downloadCsv')}
           </Button>
           <Button
             variant="ghost"
@@ -456,38 +462,38 @@ export function CampaignsPage() {
               replaceSearchParams(buildCampaignSearchParams(defaultCampaignFilters))
             }}
           >
-            초기화
+            {t('common.reset')}
           </Button>
         </div>
 
         <div className="mt-5 flex flex-wrap items-end justify-between gap-3 border-t border-[var(--border-subtle)] pt-5">
           <p className="text-sm leading-6 text-[var(--text-tertiary)]">
-            자주 쓰는 조건은 프리셋으로 저장하고, 결과는 CSV로 내려받을 수 있습니다.
+            {t('campaigns.toolbarHint')}
           </p>
           {canEdit ? (
             <div className="flex flex-wrap items-end gap-3">
               <Select
-                label="일괄 변경 상태"
+                label={t('campaigns.bulkStatus')}
                 value={bulkStatus}
-                aria-label="일괄 변경 상태"
+                aria-label={t('campaigns.bulkStatus')}
                 onChange={(event) =>
                   setBulkStatus(event.target.value as CampaignStatus)
                 }
               >
-                <SelectOption value="active">운영 중으로 변경</SelectOption>
-                <SelectOption value="paused">일시중지로 변경</SelectOption>
-                <SelectOption value="ended">종료로 변경</SelectOption>
+                <SelectOption value="active">{t('labels.status.active')}</SelectOption>
+                <SelectOption value="paused">{t('labels.status.paused')}</SelectOption>
+                <SelectOption value="ended">{t('labels.status.ended')}</SelectOption>
               </Select>
               <Button
                 onClick={() => setConfirmOpen(true)}
                 disabled={selectedCampaignIds.length === 0}
               >
-                일괄 상태 변경
+                {t('campaigns.bulkChange')}
               </Button>
             </div>
           ) : (
             <p className="text-sm text-[var(--text-tertiary)]">
-              조회 전용 계정은 데이터를 확인할 수 있지만 상태 변경은 할 수 없습니다.
+              {t('campaigns.readonly')}
             </p>
           )}
         </div>
@@ -495,20 +501,20 @@ export function CampaignsPage() {
 
       {paginatedCampaigns.length === 0 ? (
         <EmptyState
-          title="조건에 맞는 캠페인이 없습니다"
-          description="검색어, 채널, 기간 조건을 더 넓혀서 다시 확인해 보세요."
+          title={t('campaigns.emptyTitle')}
+          description={t('campaigns.emptyDesc')}
         />
       ) : (
         <>
           <section className="surface-card overflow-hidden">
             <div className="flex items-center justify-between border-b border-[var(--border-subtle)] px-4 py-3.5">
               <div>
-                <p className="text-sm font-semibold text-[var(--text-primary)]">캠페인 목록</p>
-                <p className="mt-1 text-xs text-[var(--text-tertiary)]">선택한 조건에 맞는 캠페인을 정렬된 표로 제공합니다.</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{t('campaigns.list')}</p>
+                <p className="mt-1 text-xs text-[var(--text-tertiary)]">{t('campaigns.listDesc')}</p>
               </div>
             </div>
             <DataTable
-              caption="캠페인 목록 표"
+              caption={t('campaigns.listCaption')}
               captionClassName="sr-only"
               columns={columns}
               rows={paginatedCampaigns}
@@ -527,9 +533,9 @@ export function CampaignsPage() {
       {canEdit ? (
         <ConfirmDialog
           open={confirmOpen}
-          title="캠페인 상태 변경"
-          description={`선택한 ${selectedCampaignIds.length}개 캠페인의 상태를 "${campaignStatusTextMap[bulkStatus]}"(으)로 변경할까요?`}
-          confirmLabel="변경 적용"
+          title={t('campaigns.confirmTitle')}
+          description={`${selectedCampaignIds.length} · ${t(`labels.status.${bulkStatus}`)}`}
+          confirmLabel={t('campaigns.confirmLabel')}
           onCancel={() => setConfirmOpen(false)}
           onConfirm={() => batchUpdateMutation.mutate(bulkStatus)}
         />

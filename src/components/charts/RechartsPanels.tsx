@@ -21,10 +21,7 @@ import type {
 } from '../../types/mediaops'
 import { formatCompactCurrency } from '../../lib/format'
 import { usePreferencesStore } from '../../features/ui/preferences-store'
-import {
-  campaignChannelTextMap,
-  campaignStatusTextMap,
-} from '../../lib/labels'
+import { useI18n } from '../../i18n'
 
 const channelColors = ['#4f46e5', '#818cf8', '#0f766e', '#f59e0b']
 const statusColorMap = {
@@ -33,10 +30,17 @@ const statusColorMap = {
   ended: '#94a3b8',
 } as const
 
-const seriesLabelMap: Record<string, string> = {
-  revenue: '매출',
-  spend: '광고비',
-  roas: 'ROAS',
+const seriesLabelKeyMap: Record<string, string> = {
+  revenue: 'labels.table.revenue',
+  spend: 'labels.table.spend',
+  roas: 'labels.table.roas',
+}
+
+const knownChannelValues = new Set(['google', 'meta', 'naver', 'kakao'])
+
+function formatChannelLabel(value: unknown, t: (key: string) => string) {
+  const channel = String(value)
+  return knownChannelValues.has(channel) ? t(`labels.channel.${channel}`) : channel
 }
 
 export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
@@ -45,6 +49,7 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
   data: DashboardTrendPoint[]
 }) {
   const theme = usePreferencesStore((state) => state.theme)
+  const { t } = useI18n()
   const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   const tooltipStyle = theme === 'dark'
@@ -78,10 +83,10 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
             {...tooltipStyle}
             formatter={(value, name) => [
               typeof value === 'number' ? formatCompactCurrency(value) : value,
-              seriesLabelMap[String(name)] ?? name,
+              t(seriesLabelKeyMap[String(name)] ?? String(name)),
             ]}
           />
-          <Legend formatter={(value) => seriesLabelMap[value] ?? value} />
+          <Legend formatter={(value) => t(seriesLabelKeyMap[value] ?? String(value))} />
           <Line type="monotone" dataKey="revenue" stroke="#4f46e5" strokeWidth={3} dot={false} />
           <Line type="monotone" dataKey="spend" stroke="#94a3b8" strokeWidth={3} dot={false} />
         </LineChart>
@@ -96,6 +101,7 @@ export const CampaignStatusChart = memo(function CampaignStatusChart({
   data: DashboardStatusPoint[]
 }) {
   const theme = usePreferencesStore((state) => state.theme)
+  const { t } = useI18n()
   return (
     <div className="chart-frame">
       <ResponsiveContainer width="100%" height="100%">
@@ -120,9 +126,9 @@ export const CampaignStatusChart = memo(function CampaignStatusChart({
               color: theme === 'dark' ? '#e2e8f0' : '#0f172a',
             }}
             labelStyle={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}
-            formatter={(value, name) => [value, campaignStatusTextMap[String(name) as keyof typeof campaignStatusTextMap] ?? name]}
+            formatter={(value, name) => [value, t(`labels.status.${String(name)}`)]}
           />
-          <Legend formatter={(value) => campaignStatusTextMap[value as keyof typeof campaignStatusTextMap] ?? value} />
+          <Legend formatter={(value) => t(`labels.status.${String(value)}`)} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -135,6 +141,7 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
   data: Array<{ channel: string; revenue: number; spend: number }>
 }) {
   const theme = usePreferencesStore((state) => state.theme)
+  const { t } = useI18n()
   const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
@@ -142,7 +149,7 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
-          <XAxis dataKey="channel" tickFormatter={(value) => campaignChannelTextMap[value as keyof typeof campaignChannelTextMap] ?? value} tick={{ fill: tickColor, fontSize: 12 }} />
+          <XAxis dataKey="channel" tickFormatter={(value) => formatChannelLabel(value, t)} tick={{ fill: tickColor, fontSize: 12 }} />
           <YAxis tickFormatter={formatCompactCurrency} tick={{ fill: tickColor, fontSize: 12 }} />
           <Tooltip
             contentStyle={{
@@ -154,10 +161,10 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
             labelStyle={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}
             formatter={(value, name, item) => [
               typeof value === 'number' ? formatCompactCurrency(value) : value,
-              `${campaignChannelTextMap[String(item?.payload?.channel) as keyof typeof campaignChannelTextMap] ?? item?.payload?.channel} · ${seriesLabelMap[String(name)] ?? name}`,
+              `${formatChannelLabel(item?.payload?.channel, t)} · ${t(seriesLabelKeyMap[String(name)] ?? String(name))}`,
             ]}
           />
-          <Legend formatter={(value) => seriesLabelMap[value] ?? value} />
+          <Legend formatter={(value) => t(seriesLabelKeyMap[value] ?? String(value))} />
           <Bar dataKey="revenue" fill="#4f46e5" radius={[8, 8, 0, 0]} />
           <Bar dataKey="spend" fill="#94a3b8" radius={[8, 8, 0, 0]} />
         </BarChart>
@@ -172,6 +179,7 @@ export const RoasRankingChart = memo(function RoasRankingChart({
   data: Campaign[]
 }) {
   const theme = usePreferencesStore((state) => state.theme)
+  const { t } = useI18n()
   const gridColor = theme === 'dark' ? '#23304a' : '#e2e8f0'
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
@@ -196,7 +204,7 @@ export const RoasRankingChart = memo(function RoasRankingChart({
               color: theme === 'dark' ? '#e2e8f0' : '#0f172a',
             }}
             labelStyle={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}
-            formatter={(value, name) => [value, seriesLabelMap[String(name)] ?? name]}
+            formatter={(value, name) => [value, t(seriesLabelKeyMap[String(name)] ?? String(name))]}
           />
           <Bar dataKey="roas" radius={[0, 8, 8, 0]}>
             {data.slice(0, 5).map((campaign, index) => (

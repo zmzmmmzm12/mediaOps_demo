@@ -23,7 +23,7 @@ export function ChartCard({
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
-      <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)]/55 p-3">
+      <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3">
         {children}
       </div>
     </article>

@@ -32,7 +32,7 @@ export function DataTable<T>({
               {caption}
             </caption>
           ) : null}
-          <thead className="bg-[var(--panel-muted)]/90">
+          <thead className="bg-[var(--panel-muted)]">
             <tr>
               {columns.map((column) => (
                 <th
@@ -52,7 +52,7 @@ export function DataTable<T>({
             {rows.map((row) => (
               <tr
                 key={getRowKey(row)}
-                className="align-top transition hover:bg-[var(--panel-muted)]/85"
+                className="align-top transition hover:bg-[var(--panel-muted)]"
               >
                 {columns.map((column) => (
                   <td

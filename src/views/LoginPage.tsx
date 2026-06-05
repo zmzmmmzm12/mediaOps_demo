@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { Button } from '../components/ui/Button'
@@ -9,20 +9,36 @@ import { Skeleton } from '../components/ui/Skeleton'
 import { useAuthStore } from '../features/auth/auth-store'
 import { usePreferencesStore } from '../features/ui/preferences-store'
 import { getLoginProfiles, loginWithProfile } from '../lib/api/mediaops'
-import { roleLabels } from '../features/auth/permissions'
+import { localeOptions, useI18n } from '../i18n'
+import type { Locale } from '../i18n/types'
 
 export function LoginPage() {
   const router = useRouter()
   const session = useAuthStore((state) => state.session)
   const setSession = useAuthStore((state) => state.setSession)
   const theme = usePreferencesStore((state) => state.theme)
+  const { locale, setLocale, t } = useI18n()
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+  const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const languageMenuRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (session) {
       router.replace('/dashboard')
     }
   }, [router, session])
+
+  useEffect(() => {
+    function handlePointerDown(event: MouseEvent) {
+      if (!languageMenuRef.current?.contains(event.target as Node)) {
+        setLanguageMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown)
+
+    return () => document.removeEventListener('mousedown', handlePointerDown)
+  }, [])
 
   const profilesQuery = useQuery({
     queryKey: ['auth-profiles'],
@@ -40,6 +56,7 @@ export function LoginPage() {
   const profiles = profilesQuery.data?.profiles ?? []
   const activeProfile =
     profiles.find((profile) => profile.id === selectedUserId) ?? profiles[0] ?? null
+  const currentLocaleOption = localeOptions.find((option) => option.value === locale) ?? localeOptions[0]
 
   function handleSubmit() {
     const userId = selectedUserId ?? profiles[0]?.id
@@ -62,47 +79,44 @@ export function LoginPage() {
               MediaOps
             </p>
             <h1 className="mt-5 max-w-2xl text-5xl font-semibold tracking-[-0.05em] text-[var(--text-primary)] sm:text-[64px] sm:leading-[1.03]">
-              성과 운영을 위한
-              <br />
-              깔끔한 관리자 대시보드
+              {t('login.heroTitle')}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-secondary)]">
-              SEO 메타데이터가 적용된 Next.js 기반 구조로 전환하고, 광고 운영 실무에 맞춘
-              데이터 밀도와 시각적 계층을 다시 설계했습니다.
+              {t('login.heroDesc')}
             </p>
           </div>
 
           <div className="relative mt-12 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
               <div className="surface-muted p-4">
-                <p className="text-sm text-[var(--text-tertiary)]">권한 제어</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">3개 역할</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{t('login.permissionControl')}</p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.rolesCount')}</p>
               </div>
               <div className="surface-muted p-4">
-                <p className="text-sm text-[var(--text-tertiary)]">캠페인 분석</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">목록 + 상세</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{t('login.campaignAnalysis')}</p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.listAndDetail')}</p>
               </div>
               <div className="surface-muted p-4">
-                <p className="text-sm text-[var(--text-tertiary)]">다국어 문구</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">한/영 정리</p>
+                <p className="text-sm text-[var(--text-tertiary)]">{t('login.localizedCopy')}</p>
+                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.localizedCopyCount')}</p>
               </div>
             </div>
             <div className="relative min-h-[420px]">
               <div className="absolute left-0 top-10 w-[72%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)] backdrop-blur">
                 <div className="mb-4 flex items-center justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">운영 개요</p>
-                    <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">광고 운영 현황</p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">{t('login.overview')}</p>
+                    <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">{t('login.dashboardStatus')}</p>
                   </div>
-                  <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">실시간</span>
+                  <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">{t('dashboard.realtime')}</span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div className="surface-muted p-4">
-                    <p className="text-xs text-[var(--text-tertiary)]">주간 매출</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">{t('labels.metric.weeklyRevenue')}</p>
                     <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">₩14,869.95</p>
                   </div>
                   <div className="surface-muted p-4">
-                    <p className="text-xs text-[var(--text-tertiary)]">티켓 전환</p>
+                    <p className="text-xs text-[var(--text-tertiary)]">{t('labels.metric.ticketConversion')}</p>
                     <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">24,580</p>
                   </div>
                 </div>
@@ -120,7 +134,7 @@ export function LoginPage() {
               </div>
 
               <div className="absolute bottom-0 right-0 w-[56%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)]">
-                <p className="text-sm font-semibold text-[var(--text-primary)]">부서별 리포트</p>
+                <p className="text-sm font-semibold text-[var(--text-primary)]">{t('login.departmentReport')}</p>
                 <div className="mt-4 space-y-3">
                   {[
                     ['재무', '56.6%'],
@@ -147,14 +161,59 @@ export function LoginPage() {
         </section>
 
         <section className="surface-card p-5 sm:p-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
-            로그인
-          </p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
+              {t('login.eyebrow')}
+            </p>
+            <div ref={languageMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setLanguageMenuOpen((open) => !open)}
+                className="focus-ring inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                aria-label={t('header.languageLabel')}
+                aria-haspopup="menu"
+                aria-expanded={languageMenuOpen}
+              >
+                {currentLocaleOption.value.toUpperCase()}
+              </button>
+              {languageMenuOpen ? (
+                <div
+                  role="menu"
+                  className="absolute right-0 top-full z-[120] mt-2 w-40 overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-bg)] py-1 shadow-[var(--shadow-md)]"
+                >
+                  {localeOptions.map((option) => {
+                    const selected = option.value === locale
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={selected}
+                        onClick={() => {
+                          setLocale(option.value as Locale)
+                          setLanguageMenuOpen(false)
+                        }}
+                        className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition ${
+                          selected
+                            ? 'bg-[var(--panel-muted)] font-semibold text-[var(--text-primary)]'
+                            : 'text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]'
+                        }`}
+                      >
+                        <span>{option.label}</span>
+                        {selected ? <span className="text-xs text-[var(--brand)]">✓</span> : null}
+                      </button>
+                    )
+                  })}
+                </div>
+              ) : null}
+            </div>
+          </div>
           <h2 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
-            데모 계정을 선택하세요
+            {t('login.selectAccount')}
           </h2>
           <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
-            선택한 역할에 따라 메뉴 노출과 가능한 액션이 달라집니다.
+            {t('login.selectAccountDesc')}
           </p>
 
           <div className="mt-8 space-y-3">
@@ -176,7 +235,7 @@ export function LoginPage() {
                 message={profilesQuery.error.message}
                 action={
                   <Button variant="secondary" onClick={() => profilesQuery.refetch()}>
-                    다시 시도
+                    {t('common.retry')}
                   </Button>
                 }
               />
@@ -204,7 +263,7 @@ export function LoginPage() {
                       <p className="text-sm text-[var(--text-tertiary)]">{profile.email}</p>
                     </div>
                     <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)] ring-1 ring-inset ring-[var(--border-subtle)]">
-                      {roleLabels[profile.role]}
+                      {t(`labels.role.${profile.role}`)}
                     </span>
                   </div>
                   <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
@@ -221,10 +280,10 @@ export function LoginPage() {
 
           <div className="surface-muted mt-7 p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
-              선택된 권한
+              {t('login.selectedRole')}
             </p>
             <p className="mt-2 text-lg font-semibold text-[var(--text-primary)]">
-              {activeProfile ? roleLabels[activeProfile.role] : '선택 없음'}
+              {activeProfile ? t(`labels.role.${activeProfile.role}`) : '-'}
             </p>
             <p className="mt-2 text-sm leading-6 text-[var(--text-tertiary)]">
               {activeProfile
@@ -247,7 +306,7 @@ export function LoginPage() {
             disabled={profilesQuery.isLoading || loginMutation.isPending}
             className="mt-6 w-full"
           >
-            {loginMutation.isPending ? '로그인 중...' : '대시보드 입장'}
+            {loginMutation.isPending ? t('login.signingIn') : t('login.enterDashboard')}
           </Button>
         </section>
       </div>

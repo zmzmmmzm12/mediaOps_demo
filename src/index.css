@@ -15,11 +15,11 @@
 }
 
 :root {
-  --app-bg: #f3f6fb;
-  --app-bg-elevated: #e9eef8;
-  --panel-bg: rgba(255, 255, 255, 0.96);
-  --panel-muted: #f6f8fc;
-  --panel-subtle: #eef3ff;
+  --app-bg: #eef2f8;
+  --app-bg-elevated: #e7ecf5;
+  --panel-bg: rgba(255, 255, 255, 0.98);
+  --panel-muted: #f5f7fb;
+  --panel-subtle: #edf1fb;
   --panel-strong: #ffffff;
   --border-subtle: rgba(15, 23, 42, 0.08);
   --border-strong: rgba(15, 23, 42, 0.14);
@@ -27,24 +27,26 @@
   --text-secondary: #334155;
   --text-tertiary: #64748b;
   --text-quaternary: #94a3b8;
-  --brand: #4f6ef7;
-  --brand-strong: #3658ea;
-  --brand-soft: rgba(79, 110, 247, 0.1);
-  --brand-soft-strong: rgba(79, 110, 247, 0.18);
+  --brand: #6d5dfc;
+  --brand-strong: #5545e8;
+  --brand-soft: rgba(109, 93, 252, 0.12);
+  --brand-soft-strong: rgba(109, 93, 252, 0.2);
   --sidebar-bg: rgba(255, 255, 255, 0.98);
-  --sidebar-panel: #f7f9fd;
+  --sidebar-panel: #f6f8fc;
+  --sidebar-panel-strong: #ffffff;
   --sidebar-border: rgba(15, 23, 42, 0.08);
   --sidebar-text: #0f172a;
   --sidebar-muted: #64748b;
-  --sidebar-hover: #f8fafc;
+  --sidebar-hover: #eef2f8;
+  --sidebar-active: rgba(109, 93, 252, 0.12);
   --success: #059669;
   --success-soft: rgba(16, 185, 129, 0.12);
   --warning: #d97706;
   --warning-soft: rgba(217, 119, 6, 0.12);
   --danger: #dc2626;
   --danger-soft: rgba(220, 38, 38, 0.1);
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.03), 0 10px 28px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 16px 44px rgba(15, 23, 42, 0.07);
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 22px rgba(15, 23, 42, 0.035);
+  --shadow-md: 0 16px 42px rgba(15, 23, 42, 0.075);
   --shadow-lg: 0 28px 80px rgba(15, 23, 42, 0.1);
   --focus-ring: rgba(79, 70, 229, 0.38);
   --focus-ring-soft: rgba(79, 70, 229, 0.12);
@@ -74,12 +76,14 @@
   --brand-strong: #a5b4fc;
   --brand-soft: rgba(129, 140, 248, 0.14);
   --brand-soft-strong: rgba(129, 140, 248, 0.22);
-  --sidebar-bg: #0e1627;
-  --sidebar-panel: #121d31;
+  --sidebar-bg: #0d1320;
+  --sidebar-panel: rgba(255, 255, 255, 0.045);
+  --sidebar-panel-strong: rgba(255, 255, 255, 0.075);
   --sidebar-border: rgba(255, 255, 255, 0.08);
   --sidebar-text: #e5e7eb;
   --sidebar-muted: #94a3b8;
-  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-hover: rgba(255, 255, 255, 0.06);
+  --sidebar-active: rgba(129, 140, 248, 0.2);
   --success: #34d399;
   --success-soft: rgba(16, 185, 129, 0.16);
   --warning: #f59e0b;
@@ -108,7 +112,8 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background:
-    radial-gradient(circle at top left, rgba(79, 110, 247, 0.08), transparent 32rem),
+    radial-gradient(circle at 18% 0%, rgba(109, 93, 252, 0.09), transparent 28rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 42%),
     var(--app-bg);
   color: var(--text-primary);
   overflow-x: hidden;
