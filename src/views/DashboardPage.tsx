@@ -124,18 +124,18 @@ export function DashboardPage() {
         />
       ) : (
         <>
-          <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-4">
             {dashboard.metrics.slice(0, 4).map((metric, index) => (
               <article
                 key={`accent-${metric.id}`}
-                className={`relative overflow-hidden rounded-xl p-4 shadow-[0_14px_34px_rgba(15,23,42,0.1)] ${metricAccentClasses[index % metricAccentClasses.length]}`}
+                className={`relative min-w-0 overflow-hidden rounded-xl p-4 shadow-[0_14px_34px_rgba(15,23,42,0.1)] ${metricAccentClasses[index % metricAccentClasses.length]}`}
               >
-                <div className="absolute right-[-22px] top-[-28px] h-24 w-24 rounded-full bg-white/15" />
-                <div className="relative">
+                <div className="absolute right-[-14px] top-[-28px] h-24 w-24 rounded-full bg-white/15" />
+                <div className="relative min-w-0">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80">
                     {translateDashboardMetricLabel(metric.label, t)}
                   </p>
-                  <p className="mt-3 text-2xl font-semibold tracking-[-0.03em]">
+                  <p className="numeric-value mt-3 text-[clamp(1.35rem,5vw,1.5rem)] font-semibold tracking-[-0.03em]">
                     {metric.value}
                   </p>
                   <p className="mt-2 text-xs font-medium text-white/80">{metric.delta}</p>
@@ -144,28 +144,28 @@ export function DashboardPage() {
             ))}
           </section>
 
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.32fr)_minmax(300px,0.78fr)]">
-            <article className="surface-card overflow-hidden p-4 sm:p-5">
-              <div className="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
-                <div>
+          <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.32fr)_minmax(280px,0.78fr)]">
+            <article className="surface-card min-w-0 overflow-hidden p-4 sm:p-5">
+              <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(260px,0.95fr)]">
+                <div className="min-w-0">
                   <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">
                     <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
                     {t('dashboard.heroEyebrow')}
                   </div>
-                  <h3 className="mt-5 text-[28px] font-semibold leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
+                  <h3 className="mt-5 text-[clamp(1.5rem,5vw,1.75rem)] font-semibold leading-tight tracking-[-0.04em] text-[var(--text-primary)]">
                     {t('dashboard.heroTitle')}
                   </h3>
                   <p className="mt-4 max-w-xl text-sm leading-7 text-[var(--text-tertiary)]">
                     {t('dashboard.heroDesc')}
                   </p>
 
-                  <div className="mt-7 grid gap-3 sm:grid-cols-3">
+                  <div className="mt-7 grid min-w-0 gap-3 md:grid-cols-3">
                     {dashboard.metrics.slice(0, 3).map((metric) => (
-                      <div key={metric.id} className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3.5">
+                      <div key={metric.id} className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3.5">
                         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                           {translateDashboardMetricLabel(metric.label, t)}
                         </p>
-                        <p className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+                        <p className="numeric-value mt-3 text-[clamp(1.25rem,5vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
                           {metric.value}
                         </p>
                         <p className="mt-2 text-xs text-[var(--text-tertiary)]">{metric.delta}</p>
@@ -174,21 +174,21 @@ export function DashboardPage() {
                   </div>
                 </div>
 
-                <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
+                <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0">
                       <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                         {t('dashboard.weeklyOverview')}
                       </p>
                       <p className="mt-1 text-lg font-semibold text-[var(--text-primary)]">{t('dashboard.operationFlow')}</p>
                     </div>
-                    <span className="rounded-full border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
+                    <span className="w-fit rounded-full border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand)]">
                       {t('dashboard.realtime')}
                     </span>
                   </div>
-                  <div className="mt-6 flex h-40 items-end gap-2">
+                  <div className="mt-6 flex h-40 min-w-0 items-end gap-1.5 sm:gap-2">
                     {dashboard.trend.map((point, index) => (
-                      <div key={point.date} className="flex w-full flex-col items-center gap-2">
+                      <div key={point.date} className="flex min-w-0 flex-1 flex-col items-center gap-2">
                         <span
                           className="w-full rounded-full bg-[var(--brand)]/80"
                           style={{ height: `${38 + ((point.revenue + index * 17) % 58)}%` }}
@@ -203,7 +203,7 @@ export function DashboardPage() {
               </div>
             </article>
 
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+            <div className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-1">
               {dashboard.metrics.slice(3).map((metric) => (
                 <MetricCard
                   key={metric.id}
@@ -216,7 +216,7 @@ export function DashboardPage() {
             </div>
           </section>
 
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,0.9fr)]">
+          <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.5fr)_minmax(280px,0.9fr)]">
             <ChartCard
               title={t('dashboard.revenueSpendTrend')}
               description={t('dashboard.revenueSpendTrendDesc')}
@@ -231,7 +231,7 @@ export function DashboardPage() {
             </ChartCard>
           </section>
 
-          <section className="grid gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.8fr)]">
+          <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.3fr)_minmax(280px,0.8fr)]">
             <ChartCard
               title={t('dashboard.topCampaigns')}
               description={t('dashboard.topCampaignsDesc')}

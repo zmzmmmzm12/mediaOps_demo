@@ -308,32 +308,32 @@ export function CampaignsPage() {
         description={t('campaigns.description')}
       />
 
-      <section className="surface-card overflow-hidden p-4">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,0.55fr))]">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4 xl:col-span-1">
+      <section className="surface-card min-w-0 overflow-hidden p-4">
+        <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,0.55fr))]">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4 xl:col-span-1">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">{t('campaigns.control')}</p>
-            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+            <h3 className="mt-3 text-[clamp(1.35rem,5vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
               {t('campaigns.controlTitle')}
             </h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               {t('campaigns.controlDesc')}
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.resultCount')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
               {filteredCampaigns.length}
             </p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">조건에 맞는 활성 데이터</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.savedPresets')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{presets.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">빠른 필터 재사용</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.selectedItems')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{selectedCampaignIds.length}</p>
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{selectedCampaignIds.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">일괄 작업 대상</p>
           </div>
         </div>

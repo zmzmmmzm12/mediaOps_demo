@@ -51,8 +51,17 @@
   "labels": {
     "role": { "admin": "관리자", "manager": "매니저", "viewer": "조회 전용" },
     "status": { "active": "운영 중", "paused": "일시중지", "ended": "종료" },
-    "channel": { "google": "구글", "meta": "메타", "naver": "네이버", "kakao": "카카오" },
-    "priority": { "critical": "우선 대응", "steady": "안정 운영", "planned": "계획 단계" },
+    "channel": {
+      "google": "구글",
+      "meta": "메타",
+      "naver": "네이버",
+      "kakao": "카카오"
+    },
+    "priority": {
+      "critical": "우선 대응",
+      "steady": "안정 운영",
+      "planned": "계획 단계"
+    },
     "table": {
       "campaign": "캠페인",
       "status": "상태",
@@ -187,7 +196,7 @@
   },
   "login": {
     "eyebrow": "로그인",
-    "heroTitle": "성과 운영을 위한 깔끔한 관리자 대시보드",
+    "heroTitle": "성과 운영을 위한 관리자 대시보드",
     "heroDesc": "SEO 메타데이터가 적용된 Next.js 기반 구조로 전환하고, 광고 운영 실무에 맞춘 데이터 밀도와 시각적 계층을 다시 설계했습니다.",
     "permissionControl": "권한 제어",
     "campaignAnalysis": "캠페인 분석",

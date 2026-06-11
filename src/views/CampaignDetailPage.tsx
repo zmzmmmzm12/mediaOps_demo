@@ -313,13 +313,13 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
             </div>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[320px]">
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+          <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:min-w-[280px]">
+            <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('detail.budgetUsage')}</p>
-              <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{detail.summary.budgetUtilization}%</p>
+              <p className="numeric-value mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{detail.summary.budgetUtilization}%</p>
               <p className="mt-2 text-xs text-[var(--text-tertiary)]">{detail.summary.pacing}</p>
             </div>
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+            <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
               <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('detail.statusChange')}</p>
               {canEdit ? (
                 <Select
@@ -329,7 +329,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
                   onChange={(event) =>
                     statusMutation.mutate(event.target.value as CampaignStatus)
                   }
-                  className="mt-2 min-w-40"
+                  className="mt-2 w-full min-w-0"
                 >
                   <SelectOption value="active">{t('labels.status.active')}</SelectOption>
                   <SelectOption value="paused">{t('labels.status.paused')}</SelectOption>
@@ -343,7 +343,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
         </div>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-5">
+      <section className="grid min-w-0 gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <MetricCard label={t('detail.revenue')} value={formatCompactCurrency(campaign.revenue)} delta={`전환 ${formatInteger(campaign.conversions)}건`} tone="positive" />
         <MetricCard label={t('labels.table.spend')} value={formatCompactCurrency(campaign.spend)} delta={`${t('detail.budgetUsage')} ${detail.summary.budgetUtilization}%`} tone="neutral" />
         <MetricCard label="ROAS" value={formatRatio(campaign.roas)} delta={detail.summary.health} tone={campaign.roas >= 2 ? 'positive' : 'warning'} />
@@ -365,7 +365,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       </section>
 
       {activeTab === 'overview' ? (
-        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
+        <div id="panel-overview" role="tabpanel" aria-labelledby="tab-overview" className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(280px,0.8fr)]">
           <ChartCard title={t('detail.performanceTrend')} description={t('detail.performanceTrendDesc')}>
             <RevenueSpendTrendChart
               data={detail.delivery.map((point) => ({
@@ -389,7 +389,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
               <div className="space-y-3">
                 {detail.activity.map((item) => (
                   <article key={item.id} className="surface-muted p-4">
-                    <div className="flex items-center justify-between gap-3">
+                    <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                       <p className="font-semibold text-[var(--text-primary)]">{item.actor}</p>
                       <p className="text-xs uppercase tracking-[0.12em] text-[var(--text-quaternary)]">{item.timeLabel}</p>
                     </div>

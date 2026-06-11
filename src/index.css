@@ -15,14 +15,16 @@
 }
 
 :root {
-  --app-bg: #eef2f8;
-  --app-bg-elevated: #e7ecf5;
-  --panel-bg: rgba(255, 255, 255, 0.98);
-  --panel-muted: #f5f7fb;
-  --panel-subtle: #edf1fb;
+  --app-bg: #eef3fb;
+  --app-bg-elevated: #e5ecf7;
+  --panel-bg: rgba(255, 255, 255, 0.86);
+  --panel-muted: #f4f7fb;
+  --panel-subtle: #eaf0fb;
   --panel-strong: #ffffff;
-  --border-subtle: rgba(15, 23, 42, 0.08);
-  --border-strong: rgba(15, 23, 42, 0.14);
+  --panel-solid: #ffffff;
+  --popover-bg: #ffffff;
+  --border-subtle: rgba(30, 41, 59, 0.09);
+  --border-strong: rgba(30, 41, 59, 0.16);
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-tertiary: #64748b;
@@ -31,8 +33,8 @@
   --brand-strong: #5545e8;
   --brand-soft: rgba(109, 93, 252, 0.12);
   --brand-soft-strong: rgba(109, 93, 252, 0.2);
-  --sidebar-bg: rgba(255, 255, 255, 0.98);
-  --sidebar-panel: #f6f8fc;
+  --sidebar-bg: rgba(255, 255, 255, 0.82);
+  --sidebar-panel: rgba(246, 248, 252, 0.92);
   --sidebar-panel-strong: #ffffff;
   --sidebar-border: rgba(15, 23, 42, 0.08);
   --sidebar-text: #0f172a;
@@ -45,9 +47,9 @@
   --warning-soft: rgba(217, 119, 6, 0.12);
   --danger: #dc2626;
   --danger-soft: rgba(220, 38, 38, 0.1);
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.03), 0 8px 22px rgba(15, 23, 42, 0.035);
-  --shadow-md: 0 16px 42px rgba(15, 23, 42, 0.075);
-  --shadow-lg: 0 28px 80px rgba(15, 23, 42, 0.1);
+  --shadow-sm: 0 1px 1px rgba(15, 23, 42, 0.025), 0 14px 36px rgba(15, 23, 42, 0.055);
+  --shadow-md: 0 1px 2px rgba(15, 23, 42, 0.04), 0 22px 58px rgba(15, 23, 42, 0.085);
+  --shadow-lg: 0 1px 2px rgba(15, 23, 42, 0.05), 0 32px 92px rgba(15, 23, 42, 0.14);
   --focus-ring: rgba(79, 70, 229, 0.38);
   --focus-ring-soft: rgba(79, 70, 229, 0.12);
   color: var(--text-primary);
@@ -60,12 +62,14 @@
 }
 
 [data-theme='dark'] {
-  --app-bg: #0a1020;
-  --app-bg-elevated: #101827;
-  --panel-bg: rgba(17, 24, 39, 0.92);
-  --panel-muted: #121b2c;
-  --panel-subtle: #182235;
-  --panel-strong: #111827;
+  --app-bg: #070b16;
+  --app-bg-elevated: #0d1424;
+  --panel-bg: rgba(15, 23, 42, 0.78);
+  --panel-muted: rgba(255, 255, 255, 0.055);
+  --panel-subtle: rgba(255, 255, 255, 0.075);
+  --panel-strong: rgba(15, 23, 42, 0.92);
+  --panel-solid: #111827;
+  --popover-bg: #111827;
   --border-subtle: rgba(148, 163, 184, 0.11);
   --border-strong: rgba(148, 163, 184, 0.18);
   --text-primary: #e5e7eb;
@@ -76,7 +80,7 @@
   --brand-strong: #a5b4fc;
   --brand-soft: rgba(129, 140, 248, 0.14);
   --brand-soft-strong: rgba(129, 140, 248, 0.22);
-  --sidebar-bg: #0d1320;
+  --sidebar-bg: rgba(10, 16, 32, 0.86);
   --sidebar-panel: rgba(255, 255, 255, 0.045);
   --sidebar-panel-strong: rgba(255, 255, 255, 0.075);
   --sidebar-border: rgba(255, 255, 255, 0.08);
@@ -110,12 +114,14 @@ html {
 body {
   min-height: 100vh;
   margin: 0;
-  font-family: var(--font-sans);
+  font-family: 'Pretendard Variable', 'Pretendard', 'Inter', 'Noto Sans KR', 'Noto Sans', 'Apple SD Gothic Neo', 'Malgun Gothic', ui-sans-serif, system-ui, sans-serif;
   background:
-    radial-gradient(circle at 18% 0%, rgba(109, 93, 252, 0.09), transparent 28rem),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 42%),
+    radial-gradient(circle at 18% 0%, rgba(109, 93, 252, 0.14), transparent 30rem),
+    radial-gradient(circle at 88% 8%, rgba(14, 165, 233, 0.1), transparent 26rem),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.34), transparent 42%),
     var(--app-bg);
   color: var(--text-primary);
+  letter-spacing: -0.01em;
   overflow-x: hidden;
   overflow-y: auto;
 }
@@ -129,6 +135,7 @@ input,
 select,
 textarea {
   font: inherit;
+  letter-spacing: inherit;
 }
 
 button:not(:disabled) {
@@ -164,45 +171,48 @@ textarea {
 .surface-card {
   border: 1px solid var(--border-subtle);
   background: var(--panel-bg);
-  border-radius: 14px;
+  border-radius: 22px;
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(22px) saturate(1.18);
 }
 
 .surface-muted {
   border: 1px solid var(--border-subtle);
   background: var(--panel-muted);
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .surface-subtle {
   background: var(--panel-subtle);
-  border-radius: 12px;
+  border-radius: 16px;
 }
 
 .surface-elevated {
   border: 1px solid var(--border-subtle);
-  background: var(--panel-strong);
-  border-radius: 14px;
+  background: var(--panel-solid);
+  border-radius: 22px;
   box-shadow: var(--shadow-md);
 }
 
 .chart-frame {
   width: 100%;
   min-width: 0;
-  height: 18rem;
-  min-height: 18rem;
+  height: clamp(15rem, 52vw, 18rem);
+  min-height: 15rem;
 }
 
 .interactive-card {
   border: 1px solid var(--border-subtle);
   background: var(--panel-bg);
-  border-radius: 14px;
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(18px) saturate(1.12);
 }
 
 .interactive-card:hover {
   border-color: var(--border-strong);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .focus-ring {
@@ -217,11 +227,44 @@ textarea {
 .field-shell {
   width: 100%;
   min-height: 40px;
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border-subtle);
   background: var(--panel-strong);
   color: var(--text-primary);
   box-shadow: 0 1px 0 rgba(15, 23, 42, 0.02);
+}
+
+.header-icon-button {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 2.75rem;
+  border-radius: 0.875rem;
+  border: 1px solid var(--border-subtle);
+  background-color: var(--panel-strong);
+  color: var(--text-tertiary);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+}
+
+.header-icon-button:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background-color: var(--panel-muted);
+  color: var(--text-primary);
+}
+
+.language-popover {
+  border: 1px solid var(--border-subtle);
+  background-color: var(--popover-bg);
+  color: var(--text-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.numeric-value {
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
 }
 
 .field-shell::placeholder {

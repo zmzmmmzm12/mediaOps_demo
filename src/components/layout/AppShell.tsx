@@ -195,8 +195,6 @@ export function AppShell({ children }: AppShellProps) {
     router.push(`/campaigns?${query.toString()}`)
   }
 
-  const currentLocaleOption = localeOptions.find((option) => option.value === locale) ?? localeOptions[0]
-
   if (!hydrated || !session) {
     return (
       <div className="min-h-screen bg-[var(--app-bg)] px-4 py-6" data-theme={theme}>
@@ -216,8 +214,8 @@ export function AppShell({ children }: AppShellProps) {
         본문으로 건너뛰기
       </a>
 
-      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-4 px-4 py-4 lg:grid-cols-[244px_minmax(0,1fr)] lg:px-5 lg:py-5">
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3 py-3 shadow-[0_14px_42px_rgba(15,23,42,0.06)] lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
+      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-5 px-4 py-4 lg:grid-cols-[252px_minmax(0,1fr)] lg:px-5 lg:py-5">
+        <aside className="flex min-h-0 flex-col overflow-hidden rounded-[1.35rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3.5 py-3.5 shadow-[var(--shadow-md)] lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
           <Link href="/dashboard" className="focus-ring rounded-xl">
             <div className="flex items-center gap-3 rounded-xl px-2.5 py-2.5">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand)]">
@@ -321,7 +319,7 @@ export function AppShell({ children }: AppShellProps) {
 
         <main id="main-content" className="min-w-0 overflow-x-hidden" tabIndex={-1}>
           <div className="mx-auto flex min-h-full max-w-[1160px] flex-col gap-5 pb-8">
-            <header className="flex flex-col gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] px-4 py-3 shadow-[0_10px_28px_rgba(15,23,42,0.035)] backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+            <header className="relative z-40 flex flex-col gap-3 rounded-[1.35rem] border border-[var(--border-subtle)] bg-[var(--panel-bg)] px-4 py-3.5 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <Breadcrumbs />
                 <p className="mt-1.5 text-sm text-[var(--text-tertiary)]">
@@ -332,7 +330,7 @@ export function AppShell({ children }: AppShellProps) {
                 <form
                   role="search"
                   onSubmit={handleHeaderSearchSubmit}
-                  className="field-shell focus-within:focus-ring hidden h-9 min-h-9 items-center gap-2 px-3 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[310px]"
+                  className="field-shell focus-within:focus-ring hidden h-10 min-h-10 items-center gap-2 px-3.5 text-sm text-[var(--text-tertiary)] md:flex md:min-w-[320px]"
                 >
                   <label htmlFor="global-campaign-search" className="sr-only">{t('header.searchLabel')}</label>
                   <SearchIcon />
@@ -348,27 +346,26 @@ export function AppShell({ children }: AppShellProps) {
                 </form>
                 <button
                   type="button"
-                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  className="focus-ring header-icon-button"
                   aria-label={t('header.notifications')}
                 >
                   <BellIcon />
                 </button>
-                <div ref={languageMenuRef} className="relative">
+                <div ref={languageMenuRef} className="relative z-50">
                   <button
                     type="button"
                     onClick={() => setLanguageMenuOpen((open) => !open)}
-                    className="focus-ring inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                    className="focus-ring header-icon-button"
                     aria-label={t('header.languageLabel')}
                     aria-haspopup="menu"
                     aria-expanded={languageMenuOpen}
                   >
                     <LanguageIcon />
-                    <span>{currentLocaleOption.value.toUpperCase()}</span>
                   </button>
                   {languageMenuOpen ? (
                     <div
                       role="menu"
-                      className="absolute right-0 top-full z-[120] mt-2 w-40 overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-bg)] py-1 shadow-[var(--shadow-md)]"
+                      className="language-popover absolute right-0 top-full z-[200] mt-2 w-44 overflow-hidden rounded-xl p-1"
                     >
                       {localeOptions.map((option) => {
                         const selected = option.value === locale
@@ -384,7 +381,7 @@ export function AppShell({ children }: AppShellProps) {
                               setLanguageMenuOpen(false)
                             }}
                             className={cn(
-                              'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition',
+                              'flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition',
                               selected
                                 ? 'bg-[var(--panel-muted)] font-semibold text-[var(--text-primary)]'
                                 : 'text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]',
@@ -401,7 +398,7 @@ export function AppShell({ children }: AppShellProps) {
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="focus-ring inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                  className="focus-ring header-icon-button"
                   aria-label={theme === 'dark' ? t('header.switchToLight') : t('header.switchToDark')}
                 >
                   <ThemeIcon theme={theme} />

@@ -87,34 +87,34 @@ export function SettingsPage() {
         description={t('settings.description')}
       />
 
-      <section className="surface-card overflow-hidden p-4">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+      <section className="surface-card min-w-0 overflow-hidden p-4">
+        <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">{t('settings.personal')}</p>
-            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{t('settings.personalTitle')}</h3>
+            <h3 className="mt-3 text-[clamp(1.35rem,5vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{t('settings.personalTitle')}</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               {t('settings.personalDesc')}
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('settings.currentRole')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{t(`labels.role.${session.role}`)}</p>
+            <p className="mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{t(`labels.role.${session.role}`)}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">접근 가능한 메뉴 기준</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('settings.activeTheme')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{theme === 'dark' ? t('common.darkMode') : t('common.lightMode')}</p>
+            <p className="mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{theme === 'dark' ? t('common.darkMode') : t('common.lightMode')}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">개인 환경설정</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('settings.savedPresets')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{presets.length}</p>
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{presets.length}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">필터 조건 재사용</p>
           </div>
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(320px,0.95fr)_minmax(0,1.05fr)]">
+      <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(280px,0.95fr)_minmax(0,1.05fr)]">
         <article className="surface-card p-5">
           <div className="flex items-start gap-4">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--brand-soft)] text-lg font-semibold text-[var(--brand)]">

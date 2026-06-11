@@ -51,8 +51,17 @@
   "labels": {
     "role": { "admin": "Admin", "manager": "Manager", "viewer": "Viewer" },
     "status": { "active": "Active", "paused": "Paused", "ended": "Ended" },
-    "channel": { "google": "Google", "meta": "Meta", "naver": "Naver", "kakao": "Kakao" },
-    "priority": { "critical": "Needs attention", "steady": "Stable", "planned": "Planned" },
+    "channel": {
+      "google": "Google",
+      "meta": "Meta",
+      "naver": "Naver",
+      "kakao": "Kakao"
+    },
+    "priority": {
+      "critical": "Needs attention",
+      "steady": "Stable",
+      "planned": "Planned"
+    },
     "table": {
       "campaign": "Campaign",
       "status": "Status",
@@ -187,7 +196,7 @@
   },
   "login": {
     "eyebrow": "Login",
-    "heroTitle": "Clean admin dashboard for performance operations",
+    "heroTitle": "admin dashboard for performance operations",
     "heroDesc": "Converted to SEO-ready Next.js and redesigned around practical ad operations density and visual hierarchy.",
     "permissionControl": "Access control",
     "campaignAnalysis": "Campaign analytics",

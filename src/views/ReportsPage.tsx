@@ -122,32 +122,32 @@ export function ReportsPage() {
         }
       />
 
-      <section className="surface-card overflow-hidden p-4">
-        <div className="grid gap-3 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
+      <section className="surface-card min-w-0 overflow-hidden p-4">
+        <div className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1.1fr)_repeat(3,minmax(0,0.7fr))]">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">{t('reports.summary')}</p>
-            <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{t('reports.summaryTitle')}</h3>
+            <h3 className="mt-3 text-[clamp(1.35rem,5vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">{t('reports.summaryTitle')}</h3>
             <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
               {t('reports.summaryDesc')}
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('reports.totalRevenue')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">{formatCompactCurrency(totalRevenue)}</p>
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{formatCompactCurrency(totalRevenue)}</p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">{t('reports.periodRevenueTotal')}</p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('reports.topChannel')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
+            <p className="mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">
               {topChannel ? t(`labels.channel.${topChannel.channel}`) : '-'}
             </p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">
               {topChannel ? formatCompactCurrency(topChannel.revenue) : t('reports.noData')}
             </p>
           </div>
-          <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
+          <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('reports.topCampaign')}</p>
-            <p className="mt-3 text-2xl font-semibold text-[var(--text-primary)]">
+            <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">
               {topCampaign ? formatRatio(topCampaign.roas) : '-'}
             </p>
             <p className="mt-2 truncate text-xs text-[var(--text-tertiary)]">
@@ -157,7 +157,7 @@ export function ReportsPage() {
         </div>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-2">
+      <section className="grid min-w-0 gap-5 xl:grid-cols-2">
         <ChartCard title={t('reports.revenueTrend')} description={t('reports.revenueTrendDesc')}>
           <RevenueSpendTrendChart
             data={reports.revenueByPeriod.map((item) => ({
@@ -172,7 +172,7 @@ export function ReportsPage() {
         </ChartCard>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(320px,0.88fr)_minmax(0,1.12fr)]">
+      <section className="grid min-w-0 gap-5 xl:grid-cols-[minmax(280px,0.88fr)_minmax(0,1.12fr)]">
         <ChartCard title={t('reports.roasRank')} description={t('reports.roasRankDesc')}>
           <RoasRankingChart data={reports.roasRanking} />
         </ChartCard>

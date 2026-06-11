@@ -17,7 +17,7 @@ export function PageSkeleton() {
           </div>
         ))}
       </div>
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+      <div className="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1.35fr)_minmax(280px,0.65fr)]">
         <div className="surface-card p-5">
           <Skeleton className="h-5 w-28" />
           <Skeleton className="mt-3 h-4 w-56" />

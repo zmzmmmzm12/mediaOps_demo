@@ -62,13 +62,13 @@ export function Modal({ open, title, children, onClose, actions }: ModalProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[300] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-md">
       <div
         ref={containerRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
-        className="surface-elevated w-full max-w-lg p-5"
+        className="surface-elevated w-full max-w-lg p-5 sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           <h3 id="modal-title" className="text-2xl font-semibold text-[var(--text-primary)]">
@@ -78,7 +78,7 @@ export function Modal({ open, title, children, onClose, actions }: ModalProps) {
             type="button"
             onClick={onClose}
             aria-label="대화상자 닫기"
-            className="focus-ring rounded-full p-2 text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)]"
+            className="focus-ring inline-flex h-10 w-10 items-center justify-center rounded-xl text-xl leading-none text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
           >
             ×
           </button>

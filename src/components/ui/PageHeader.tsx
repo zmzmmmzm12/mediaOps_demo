@@ -22,7 +22,7 @@ export function PageHeader({
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="page-header-title mt-2 text-[28px] font-semibold leading-tight text-[var(--text-primary)] sm:text-[34px]">
+          <h2 className="page-header-title mt-2 text-[clamp(1.65rem,5vw,2.125rem)] font-semibold leading-tight text-[var(--text-primary)]">
             {title}
           </h2>
           {description ? (

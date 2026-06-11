@@ -9,7 +9,7 @@ export function ForbiddenPage() {
   return (
     <div className="surface-card px-6 py-10 text-center">
       <p className="text-xs font-semibold uppercase tracking-[0.18em] text-amber-600">403</p>
-      <h2 className="mt-4 text-4xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+      <h2 className="mt-4 text-[clamp(2rem,7vw,2.25rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
         {t('nav.forbidden')}
       </h2>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-[var(--text-tertiary)]">

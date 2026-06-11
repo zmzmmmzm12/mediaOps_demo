@@ -26,7 +26,7 @@ export function DataTable<T>({
   return (
     <div className="scrollbar-subtle overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)]">
       <div className="overflow-x-auto">
-        <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
+        <table className="min-w-[640px] border-separate border-spacing-0 text-left text-sm">
           {caption ? (
             <caption className={cn('table-caption px-4 pb-3 pt-4 text-left text-sm', captionClassName)}>
               {caption}

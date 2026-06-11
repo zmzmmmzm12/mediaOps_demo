@@ -12,6 +12,15 @@ import { getLoginProfiles, loginWithProfile } from '../lib/api/mediaops'
 import { localeOptions, useI18n } from '../i18n'
 import type { Locale } from '../i18n/types'
 
+function LanguageIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.45" />
+      <path d="M3.8 8h12.4M3.8 12h12.4M10 3c1.85 1.9 2.8 4.23 2.8 7S11.85 15.1 10 17M10 3C8.15 4.9 7.2 7.23 7.2 10s.95 5.1 2.8 7" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function LoginPage() {
   const router = useRouter()
   const session = useAuthStore((state) => state.session)
@@ -56,7 +65,6 @@ export function LoginPage() {
   const profiles = profilesQuery.data?.profiles ?? []
   const activeProfile =
     profiles.find((profile) => profile.id === selectedUserId) ?? profiles[0] ?? null
-  const currentLocaleOption = localeOptions.find((option) => option.value === locale) ?? localeOptions[0]
 
   function handleSubmit() {
     const userId = selectedUserId ?? profiles[0]?.id
@@ -69,16 +77,21 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--app-bg)] px-4 py-6 sm:px-6 lg:px-8" data-theme={theme}>
-      <div className="mx-auto grid min-h-[calc(100vh-3rem)] max-w-6xl items-stretch gap-4 lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="surface-card relative flex min-h-[680px] flex-col justify-between overflow-hidden p-5 sm:p-7">
-          <div className="pointer-events-none absolute right-[-80px] top-[-80px] h-64 w-64 rounded-full bg-[var(--brand-soft)] blur-3xl" />
-          <div className="pointer-events-none absolute bottom-[-80px] left-[-40px] h-56 w-56 rounded-full bg-[var(--panel-subtle)] blur-3xl" />
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--brand)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--app-bg)] px-4 py-6 sm:px-6 lg:px-8" data-theme={theme}>
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_14%,rgba(109,93,252,0.18),transparent_28rem),radial-gradient(circle_at_82%_10%,rgba(14,165,233,0.12),transparent_24rem),radial-gradient(circle_at_70%_88%,rgba(16,185,129,0.10),transparent_24rem)]" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-px w-[min(72rem,90vw)] -translate-x-1/2 bg-gradient-to-r from-transparent via-[var(--brand)]/35 to-transparent" />
+
+      <div className="relative mx-auto grid min-h-[calc(100vh-3rem)] max-w-7xl items-stretch gap-5 lg:grid-cols-[minmax(0,1.08fr)_minmax(390px,0.72fr)]">
+        <section className="surface-card relative flex min-h-0 flex-col justify-between overflow-hidden border-[var(--border-strong)] p-5 sm:min-h-[680px] sm:p-8">
+          <div className="pointer-events-none absolute right-[-120px] top-[-120px] h-80 w-80 rounded-full bg-[var(--brand-soft-strong)] blur-3xl" />
+          <div className="pointer-events-none absolute bottom-[-120px] left-[-80px] h-72 w-72 rounded-full bg-sky-400/10 blur-3xl" />
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.20),transparent_44%)]" />
+          <div className="relative">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-subtle)] bg-[var(--panel-solid)] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)] shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--brand)]" />
               MediaOps
-            </p>
-            <h1 className="mt-5 max-w-2xl text-5xl font-semibold tracking-[-0.05em] text-[var(--text-primary)] sm:text-[64px] sm:leading-[1.03]">
+            </div>
+            <h1 className="mt-5 max-w-2xl text-[clamp(2.5rem,10vw,4rem)] font-semibold leading-[1.05] tracking-[-0.05em] text-[var(--text-primary)]">
               {t('login.heroTitle')}
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--text-secondary)]">
@@ -86,41 +99,41 @@ export function LoginPage() {
             </p>
           </div>
 
-          <div className="relative mt-12 grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-            <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-              <div className="surface-muted p-4">
+          <div className="relative mt-12 grid gap-5 lg:grid-cols-[0.84fr_1.16fr]">
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-1">
+              <div className="surface-muted bg-[var(--panel-solid)] p-4 shadow-sm">
                 <p className="text-sm text-[var(--text-tertiary)]">{t('login.permissionControl')}</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.rolesCount')}</p>
+                <p className="mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{t('labels.metric.rolesCount')}</p>
               </div>
-              <div className="surface-muted p-4">
+              <div className="surface-muted bg-[var(--panel-solid)] p-4 shadow-sm">
                 <p className="text-sm text-[var(--text-tertiary)]">{t('login.campaignAnalysis')}</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.listAndDetail')}</p>
+                <p className="mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{t('labels.metric.listAndDetail')}</p>
               </div>
-              <div className="surface-muted p-4">
+              <div className="surface-muted bg-[var(--panel-solid)] p-4 shadow-sm">
                 <p className="text-sm text-[var(--text-tertiary)]">{t('login.localizedCopy')}</p>
-                <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">{t('labels.metric.localizedCopyCount')}</p>
+                <p className="mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">{t('labels.metric.localizedCopyCount')}</p>
               </div>
             </div>
-            <div className="relative min-h-[420px]">
-              <div className="absolute left-0 top-10 w-[72%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)] backdrop-blur">
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
+            <div className="relative min-h-0 space-y-4 sm:min-h-[420px] sm:space-y-0">
+              <div className="relative w-full rounded-[1.35rem] border border-[var(--border-subtle)] bg-[var(--panel-solid)] p-4 shadow-[var(--shadow-md)] sm:absolute sm:left-0 sm:top-10 sm:w-[74%]">
+                <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brand)]">{t('login.overview')}</p>
                     <p className="mt-1 text-base font-semibold text-[var(--text-primary)]">{t('login.dashboardStatus')}</p>
                   </div>
                   <span className="rounded-full bg-[var(--brand-soft)] px-2.5 py-1 text-[11px] font-semibold text-[var(--brand-strong)]">{t('dashboard.realtime')}</span>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
+                <div className="grid min-w-0 gap-3 sm:grid-cols-2">
                   <div className="surface-muted p-4">
                     <p className="text-xs text-[var(--text-tertiary)]">{t('labels.metric.weeklyRevenue')}</p>
-                    <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">₩14,869.95</p>
+                    <p className="numeric-value mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">₩14,869.95</p>
                   </div>
                   <div className="surface-muted p-4">
                     <p className="text-xs text-[var(--text-tertiary)]">{t('labels.metric.ticketConversion')}</p>
-                    <p className="mt-2 text-2xl font-semibold text-[var(--text-primary)]">24,580</p>
+                    <p className="numeric-value mt-2 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]">24,580</p>
                   </div>
                 </div>
-                <div className="mt-4 h-32 rounded-xl bg-[var(--panel-muted)] p-3">
+                <div className="mt-4 h-32 rounded-2xl bg-[linear-gradient(180deg,var(--panel-muted),var(--panel-subtle))] p-3">
                   <div className="flex h-full items-end gap-2">
                     {Array.from({ length: 18 }).map((_, index) => (
                       <span
@@ -133,7 +146,7 @@ export function LoginPage() {
                 </div>
               </div>
 
-              <div className="absolute bottom-0 right-0 w-[56%] rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 shadow-[var(--shadow-md)]">
+              <div className="relative w-full rounded-[1.35rem] border border-[var(--border-subtle)] bg-[var(--panel-solid)] p-4 shadow-[var(--shadow-md)] sm:absolute sm:bottom-0 sm:right-0 sm:w-[58%]">
                 <p className="text-sm font-semibold text-[var(--text-primary)]">{t('login.departmentReport')}</p>
                 <div className="mt-4 space-y-3">
                   {[
@@ -160,26 +173,26 @@ export function LoginPage() {
           </div>
         </section>
 
-        <section className="surface-card p-5 sm:p-6">
+        <section className="surface-card relative z-30 self-center border-[var(--border-strong)] p-5 shadow-[var(--shadow-lg)] sm:p-6 lg:sticky lg:top-6">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brand)]">
               {t('login.eyebrow')}
             </p>
-            <div ref={languageMenuRef} className="relative">
+            <div ref={languageMenuRef} className="relative z-50">
               <button
                 type="button"
                 onClick={() => setLanguageMenuOpen((open) => !open)}
-                className="focus-ring inline-flex h-9 items-center gap-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3 text-xs font-semibold text-[var(--text-secondary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]"
+                className="focus-ring header-icon-button"
                 aria-label={t('header.languageLabel')}
                 aria-haspopup="menu"
                 aria-expanded={languageMenuOpen}
               >
-                {currentLocaleOption.value.toUpperCase()}
+                <LanguageIcon />
               </button>
               {languageMenuOpen ? (
                 <div
                   role="menu"
-                  className="absolute right-0 top-full z-[120] mt-2 w-40 overflow-hidden rounded-lg border border-[var(--border-subtle)] bg-[var(--panel-bg)] py-1 shadow-[var(--shadow-md)]"
+                  className="language-popover absolute right-0 top-full z-[200] mt-2 w-44 overflow-hidden rounded-xl p-1"
                 >
                   {localeOptions.map((option) => {
                     const selected = option.value === locale
@@ -194,7 +207,7 @@ export function LoginPage() {
                           setLocale(option.value as Locale)
                           setLanguageMenuOpen(false)
                         }}
-                        className={`flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm transition ${
+                        className={`flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-sm transition ${
                           selected
                             ? 'bg-[var(--panel-muted)] font-semibold text-[var(--text-primary)]'
                             : 'text-[var(--text-tertiary)] hover:bg-[var(--panel-muted)] hover:text-[var(--text-primary)]'
@@ -209,7 +222,7 @@ export function LoginPage() {
               ) : null}
             </div>
           </div>
-          <h2 className="mt-3 text-4xl font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+          <h2 className="mt-3 text-[clamp(2rem,7vw,2.25rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
             {t('login.selectAccount')}
           </h2>
           <p className="mt-3 text-sm leading-6 text-[var(--text-tertiary)]">
@@ -251,18 +264,18 @@ export function LoginPage() {
                   onClick={() => setSelectedUserId(profile.id)}
                   aria-pressed={isSelected}
                   data-testid={`login-profile-${profile.role}`}
-                  className={`focus-ring w-full rounded-xl border p-4 text-left ${
+                  className={`focus-ring w-full rounded-2xl border p-4 text-left shadow-sm ${
                     isSelected
-                      ? 'border-[var(--brand)] bg-[var(--brand-soft)]'
-                      : 'border-[var(--border-subtle)] bg-[var(--panel-strong)] hover:bg-[var(--panel-muted)]'
+                      ? 'border-[var(--brand)] bg-[var(--brand-soft)] shadow-[0_16px_36px_rgba(79,70,229,0.10)]'
+                      : 'border-[var(--border-subtle)] bg-[var(--panel-solid)] hover:border-[var(--border-strong)] hover:bg-[var(--panel-muted)]'
                   }`}
                 >
                   <div className="flex items-start justify-between gap-4">
-                    <div>
+                    <div className="min-w-0">
                       <p className="text-lg font-semibold text-[var(--text-primary)]">{profile.name}</p>
                       <p className="text-sm text-[var(--text-tertiary)]">{profile.email}</p>
                     </div>
-                    <span className="rounded-full bg-[var(--panel-strong)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)] ring-1 ring-inset ring-[var(--border-subtle)]">
+                    <span className="shrink-0 rounded-full bg-[var(--panel-solid)] px-3 py-1 text-xs font-semibold text-[var(--text-secondary)] ring-1 ring-inset ring-[var(--border-subtle)]">
                       {t(`labels.role.${profile.role}`)}
                     </span>
                   </div>
@@ -278,7 +291,7 @@ export function LoginPage() {
             })}
           </div>
 
-          <div className="surface-muted mt-7 p-4">
+          <div className="surface-muted mt-7 bg-[var(--panel-solid)] p-4 shadow-sm">
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
               {t('login.selectedRole')}
             </p>

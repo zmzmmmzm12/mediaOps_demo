@@ -13,7 +13,7 @@ export function ChartCard({
   children,
 }: ChartCardProps) {
   return (
-    <article className="surface-card overflow-hidden p-4 sm:p-5">
+    <article className="surface-card min-w-0 overflow-hidden p-4 sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <p className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--text-primary)]">{title}</p>
@@ -23,7 +23,7 @@ export function ChartCard({
         </div>
         {actions ? <div className="shrink-0">{actions}</div> : null}
       </div>
-      <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3">
+      <div className="mt-4 min-w-0 overflow-hidden rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-2 sm:p-3">
         {children}
       </div>
     </article>
