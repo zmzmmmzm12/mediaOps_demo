@@ -45,7 +45,7 @@ export function CampaignFilters({
 }: CampaignFiltersProps) {
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+      <div className="grid min-w-0 gap-3 md:grid-cols-[minmax(0,1fr)_220px]">
         <div className="space-y-2">
           <label
             htmlFor="campaign-search"
@@ -92,7 +92,7 @@ export function CampaignFilters({
         </div>
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-[1fr_240px_auto_auto_auto_auto]">
+      <div className="grid min-w-0 gap-3 xl:grid-cols-[minmax(0,1fr)_240px_auto_auto_auto_auto]">
         <div className="space-y-2">
           <label
             htmlFor="campaign-preset-name"
@@ -138,7 +138,7 @@ export function CampaignFilters({
 
         <Button
           variant="secondary"
-          className="self-end"
+          className="w-full self-end xl:w-auto"
           onClick={onSavePreset}
           data-testid="save-preset-button"
         >
@@ -146,7 +146,7 @@ export function CampaignFilters({
         </Button>
         <Button
           variant="secondary"
-          className="self-end"
+          className="w-full self-end xl:w-auto"
           onClick={onLoadPreset}
           disabled={!selectedPresetId}
           data-testid="load-preset-button"
@@ -155,19 +155,20 @@ export function CampaignFilters({
         </Button>
         <Button
           variant="secondary"
-          className="self-end"
+          className="w-full self-end xl:w-auto"
           onClick={onDeletePreset}
           disabled={!selectedPresetId}
           data-testid="delete-preset-button"
         >
           삭제
         </Button>
-        <div className="flex flex-wrap items-end gap-3">
-          <Button variant="secondary" onClick={onReset} data-testid="reset-filters-button">
+        <div className="grid gap-3 sm:grid-cols-2 xl:flex xl:flex-wrap xl:items-end">
+          <Button variant="secondary" className="w-full xl:w-auto" onClick={onReset} data-testid="reset-filters-button">
             초기화
           </Button>
           <Button
             variant="secondary"
+            className="w-full xl:w-auto"
             onClick={onDownloadCsv}
             data-testid="download-csv-button"
           >

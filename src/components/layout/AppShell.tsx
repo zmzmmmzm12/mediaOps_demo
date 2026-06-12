@@ -106,6 +106,46 @@ function ThemeIcon({ theme }: { theme: 'light' | 'dark' }) {
   )
 }
 
+function MenuIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <path d="M4 6h12M4 10h12M4 14h12" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function PanelToggleIcon({ collapsed }: { collapsed: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <rect x="3.5" y="4" width="13" height="12" rx="2" stroke="currentColor" strokeWidth="1.4" />
+      <path d="M8 4v12" stroke="currentColor" strokeWidth="1.4" />
+      <path
+        d={collapsed ? 'M11 8.2 13.2 10 11 11.8' : 'M13.2 8.2 11 10l2.2 1.8'}
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <path d="m6 6 8 8M14 6l-8 8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function LogoutIcon() {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+      <path d="M8.5 4.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5M11.5 7 14.5 10l-3 3M14.5 10h-8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 const menuIconMap: Record<string, ReactNode> = {
   '/dashboard': <DashboardIcon />,
   '/campaigns': <CampaignIcon />,
@@ -125,6 +165,8 @@ export function AppShell({ children }: AppShellProps) {
   const { locale, setLocale, t } = useI18n()
   const [headerSearch, setHeaderSearch] = useState('')
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const languageMenuRef = useRef<HTMLDivElement | null>(null)
   const router = useRouter()
   const pathname = usePathname()
@@ -167,6 +209,36 @@ export function AppShell({ children }: AppShellProps) {
     return () => {
       document.removeEventListener('mousedown', handlePointerDown)
       document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!mobileSidebarOpen) {
+      return
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [mobileSidebarOpen])
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 1024px)')
+
+    function handleViewportChange(event: MediaQueryListEvent | MediaQueryList) {
+      if (event.matches) {
+        setMobileSidebarOpen(false)
+      }
+    }
+
+    handleViewportChange(mediaQuery)
+    mediaQuery.addEventListener('change', handleViewportChange)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleViewportChange)
     }
   }, [])
 
@@ -214,25 +286,80 @@ export function AppShell({ children }: AppShellProps) {
         본문으로 건너뛰기
       </a>
 
-      <div className="mx-auto grid min-h-screen max-w-[1440px] gap-5 px-4 py-4 lg:grid-cols-[252px_minmax(0,1fr)] lg:px-5 lg:py-5">
-        <aside className="flex min-h-0 flex-col overflow-hidden rounded-[1.35rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3.5 py-3.5 shadow-[var(--shadow-md)] lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)]">
-          <Link href="/dashboard" className="focus-ring rounded-xl">
-            <div className="flex items-center gap-3 rounded-xl px-2.5 py-2.5">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand)]">
-                <DashboardIcon />
-              </span>
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
-                  MediaOps
-                </p>
-                <p className="mt-0.5 text-[15px] font-semibold text-[var(--sidebar-text)]">
-                  {t('sidebar.title')}
-                </p>
-              </div>
-            </div>
-          </Link>
+      {mobileSidebarOpen ? (
+        <button
+          type="button"
+          className="fixed inset-0 z-[220] bg-slate-950/45 backdrop-blur-sm lg:hidden"
+          aria-label="사이드바 오버레이 닫기"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      ) : null}
 
-          <div className="mt-3 rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3">
+      <div
+        className={cn(
+          'mx-auto grid min-h-screen w-full max-w-[1920px] gap-4 px-4 py-4 transition-[grid-template-columns,gap] duration-200 lg:px-5 lg:py-5 2xl:px-6',
+          sidebarCollapsed
+            ? 'lg:grid-cols-[72px_minmax(0,1fr)] lg:gap-3 2xl:gap-4'
+            : 'lg:grid-cols-[252px_minmax(0,1fr)] lg:gap-5 2xl:gap-6',
+        )}
+      >
+        <aside
+          className={cn(
+            'fixed bottom-4 left-4 top-4 z-[240] flex min-h-0 w-[min(18rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-[1.35rem] border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-3.5 py-3.5 shadow-[var(--shadow-md)] transition-[transform,opacity,padding] duration-200 lg:sticky lg:bottom-auto lg:left-auto lg:top-5 lg:z-auto lg:h-[calc(100vh-2.5rem)] lg:w-auto',
+            mobileSidebarOpen
+              ? 'translate-x-0 opacity-100'
+              : 'pointer-events-none -translate-x-[calc(100%+1rem)] opacity-0 lg:pointer-events-auto lg:translate-x-0 lg:opacity-100',
+            sidebarCollapsed && 'lg:px-1.5',
+          )}
+        >
+          <div className={cn('flex items-center gap-2', sidebarCollapsed ? 'lg:flex-col' : 'justify-between')}>
+            <Link
+              href="/dashboard"
+              className="focus-ring min-w-0 flex-1 rounded-xl"
+              title="MediaOps"
+              onClick={() => setMobileSidebarOpen(false)}
+            >
+              <div
+                className={cn(
+                  'flex items-center gap-3 rounded-xl px-2.5 py-2.5',
+                  sidebarCollapsed && 'lg:justify-center lg:px-0',
+                )}
+              >
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--brand-soft)] text-[var(--brand)]">
+                  <DashboardIcon />
+                </span>
+                <div className={cn('min-w-0', sidebarCollapsed && 'lg:hidden')}>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--brand)]">
+                    MediaOps
+                  </p>
+                  <p className="mt-0.5 text-[15px] font-semibold text-[var(--sidebar-text)]">
+                    {t('sidebar.title')}
+                  </p>
+                </div>
+              </div>
+            </Link>
+            <button
+              type="button"
+              className="focus-ring header-icon-button desktop-control-only"
+              onClick={() => setSidebarCollapsed((collapsed) => !collapsed)}
+              aria-label={sidebarCollapsed ? '사이드바 펼치기' : '사이드바 접기'}
+              aria-pressed={sidebarCollapsed}
+            >
+              <PanelToggleIcon collapsed={sidebarCollapsed} />
+            </button>
+            {mobileSidebarOpen ? (
+              <button
+                type="button"
+                className="focus-ring header-icon-button mobile-control-only"
+                onClick={() => setMobileSidebarOpen(false)}
+                aria-label="사이드바 닫기"
+              >
+                <CloseIcon />
+              </button>
+            ) : null}
+          </div>
+
+          <div className={cn('mt-3 rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3', sidebarCollapsed && 'lg:hidden')}>
             <div className="flex items-center gap-3">
               <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--sidebar-panel-strong)] text-sm font-semibold text-[var(--brand)] shadow-sm">
                 M
@@ -250,24 +377,29 @@ export function AppShell({ children }: AppShellProps) {
             </div>
           </div>
 
-          <div className="mt-5 px-2">
+          <div className={cn('mt-5 px-2', sidebarCollapsed && 'lg:hidden')}>
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--sidebar-muted)]">
               {t('nav.menu')}
             </p>
           </div>
 
-          <div className="scrollbar-subtle mt-2 min-h-0 flex-1 overflow-y-auto pr-1">
+          <div className={cn('scrollbar-subtle mt-2 min-h-0 flex-1 overflow-y-auto pr-1', sidebarCollapsed && 'lg:pr-0')}>
             <nav className="space-y-1" aria-label={t('nav.menu')}>
               {filteredMenu.map((entry) => {
                 const isActive = pathname === entry.to || pathname.startsWith(`${entry.to}/`)
                 const navKey = entry.to.replace('/', '') || 'dashboard'
+                const navLabel = t(`nav.${navKey}`)
 
                 return (
                   <Link
                     key={entry.to}
                     href={entry.to}
+                    title={navLabel}
+                    aria-label={navLabel}
+                    onClick={() => setMobileSidebarOpen(false)}
                     className={cn(
                       'focus-ring group relative flex items-center gap-3 rounded-lg px-3 py-2.5',
+                      sidebarCollapsed && 'lg:justify-center lg:px-0',
                       isActive
                         ? 'bg-[var(--sidebar-active)] text-[var(--sidebar-text)]'
                         : 'text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]',
@@ -288,8 +420,8 @@ export function AppShell({ children }: AppShellProps) {
                     >
                       {menuIconMap[entry.to] ?? <DashboardIcon />}
                     </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-current">{t(`nav.${navKey}`)}</p>
+                    <div className={cn('min-w-0 flex-1', sidebarCollapsed && 'lg:hidden')}>
+                      <p className="truncate text-sm font-medium text-current">{navLabel}</p>
                     </div>
                   </Link>
                 )
@@ -298,7 +430,7 @@ export function AppShell({ children }: AppShellProps) {
           </div>
 
           <div className="mt-3 shrink-0 border-t border-[var(--sidebar-border)] px-1 pt-3">
-            <div className="mb-3 rounded-lg border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3">
+            <div className={cn('mb-3 rounded-lg border border-[var(--sidebar-border)] bg-[var(--sidebar-panel)] px-3 py-3', sidebarCollapsed && 'lg:hidden')}>
               <div className="flex items-center gap-2 text-[var(--brand)]">
                 <SparkIcon />
                 <p className="text-xs font-semibold uppercase tracking-[0.12em]">{t('nav.workspace')}</p>
@@ -309,22 +441,39 @@ export function AppShell({ children }: AppShellProps) {
             <Button
               variant="ghost"
               onClick={handleLogout}
-              className="mt-1 w-full justify-start px-3 text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]"
+              className={cn(
+                'mt-1 w-full justify-start px-3 text-[var(--sidebar-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]',
+                sidebarCollapsed && 'lg:justify-center lg:px-0',
+              )}
               aria-label={t('nav.logout')}
             >
-              <span>{t('nav.logout')}</span>
+              <LogoutIcon />
+              <span className={cn(sidebarCollapsed && 'lg:hidden')}>{t('nav.logout')}</span>
             </Button>
           </div>
         </aside>
 
         <main id="main-content" className="min-w-0 overflow-x-hidden" tabIndex={-1}>
-          <div className="mx-auto flex min-h-full max-w-[1160px] flex-col gap-5 pb-8">
+          <div className="flex min-h-full w-full min-w-0 flex-col gap-5 pb-8">
             <header className="relative z-40 flex flex-col gap-3 rounded-[1.35rem] border border-[var(--border-subtle)] bg-[var(--panel-bg)] px-4 py-3.5 shadow-[var(--shadow-sm)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <Breadcrumbs />
-                <p className="mt-1.5 text-sm text-[var(--text-tertiary)]">
-                  {t('header.subtitle')}
-                </p>
+              <div className="flex min-w-0 items-start gap-3">
+                {!mobileSidebarOpen ? (
+                  <button
+                    type="button"
+                    className="focus-ring header-icon-button mobile-control-only"
+                    onClick={() => setMobileSidebarOpen(true)}
+                    aria-label="사이드바 열기"
+                    aria-expanded={mobileSidebarOpen}
+                  >
+                    <MenuIcon />
+                  </button>
+                ) : null}
+                <div className="min-w-0">
+                  <Breadcrumbs />
+                  <p className="mt-1.5 text-sm text-[var(--text-tertiary)]">
+                    {t('header.subtitle')}
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <form
@@ -346,7 +495,7 @@ export function AppShell({ children }: AppShellProps) {
                 </form>
                 <button
                   type="button"
-                  className="focus-ring header-icon-button"
+                  className="focus-ring header-icon-button inline-flex"
                   aria-label={t('header.notifications')}
                 >
                   <BellIcon />
@@ -355,7 +504,7 @@ export function AppShell({ children }: AppShellProps) {
                   <button
                     type="button"
                     onClick={() => setLanguageMenuOpen((open) => !open)}
-                    className="focus-ring header-icon-button"
+                    className="focus-ring header-icon-button inline-flex"
                     aria-label={t('header.languageLabel')}
                     aria-haspopup="menu"
                     aria-expanded={languageMenuOpen}
@@ -398,7 +547,7 @@ export function AppShell({ children }: AppShellProps) {
                 <button
                   type="button"
                   onClick={toggleTheme}
-                  className="focus-ring header-icon-button"
+                  className="focus-ring header-icon-button inline-flex"
                   aria-label={theme === 'dark' ? t('header.switchToLight') : t('header.switchToDark')}
                 >
                   <ThemeIcon theme={theme} />

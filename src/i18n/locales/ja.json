@@ -1,5 +1,5 @@
 {
-  "common": { "retry": "再試行", "empty": "空の状態", "error": "エラー", "warning": "注意", "healthy": "良好", "info": "参考", "downloadCsv": "CSV ダウンロード", "reset": "リセット", "delete": "削除", "load": "読み込み", "save": "保存", "apply": "適用", "select": "選択", "lightMode": "ライトモード", "darkMode": "ダークモード", "language": "言語", "current": "現在", "none": "なし" },
+  "common": { "retry": "再試行", "empty": "空の状態", "error": "エラー", "warning": "注意", "healthy": "良好", "info": "参考", "downloadCsv": "CSV ダウンロード", "reset": "リセット", "delete": "削除", "load": "読み込み", "save": "保存", "apply": "適用", "select": "選択", "lightMode": "ライトモード", "darkMode": "ダークモード", "language": "言語", "current": "現在", "total": "合計", "none": "なし" },
   "nav": { "dashboard": "ダッシュボード", "campaigns": "キャンペーン", "reports": "レポート", "settings": "設定", "login": "ログイン", "forbidden": "アクセス制限", "notFound": "ページなし", "workspace": "運用ワークスペース", "menu": "メニュー", "role": "権限", "logout": "ログアウト" },
   "header": { "subtitle": "広告運用と意思決定をひとつの画面で整理します。", "searchLabel": "キャンペーン横断検索", "searchPlaceholder": "キャンペーン、チャネル、担当者を検索", "notifications": "通知", "searchHint": "検索", "switchToLight": "ライトモードに切り替え", "switchToDark": "ダークモードに切り替え", "languageLabel": "言語を選択" },
   "sidebar": { "title": "運用ダッシュボード", "team": "MediaOps Team", "workspaceTitle": "キャンペーン運用は良好です", "workspaceDesc": "本日、主要キャンペーン4件が目標ROASを上回っています。" },

@@ -169,9 +169,9 @@ export function SettingsPage() {
             <p className="text-sm text-[var(--text-tertiary)]">{t('settings.roleScope')}</p>
             <h3 className="mt-1 text-xl font-semibold text-[var(--text-primary)]">{t('settings.roleScopeTitle')}</h3>
           </div>
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <div className="mt-5 grid min-w-0 gap-3 md:grid-cols-3">
             {(['admin', 'manager', 'viewer'] as const).map((role) => (
-              <div key={role} className="surface-muted p-4">
+              <div key={role} className="surface-muted min-w-0 p-4">
                 <p className="font-semibold text-[var(--text-primary)]">{t(`labels.role.${role}`)}</p>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-tertiary)]">
                   {role === 'admin'

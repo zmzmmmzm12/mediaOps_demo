@@ -419,29 +419,29 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
       ) : null}
 
       {activeTab === 'revenue' ? (
-        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid gap-5 xl:grid-cols-2">
+        <div id="panel-revenue" role="tabpanel" aria-labelledby="tab-revenue" className="grid min-w-0 gap-5 xl:grid-cols-2">
           <ChartCard title={t('detail.channelComparison')} description={t('detail.channelComparisonDesc')}>
             <ChannelComparisonChart data={detail.channelComparison} />
           </ChartCard>
           <ChartCard title={t('detail.dailySummary')} description={t('detail.dailySummaryDesc')}>
             <div className="space-y-3">
               {detail.delivery.map((point) => (
-                <div key={point.date} className="surface-muted grid gap-3 p-4 sm:grid-cols-4">
-                  <div>
+                <div key={point.date} className="surface-muted grid min-w-0 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.date')}</p>
                     <p className="mt-1 font-semibold text-[var(--text-primary)]">{point.date}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.revenue')}</p>
-                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.revenue)}</p>
+                    <p className="numeric-value mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.revenue)}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">{t('labels.table.spend')}</p>
-                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.spend)}</p>
+                    <p className="numeric-value mt-1 font-semibold text-[var(--text-primary)]">{formatCompactCurrency(point.spend)}</p>
                   </div>
-                  <div>
+                  <div className="min-w-0">
                     <p className="text-xs uppercase tracking-[0.08em] text-[var(--text-quaternary)]">ROAS</p>
-                    <p className="mt-1 font-semibold text-[var(--text-primary)]">{formatRatio(point.roas)}</p>
+                    <p className="numeric-value mt-1 font-semibold text-[var(--text-primary)]">{formatRatio(point.roas)}</p>
                   </div>
                 </div>
               ))}

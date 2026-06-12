@@ -416,6 +416,7 @@ export function CampaignsPage() {
           </Select>
           <Button
             variant="secondary"
+            className="w-full xl:w-auto"
             data-testid="save-preset-button"
             onClick={() =>
               savePresetMutation.mutate({
@@ -433,6 +434,7 @@ export function CampaignsPage() {
           </Button>
           <Button
             variant="secondary"
+            className="w-full xl:w-auto"
             data-testid="load-preset-button"
             onClick={handleLoadPreset}
             disabled={!selectedPresetId}
@@ -441,6 +443,7 @@ export function CampaignsPage() {
           </Button>
           <Button
             variant="secondary"
+            className="w-full xl:w-auto"
             data-testid="delete-preset-button"
             onClick={() => deletePresetMutation.mutate(selectedPresetId)}
             disabled={!selectedPresetId}
@@ -449,6 +452,7 @@ export function CampaignsPage() {
           </Button>
           <Button
             variant="secondary"
+            className="w-full xl:w-auto"
             data-testid="download-csv-button"
             onClick={handleDownloadCsv}
           >
@@ -456,6 +460,7 @@ export function CampaignsPage() {
           </Button>
           <Button
             variant="ghost"
+            className="w-full xl:w-auto"
             data-testid="reset-filters-button"
             onClick={() => {
               setSearchInput(defaultCampaignFilters.search)
@@ -471,7 +476,7 @@ export function CampaignsPage() {
             {t('campaigns.toolbarHint')}
           </p>
           {canEdit ? (
-            <div className="flex flex-wrap items-end gap-3">
+            <div className="grid w-full gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end xl:w-auto">
               <Select
                 label={t('campaigns.bulkStatus')}
                 value={bulkStatus}
@@ -485,6 +490,7 @@ export function CampaignsPage() {
                 <SelectOption value="ended">{t('labels.status.ended')}</SelectOption>
               </Select>
               <Button
+                className="w-full sm:w-auto"
                 onClick={() => setConfirmOpen(true)}
                 disabled={selectedCampaignIds.length === 0}
               >

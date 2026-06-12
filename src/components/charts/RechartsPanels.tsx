@@ -7,8 +7,6 @@ import {
   Legend,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -100,37 +98,56 @@ export const CampaignStatusChart = memo(function CampaignStatusChart({
 }: {
   data: DashboardStatusPoint[]
 }) {
-  const theme = usePreferencesStore((state) => state.theme)
   const { t } = useI18n()
+  const total = data.reduce((sum, point) => sum + point.count, 0)
+  let currentAngle = 0
+  const gradient = total > 0
+    ? data.map((point) => {
+        const startAngle = currentAngle
+        const endAngle = startAngle + (point.count / total) * 360
+        currentAngle = endAngle
+        return `${statusColorMap[point.status]} ${startAngle}deg ${endAngle}deg`
+      }).join(', ')
+    : 'var(--panel-muted) 0deg 360deg'
+
   return (
-    <div className="chart-frame">
-      <ResponsiveContainer width="100%" height="100%">
-        <PieChart>
-          <Pie
-            data={data}
-            dataKey="count"
-            nameKey="status"
-            outerRadius={100}
-            innerRadius={56}
-            paddingAngle={3}
+    <div className="chart-frame flex flex-col items-center justify-center gap-5">
+      <div
+        className="relative flex h-40 w-40 shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_var(--border-subtle)]"
+        style={{ background: `conic-gradient(${gradient})` }}
+        role="img"
+        aria-label={t('dashboard.statusDistribution')}
+      >
+        <div className="flex h-24 w-24 flex-col items-center justify-center rounded-full border border-[var(--border-subtle)] bg-[var(--panel-strong)]">
+          <span className="numeric-value text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+            {total}
+          </span>
+          <span className="mt-0.5 text-[11px] font-medium text-[var(--text-tertiary)]">
+            {t('common.total')}
+          </span>
+        </div>
+      </div>
+      <div className="grid w-full min-w-0 gap-2 sm:grid-cols-3 xl:grid-cols-1 2xl:grid-cols-3">
+        {data.map((point) => (
+          <div
+            key={point.status}
+            className="flex min-w-0 items-center justify-between gap-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] px-3 py-2.5"
           >
-            {data.map((entry) => (
-              <Cell key={entry.status} fill={statusColorMap[entry.status]} />
-            ))}
-          </Pie>
-          <Tooltip
-            contentStyle={{
-              backgroundColor: theme === 'dark' ? '#0f172a' : '#ffffff',
-              border: `1px solid ${theme === 'dark' ? '#334155' : '#e2e8f0'}`,
-              borderRadius: 16,
-              color: theme === 'dark' ? '#e2e8f0' : '#0f172a',
-            }}
-            labelStyle={{ color: theme === 'dark' ? '#cbd5e1' : '#475569' }}
-            formatter={(value, name) => [value, t(`labels.status.${String(name)}`)]}
-          />
-          <Legend formatter={(value) => t(`labels.status.${String(value)}`)} />
-        </PieChart>
-      </ResponsiveContainer>
+            <span className="flex min-w-0 items-center gap-2">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full"
+                style={{ backgroundColor: statusColorMap[point.status] }}
+              />
+              <span className="truncate text-xs font-medium text-[var(--text-tertiary)]">
+                {t(`labels.status.${point.status}`)}
+              </span>
+            </span>
+            <span className="numeric-value text-sm font-semibold text-[var(--text-primary)]">
+              {point.count}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   )
 })

@@ -77,6 +77,15 @@ function translateDashboardMetricLabel(label: string, t: (key: string) => string
   return key ? t(key) : label
 }
 
+function formatSignedPercentDelta(current: number, previous: number) {
+  if (!Number.isFinite(current) || !Number.isFinite(previous) || previous === 0) {
+    return '-'
+  }
+
+  const delta = ((current - previous) / previous) * 100
+  return `${delta >= 0 ? '+' : ''}${delta.toFixed(1)}%`
+}
+
 export function DashboardPage() {
   const { t } = useI18n()
   const dashboardQuery = useQuery({
@@ -108,6 +117,39 @@ export function DashboardPage() {
   }
 
   const topCampaignColumns = createTopCampaignColumns(t)
+  const latestTrend = dashboard.trend.at(-1)
+  const previousTrend = dashboard.trend.at(-2)
+  const latestRoas = latestTrend && latestTrend.spend > 0
+    ? latestTrend.revenue / latestTrend.spend
+    : null
+  const revenueDelta = latestTrend && previousTrend
+    ? formatSignedPercentDelta(latestTrend.revenue, previousTrend.revenue)
+    : '-'
+  const spendDelta = latestTrend && previousTrend
+    ? formatSignedPercentDelta(latestTrend.spend, previousTrend.spend)
+    : '-'
+  const operationSummary = latestTrend
+    ? [
+        {
+          label: t('labels.table.revenue'),
+          value: formatCompactCurrency(latestTrend.revenue),
+          helper: revenueDelta,
+          tone: 'positive' as const,
+        },
+        {
+          label: t('labels.table.spend'),
+          value: formatCompactCurrency(latestTrend.spend),
+          helper: spendDelta,
+          tone: 'neutral' as const,
+        },
+        {
+          label: 'ROAS',
+          value: latestRoas ? formatRatio(latestRoas) : '-',
+          helper: latestTrend.date.slice(5),
+          tone: 'positive' as const,
+        },
+      ]
+    : []
 
   return (
     <div className="space-y-5">
@@ -124,18 +166,18 @@ export function DashboardPage() {
         />
       ) : (
         <>
-          <section className="grid min-w-0 gap-3 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))]">
             {dashboard.metrics.slice(0, 4).map((metric, index) => (
               <article
                 key={`accent-${metric.id}`}
-                className={`relative min-w-0 overflow-hidden rounded-xl p-4 shadow-[0_14px_34px_rgba(15,23,42,0.1)] ${metricAccentClasses[index % metricAccentClasses.length]}`}
+                className={`relative min-h-[132px] min-w-0 overflow-hidden rounded-xl p-5 shadow-[0_14px_34px_rgba(15,23,42,0.1)] ${metricAccentClasses[index % metricAccentClasses.length]}`}
               >
                 <div className="absolute right-[-14px] top-[-28px] h-24 w-24 rounded-full bg-white/15" />
                 <div className="relative min-w-0">
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-white/80">
                     {translateDashboardMetricLabel(metric.label, t)}
                   </p>
-                  <p className="numeric-value mt-3 text-[clamp(1.35rem,5vw,1.5rem)] font-semibold tracking-[-0.03em]">
+                  <p className="numeric-value mt-3 text-[clamp(1.55rem,4vw,2rem)] font-semibold tracking-[-0.04em]">
                     {metric.value}
                   </p>
                   <p className="mt-2 text-xs font-medium text-white/80">{metric.delta}</p>
@@ -159,13 +201,13 @@ export function DashboardPage() {
                     {t('dashboard.heroDesc')}
                   </p>
 
-                  <div className="mt-7 grid min-w-0 gap-3 md:grid-cols-3">
+                  <div className="mt-7 grid min-w-0 gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))]">
                     {dashboard.metrics.slice(0, 3).map((metric) => (
-                      <div key={metric.id} className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-3.5">
+                      <div key={metric.id} className="min-h-[116px] min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-muted)] p-4">
                         <p className="text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--text-tertiary)]">
                           {translateDashboardMetricLabel(metric.label, t)}
                         </p>
-                        <p className="numeric-value mt-3 text-[clamp(1.25rem,5vw,1.5rem)] font-semibold tracking-[-0.03em] text-[var(--text-primary)]">
+                        <p className="numeric-value mt-3 text-[clamp(1.35rem,4vw,1.7rem)] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
                           {metric.value}
                         </p>
                         <p className="mt-2 text-xs text-[var(--text-tertiary)]">{metric.delta}</p>
@@ -186,18 +228,28 @@ export function DashboardPage() {
                       {t('dashboard.realtime')}
                     </span>
                   </div>
-                  <div className="mt-6 flex h-40 min-w-0 items-end gap-1.5 sm:gap-2">
-                    {dashboard.trend.map((point, index) => (
-                      <div key={point.date} className="flex min-w-0 flex-1 flex-col items-center gap-2">
-                        <span
-                          className="w-full rounded-full bg-[var(--brand)]/80"
-                          style={{ height: `${38 + ((point.revenue + index * 17) % 58)}%` }}
+                  <div className="mt-5 grid min-w-0 gap-3">
+                    {operationSummary.length > 0 ? operationSummary.map((item) => (
+                      <div
+                        key={item.label}
+                        className="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] px-3.5 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-[var(--text-tertiary)]">{item.label}</p>
+                          <p className="numeric-value mt-1 text-[clamp(1.2rem,4vw,1.45rem)] font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+                            {item.value}
+                          </p>
+                        </div>
+                        <StatusBadge
+                          label={item.helper}
+                          tone={item.tone}
                         />
-                        <span className="text-[10px] text-[var(--text-quaternary)]">
-                          {point.date.slice(5)}
-                        </span>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="rounded-xl border border-dashed border-[var(--border-strong)] bg-[var(--panel-strong)] px-4 py-8 text-center text-sm text-[var(--text-tertiary)]">
+                        {t('dashboard.emptyDesc')}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -251,8 +303,8 @@ export function DashboardPage() {
               <div className="space-y-3">
                 {dashboard.alerts.map((alert) => (
                   <article key={alert.id} className="surface-muted p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <p className="font-semibold text-[var(--text-primary)]">{alert.title}</p>
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      <p className="min-w-0 font-semibold leading-6 text-[var(--text-primary)]">{alert.title}</p>
                       <StatusBadge
                         label={
                           alert.tone === 'warning'

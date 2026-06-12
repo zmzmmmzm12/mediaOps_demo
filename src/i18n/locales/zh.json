@@ -1,5 +1,5 @@
 {
-  "common": { "retry": "重试", "empty": "空状态", "error": "错误", "warning": "注意", "healthy": "良好", "info": "参考", "downloadCsv": "下载 CSV", "reset": "重置", "delete": "删除", "load": "加载", "save": "保存", "apply": "应用", "select": "选择", "lightMode": "浅色模式", "darkMode": "深色模式", "language": "语言", "current": "当前", "none": "无" },
+  "common": { "retry": "重试", "empty": "空状态", "error": "错误", "warning": "注意", "healthy": "良好", "info": "参考", "downloadCsv": "下载 CSV", "reset": "重置", "delete": "删除", "load": "加载", "save": "保存", "apply": "应用", "select": "选择", "lightMode": "浅色模式", "darkMode": "深色模式", "language": "语言", "current": "当前", "total": "合计", "none": "无" },
   "nav": { "dashboard": "仪表盘", "campaigns": "广告活动", "reports": "报表", "settings": "设置", "login": "登录", "forbidden": "访问受限", "notFound": "页面不存在", "workspace": "运营工作区", "menu": "菜单", "role": "权限", "logout": "退出登录" },
   "header": { "subtitle": "在一个视图中管理广告运营和决策。", "searchLabel": "广告活动全局搜索", "searchPlaceholder": "搜索广告活动、渠道、负责人", "notifications": "通知", "searchHint": "搜索", "switchToLight": "切换到浅色模式", "switchToDark": "切换到深色模式", "languageLabel": "选择语言" },
   "sidebar": { "title": "运营仪表盘", "team": "MediaOps 团队", "workspaceTitle": "广告活动运营状态良好", "workspaceDesc": "今日 4 个核心广告活动高于目标 ROAS。" },

@@ -17,6 +17,7 @@
     "darkMode": "Dark mode",
     "language": "Language",
     "current": "Current",
+    "total": "Total",
     "none": "None"
   },
   "nav": {
