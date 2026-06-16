@@ -121,6 +121,7 @@
     "controlTitle": "Campaign search and controls",
     "controlDesc": "Combine status, channel, period, and presets to quickly find and act on campaigns.",
     "resultCount": "Results",
+    "resultCountValue": "{{count}} items",
     "savedPresets": "Saved presets",
     "selectedItems": "Selected",
     "filterToolbar": "Filter toolbar",
@@ -214,8 +215,9 @@
   "detail": {
     "back": "Back to campaigns",
     "eyebrow": "Campaign detail",
+    "viewDetails": "View detail",
     "budgetUsage": "Budget usage",
-    "statusChange": "Status change",
+    "statusChange": "Campaign status",
     "readonly": "Read-only account",
     "overview": "Overview",
     "creatives": "Creatives",

@@ -57,7 +57,7 @@ export function LoginPage() {
 
   const profilesQuery = useQuery({
     queryKey: ["auth-profiles"],
-    queryFn: getLoginProfiles,
+    queryFn: ({ signal }) => getLoginProfiles({ signal }),
   });
 
   const loginMutation = useMutation({

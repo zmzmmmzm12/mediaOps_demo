@@ -90,7 +90,7 @@ export function DashboardPage() {
   const { t } = useI18n()
   const dashboardQuery = useQuery({
     queryKey: ['dashboard'],
-    queryFn: getDashboard,
+    queryFn: ({ signal }) => getDashboard({ signal }),
   })
 
   if (dashboardQuery.isLoading) {
@@ -155,8 +155,8 @@ export function DashboardPage() {
     <div className="space-y-5">
       <PageHeader
         eyebrow={t('dashboard.eyebrow')}
-        title={t('dashboard.title')}
-        description={t('dashboard.description')}
+        title={dashboard.headline}
+        description={dashboard.subheadline}
       />
 
       {dashboard.metrics.length === 0 ? (

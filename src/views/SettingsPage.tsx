@@ -41,7 +41,7 @@ export function SettingsPage() {
 
   const presetsQuery = useQuery({
     queryKey: ['filter-presets'],
-    queryFn: getFilterPresets,
+    queryFn: ({ signal }) => getFilterPresets({ signal }),
   })
 
   const deletePresetMutation = useMutation({

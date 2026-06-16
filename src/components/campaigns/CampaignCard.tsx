@@ -28,7 +28,7 @@ export function CampaignCard({ campaign, onPrefetch }: CampaignCardProps) {
       href={`/campaigns/${campaign.id}`}
       onMouseEnter={() => onPrefetch?.(campaign.id)}
       onFocus={() => onPrefetch?.(campaign.id)}
-      aria-label={`${campaign.name} ${t('detail.eyebrow')}`}
+      aria-label={`${campaign.name} ${t('detail.viewDetails')}`}
       className="focus-ring grid min-w-0 gap-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-bg)] p-4 transition hover:border-[var(--border-strong)] hover:shadow-[var(--shadow-sm)] lg:grid-cols-[1.3fr_0.9fr]"
     >
       <div className="min-w-0">

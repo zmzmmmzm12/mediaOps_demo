@@ -16,12 +16,20 @@ import type {
 } from '../../types/mediaops'
 import { fetchJson } from './client'
 
-export function getCurrentUser() {
-  return fetchJson<AuthMeResponse>('/api/auth/me')
+type ApiRequestOptions = {
+  signal?: AbortSignal
 }
 
-export function getLoginProfiles() {
-  return fetchJson<LoginProfilesResponse>('/api/auth/profiles')
+export function getCurrentUser(options?: ApiRequestOptions) {
+  return fetchJson<AuthMeResponse>('/api/auth/me', {
+    signal: options?.signal,
+  })
+}
+
+export function getLoginProfiles(options?: ApiRequestOptions) {
+  return fetchJson<LoginProfilesResponse>('/api/auth/profiles', {
+    signal: options?.signal,
+  })
 }
 
 export function loginWithProfile(userId: string) {
@@ -31,16 +39,25 @@ export function loginWithProfile(userId: string) {
   })
 }
 
-export function getDashboard() {
-  return fetchJson<DashboardResponse>('/api/dashboard')
+export function getDashboard(options?: ApiRequestOptions) {
+  return fetchJson<DashboardResponse>('/api/dashboard', {
+    signal: options?.signal,
+  })
 }
 
-export function getCampaigns() {
-  return fetchJson<CampaignListResponse>('/api/campaigns')
+export function getCampaigns(options?: ApiRequestOptions) {
+  return fetchJson<CampaignListResponse>('/api/campaigns', {
+    signal: options?.signal,
+  })
 }
 
-export function getCampaignDetail(campaignId: string) {
-  return fetchJson<CampaignDetailResponse>(`/api/campaigns/${campaignId}`)
+export function getCampaignDetail(
+  campaignId: string,
+  options?: ApiRequestOptions,
+) {
+  return fetchJson<CampaignDetailResponse>(`/api/campaigns/${campaignId}`, {
+    signal: options?.signal,
+  })
 }
 
 export function updateCampaign(
@@ -66,12 +83,16 @@ export function updateCampaignMemo(
   )
 }
 
-export function getReports() {
-  return fetchJson<ReportsResponse>('/api/reports')
+export function getReports(options?: ApiRequestOptions) {
+  return fetchJson<ReportsResponse>('/api/reports', {
+    signal: options?.signal,
+  })
 }
 
-export function getFilterPresets() {
-  return fetchJson<FilterPresetsResponse>('/api/filter-presets')
+export function getFilterPresets(options?: ApiRequestOptions) {
+  return fetchJson<FilterPresetsResponse>('/api/filter-presets', {
+    signal: options?.signal,
+  })
 }
 
 export function createFilterPreset(input: CreateFilterPresetInput) {

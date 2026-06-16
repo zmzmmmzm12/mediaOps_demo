@@ -72,7 +72,7 @@ export const RevenueSpendTrendChart = memo(function RevenueSpendTrendChart({
 
   return (
     <div className="chart-frame">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis dataKey="date" tick={{ fill: tickColor, fontSize: 12 }} />
@@ -163,7 +163,7 @@ export const ChannelComparisonChart = memo(function ChannelComparisonChart({
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
     <div className="chart-frame">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis dataKey="channel" tickFormatter={(value) => formatChannelLabel(value, t)} tick={{ fill: tickColor, fontSize: 12 }} />
@@ -201,7 +201,7 @@ export const RoasRankingChart = memo(function RoasRankingChart({
   const tickColor = theme === 'dark' ? '#94a3b8' : '#64748b'
   return (
     <div className="chart-frame">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height="100%" minWidth={0}>
         <BarChart
           data={data.slice(0, 5).map((campaign, index) => ({
             name: campaign.name,

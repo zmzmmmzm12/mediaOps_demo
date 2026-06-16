@@ -10,6 +10,7 @@ interface CampaignTableColumnOptions {
   canEdit: boolean
   onToggleSelected: (campaignId: string) => void
   onPrefetch: (campaignId: string) => void
+  onNavigateToDetail?: () => void
   sortBy: string
   sortDirection: string
   onSort: (field: 'revenue' | 'spend' | 'roas' | 'conversionRate') => void
@@ -57,6 +58,7 @@ export function createCampaignTableColumns({
   canEdit,
   onToggleSelected,
   onPrefetch,
+  onNavigateToDetail,
   sortBy,
   sortDirection,
   onSort,
@@ -87,7 +89,8 @@ export function createCampaignTableColumns({
             href={`/campaigns/${campaign.id}`}
             onMouseEnter={() => onPrefetch(campaign.id)}
             onFocus={() => onPrefetch(campaign.id)}
-            aria-label={`${campaign.name} ${t('detail.eyebrow')}`}
+            onClick={onNavigateToDetail}
+            aria-label={`${campaign.name} ${t('detail.viewDetails')}`}
             className="focus-ring font-semibold text-[var(--text-primary)] hover:text-[var(--brand)]"
           >
             {campaign.name}

@@ -56,6 +56,7 @@ export function CampaignsPage() {
   const [selectedCampaignIds, setSelectedCampaignIds] = useState<string[]>([])
   const [bulkStatus, setBulkStatus] = useState<CampaignStatus>('paused')
   const [confirmOpen, setConfirmOpen] = useState(false)
+  const [isNavigatingToDetail, setIsNavigatingToDetail] = useState(false)
   const showToast = useToastStore((state) => state.showToast)
   const filters = useMemo(
     () => parseCampaignFilters(new URLSearchParams(searchParams.toString())),
@@ -66,13 +67,13 @@ export function CampaignsPage() {
 
   const campaignsQuery = useQuery({
     queryKey: ['campaigns'],
-    queryFn: getCampaigns,
+    queryFn: ({ signal }) => getCampaigns({ signal }),
     placeholderData: keepPreviousData,
   })
 
   const presetsQuery = useQuery({
     queryKey: ['filter-presets'],
-    queryFn: getFilterPresets,
+    queryFn: ({ signal }) => getFilterPresets({ signal }),
   })
 
   const savePresetMutation = useMutation({
@@ -141,6 +142,10 @@ export function CampaignsPage() {
   }, [pathname, router])
 
   useEffect(() => {
+    if (isNavigatingToDetail) {
+      return
+    }
+
     if (debouncedSearch !== filters.search) {
       replaceSearchParams(
         buildCampaignSearchParams({
@@ -150,7 +155,7 @@ export function CampaignsPage() {
         }),
       )
     }
-  }, [debouncedSearch, filters, replaceSearchParams])
+  }, [debouncedSearch, filters, isNavigatingToDetail, replaceSearchParams])
 
   const campaignRows = useMemo(
     () => campaignsQuery.data?.campaigns ?? [],
@@ -268,15 +273,20 @@ export function CampaignsPage() {
   function handlePrefetch(campaignId: string) {
     void queryClient.prefetchQuery({
       queryKey: ['campaign-detail', campaignId],
-      queryFn: () => getCampaignDetail(campaignId),
+      queryFn: ({ signal }) => getCampaignDetail(campaignId, { signal }),
     })
   }
+
+  const handleNavigateToDetail = useCallback(() => {
+    setIsNavigatingToDetail(true)
+  }, [])
 
   const columns = createCampaignTableColumns({
     selectedIds: selectedCampaignIds,
     canEdit,
     onToggleSelected: handleToggleSelected,
     onPrefetch: handlePrefetch,
+    onNavigateToDetail: handleNavigateToDetail,
     sortBy: filters.sortBy,
     sortDirection: filters.sortDirection,
     onSort: handleSort,
@@ -322,7 +332,7 @@ export function CampaignsPage() {
           <div className="min-w-0 rounded-xl border border-[var(--border-subtle)] bg-[var(--panel-strong)] p-4">
             <p className="text-[11px] uppercase tracking-[0.08em] text-[var(--text-tertiary)]">{t('campaigns.resultCount')}</p>
             <p className="numeric-value mt-3 text-[clamp(1.3rem,5vw,1.5rem)] font-semibold text-[var(--text-primary)]" aria-live="polite" data-testid="campaign-results-count">
-              {filteredCampaigns.length}
+              {t('campaigns.resultCountValue', { count: filteredCampaigns.length })}
             </p>
             <p className="mt-2 text-xs text-[var(--text-tertiary)]">조건에 맞는 활성 데이터</p>
           </div>

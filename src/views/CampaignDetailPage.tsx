@@ -105,7 +105,7 @@ export function CampaignDetailPage({ campaignId }: CampaignDetailPageProps) {
 
   const detailQuery = useQuery({
     queryKey: ['campaign-detail', campaignId],
-    queryFn: () => getCampaignDetail(campaignId),
+    queryFn: ({ signal }) => getCampaignDetail(campaignId, { signal }),
     enabled: Boolean(campaignId),
   })
 

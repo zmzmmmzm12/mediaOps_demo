@@ -56,7 +56,7 @@ export function ReportsPage() {
   const { t } = useI18n()
   const reportsQuery = useQuery({
     queryKey: ['reports'],
-    queryFn: getReports,
+    queryFn: ({ signal }) => getReports({ signal }),
   })
 
   if (reportsQuery.isLoading) {
