@@ -1,30 +1,36 @@
-# 미디어옵스 대시보드
+# MediaOps Dashboard
 
-광고 캠페인 운영, 매출 분석, 리포트 확인을 위한 **B2B SaaS 운영 대시보드** 포트폴리오 프로젝트입니다.  
-단순 UI 데모가 아니라, **상태 관리 설계**, **권한 제어**, **재사용 가능한 컴포넌트 구조**, **접근성**, **테스트**, **성능 최적화 포인트**까지 포함한 프론트엔드 아키텍처를 보여주는 것을 목표로 했습니다.
+광고 캠페인 운영, 매출 분석, 리포트 확인을 위한 **B2B SaaS 관리자 대시보드** 포트폴리오 프로젝트입니다.
+
+단순히 화면만 구성한 데모가 아니라, **Next.js App Router 기반 라우팅**, **Route Handler mock API**, **권한 제어**, **서버 상태/클라이언트 상태 분리**, **i18n**, **공통 디자인 시스템**, **Storybook**, **Playwright E2E 테스트**까지 포함해 실무형 프론트엔드 구조를 보여주는 것을 목표로 했습니다.
 
 ## 프로젝트 개요
 
-`미디어옵스 대시보드`는 광고 운영자가 여러 캠페인의 성과를 빠르게 파악하고,  
-검색/필터/정렬/페이지네이션을 통해 데이터를 탐색하며,  
-상세 페이지에서 KPI와 운영 메모를 관리할 수 있도록 구성한 내부 운영툴 컨셉의 대시보드입니다.
+MediaOps Dashboard는 광고 운영자가 여러 캠페인의 성과를 빠르게 파악하고, 검색/필터/정렬/페이지네이션을 통해 데이터를 탐색하며, 상세 화면에서 KPI와 운영 메모를 관리할 수 있도록 구성한 내부 운영툴 컨셉의 대시보드입니다.
 
-핵심 방향은 다음과 같습니다.
+UI 톤은 Linear, Vercel Dashboard, Stripe Dashboard, Amplitude 같은 **깔끔한 B2B SaaS 관리자 화면**을 기준으로 정리했습니다.
 
-- **서버 상태와 클라이언트 상태를 명확히 분리**
-- **권한에 따라 화면과 액션을 분리**
-- **공통 UI를 재사용 가능한 구조로 설계**
-- **로딩/빈 상태/에러 상태를 실제 서비스 수준으로 구성**
-- **Storybook과 Playwright로 품질 검증 체계 확보**
+## 핵심 특징
+
+- **Next.js 16 App Router** 기반 페이지 라우팅
+- **app/api Route Handler** 기반 mock API
+- **React 19 + TypeScript** 기반 컴포넌트 구조
+- **TanStack Query** 기반 서버 상태 관리
+- **Zustand** 기반 인증, 테마, 언어, 토스트 상태 관리
+- **Tailwind CSS v4**와 CSS 변수 기반 디자인 토큰
+- **권한별 메뉴/액션 제어**
+- **한국어, 영어, 중국어, 일본어 i18n**
+- **Storybook** 기반 주요 UI 컴포넌트 문서화
+- **Playwright** 기반 핵심 사용자 흐름 검증
 
 ## 주요 기능
 
-### 1) 로그인 / 권한 제어
+### 로그인 / 권한 제어
 
-- `/login`에서 `관리자`, `매니저`, `조회 전용` 데모 계정으로 로그인
-- 로그인 사용자 정보는 `Zustand` store에 저장
-- 권한 정책은 별도 파일로 분리
-- 라우트 접근 제어와 버튼/액션 권한 제어를 분리
+- `/login`에서 데모 계정 선택 후 로그인
+- 사용자 세션은 `Zustand` store에 저장
+- 권한 정책은 `src/features/auth/permissions.ts`에서 관리
+- 권한에 따라 사이드바 메뉴와 수정 액션을 분리
 
 권한별 동작:
 
@@ -35,159 +41,112 @@
   - 일괄 상태 변경 가능
   - 설정 내 관리자 전용 영역 확인 가능
 - `매니저`
-  - 대시보드 / 캠페인 / 리포트 / 설정 접근 가능
+  - 대시보드, 캠페인, 리포트, 설정 접근 가능
   - 캠페인 상태 변경 가능
   - 운영 메모 수정 가능
   - 일괄 상태 변경 가능
 - `조회 전용`
-  - 조회 전용
+  - 데이터 조회 가능
   - 메모 수정 불가
+  - 캠페인 상태 변경 불가
   - 일괄 상태 변경 불가
   - 관리자 전용 설정 영역 접근 불가
 
-### 2) 대시보드
+### 대시보드
 
-- 총 매출, 총 광고비, 평균 ROAS, 평균 전환율, 활성 캠페인 수
-- 전월 대비 증감률 노출
+- 총 매출, 총 광고비, 평균 ROAS, 평균 전환율, 운영 중 캠페인 수
 - 매출/광고비 추이 차트
-- 캠페인 상태별 분포 차트
-- 성과 상위 캠페인 Top 5 테이블
-- 성과 저하 알림 카드
-- 스켈레톤 / 빈 상태 / 오류 상태 지원
+- 캠페인 상태 분포 차트
+- 성과 상위 캠페인 테이블
+- 운영 알림 카드
+- skeleton, empty, error state 지원
 
-### 3) 캠페인
+### 캠페인
 
-- 캠페인명 검색
+- 캠페인명, 채널, 담당자 기반 검색
 - 상태 필터: `active`, `paused`, `ended`
 - 채널 필터: `google`, `meta`, `naver`, `kakao`
 - 기간 필터
-- 정렬: 매출, 광고비, ROAS, 전환율
+- 매출, 광고비, ROAS, 전환율 정렬
 - 페이지네이션
 - CSV 다운로드
 - 필터 프리셋 저장 / 불러오기 / 삭제
 - 선택 캠페인 일괄 상태 변경
-- URL 쿼리 문자열 기반 상태 동기화
+- URL query string 기반 필터 상태 동기화
 
-### 4) 캠페인 상세
+### 캠페인 상세
 
-- 캠페인 기본 정보
+- 캠페인 기본 정보와 상태/우선순위 badge
 - KPI 카드
 - 성과 추이 차트
 - 소재별 성과 테이블
 - 채널별 성과 비교
 - 예산 소진율
+- 운영 활동 로그
 - 운영 메모 작성 / 수정
 - 캠페인 상태 변경
-- `개요 / 소재 성과 / 매출 분석 / 메모` 탭 분리
-- 메모 수정 및 상태 변경에 **optimistic update** 적용
+- `개요 / 소재 / 매출 / 메모` 탭 구성
+- 상태 변경과 메모 저장에 optimistic update 적용
 
-### 5) 리포트
+### 리포트
 
-- 기간별 매출 리포트
-- 채널별 광고비 대비 매출 비교
+- 기간별 매출 추이
+- 채널별 매출 대비 광고비 비교
 - 캠페인별 ROAS 랭킹
-- 차트 + 테이블 조합
+- 차트와 테이블을 함께 제공
 - CSV 다운로드
 
-### 6) 설정
+### 설정
 
 - 현재 로그인 사용자 정보
-- 권한별 접근 가능 범위 설명
+- 현재 역할과 권한 범위 안내
+- 라이트/다크 테마 변경
 - 저장된 필터 프리셋 관리
-- 다크모드 토글
-- 사이드바 접힘 상태 저장
+- 관리자 권한 전용 안내 영역
+
+### 다국어
+
+- 헤더 언어 버튼에서 언어 선택
+- 지원 언어:
+  - 한국어
+  - English
+  - 中文
+  - 日本語
+- 번역 리소스는 `src/i18n/locales/*.json`에서 관리
+- 선택 언어는 `Zustand persist`로 저장
 
 ## 기술 스택
 
+- `Next.js 16`
 - `React 19`
 - `TypeScript`
-- `Vite`
-- `React Router`
 - `TanStack Query`
 - `Zustand`
 - `Tailwind CSS v4`
-- `MSW`
 - `Recharts`
 - `Storybook`
 - `Playwright`
+- `ESLint`
 
-## 아키텍처 설계 포인트
+## 아키텍처 설계
 
-### 서버 상태 / 클라이언트 상태 분리
+### App Router
 
-- **TanStack Query**
-  - 대시보드 / 캠페인 / 리포트 / 상세 데이터 조회
-  - 캐싱, invalidate, optimistic update 처리
-- **Zustand**
-  - 로그인 사용자
-  - 테마
-  - 사이드바 상태
-  - 토스트 피드백
-- **URL Query String**
-  - 검색어
-  - 필터
-  - 정렬
-  - 페이지 상태
+페이지 라우팅은 `app` 디렉터리의 Next.js App Router를 사용합니다.
 
-### 권한 정책 분리
+- `app/(workspace)/dashboard/page.tsx`
+- `app/(workspace)/campaigns/page.tsx`
+- `app/(workspace)/campaigns/[campaignId]/page.tsx`
+- `app/(workspace)/reports/page.tsx`
+- `app/(workspace)/settings/page.tsx`
+- `app/login/page.tsx`
+- `app/forbidden/page.tsx`
 
-- `hasPermission(role, permission)` 유틸 기반
-- 메뉴 노출 제어와 액션 제어를 분리
-- viewer는 라우트는 접근 가능하더라도 수정 액션은 제한
+실제 화면 구현은 `src/views`에 두고, `app` 라우트 파일은 해당 view를 연결하는 구조입니다.
 
-### 컴포넌트 재사용성
+### Mock API
 
-공통 UI를 개별 페이지에서 직접 구현하지 않고 재사용 가능한 단위로 분리했습니다.
-
-- `Button`
-- `Input`
-- `Select`
-- `DateRangePicker`
-- `Tabs`
-- `DataTable`
-- `Pagination`
-- `Modal`
-- `ConfirmDialog`
-- `PageHeader`
-- `EmptyState`
-- `ErrorStatePanel`
-- `Skeleton`
-- `ChartCard`
-- `MetricCard`
-- `ToastRegion`
-
-## 품질 보강 포인트
-
-### 접근성
-
-- Skip link 제공
-- `aria-label` 기반 입력/액션 설명
-- `aria-live` 기반 상태 피드백
-- Tabs 키보드 이동 지원
-- Modal `ESC` 닫기 및 focus trap 적용
-- 색상에만 의존하지 않고 텍스트 정보 병행
-
-### 사용자 경험
-
-- Skeleton loading
-- Empty state
-- Error fallback
-- CSV 다운로드
-- 필터 preset 저장/불러오기
-- 전역 toast 피드백
-
-### 성능
-
-- 페이지 단위 lazy loading
-- 차트/무거운 뷰 분리
-- 검색 debounce 적용
-- 상세 페이지 prefetch
-- `useMemo` 기반 파생 데이터 계산 최소화
-- Query 캐시 기반 재요청 최소화
-
-## 목업 API
-
-MSW 기반 mock API를 구성했습니다.
+현재 데이터 API는 Next.js Route Handler로 구성했습니다.
 
 - `GET /api/auth/me`
 - `GET /api/auth/profiles`
@@ -202,16 +161,83 @@ MSW 기반 mock API를 구성했습니다.
 - `POST /api/filter-presets`
 - `DELETE /api/filter-presets/:presetId`
 
-추가로 일부 endpoint는 아래 디버그 상태를 지원합니다.
+mock 데이터는 `src/mocks/data.ts`에 있으며, API 응답 유틸은 `src/server/api-utils.ts`에서 관리합니다.
+
+일부 API는 테스트와 상태 검증을 위해 아래 query를 지원합니다.
 
 - `?mock=error`
 - `?mock=empty`
 
-## 스토리북
+### 상태 관리
 
-주요 공통 컴포넌트에 대해 Storybook을 구성했습니다.
+- **TanStack Query**
+  - 대시보드, 캠페인, 상세, 리포트, 프리셋 데이터 조회
+  - 캐싱과 invalidate 처리
+  - optimistic update 처리
+- **Zustand**
+  - 로그인 세션
+  - 테마
+  - 언어
+  - 토스트
+- **URL query string**
+  - 검색어
+  - 필터
+  - 정렬
+  - 페이지
 
-예시:
+### 디자인 시스템
+
+공통 UI는 `src/components/ui`에 분리했습니다.
+
+- `Button`
+- `Input`
+- `Select`
+- `DateRangePicker`
+- `Tabs`
+- `DataTable`
+- `Pagination`
+- `Modal`
+- `ConfirmDialog`
+- `PageHeader`
+- `EmptyState`
+- `ErrorStatePanel`
+- `Skeleton`
+- `StatusBadge`
+- `ToastRegion`
+
+카드, border, radius, padding, focus-visible, hover, disabled, loading 상태는 CSS 변수와 Tailwind class를 조합해 동일한 톤으로 맞췄습니다.
+
+## 프로젝트 구조
+
+```text
+app/
+  (workspace)/         인증 후 접근하는 대시보드 라우트 그룹
+  api/                 Next.js Route Handler mock API
+  login/               로그인 라우트
+  forbidden/           권한 제한 라우트
+  layout.tsx           전역 메타데이터와 루트 레이아웃
+
+src/
+  app/                 QueryClient, Provider 구성
+  components/          UI, layout, chart, feature 컴포넌트
+  features/            auth, campaigns, ui store, 권한 정책
+  hooks/               공통 hook
+  i18n/                다국어 리소스와 번역 helper
+  lib/                 API client, format, download, utility
+  mocks/               mock data, MSW 호환 파일
+  server/              API response utility
+  types/               도메인 타입
+  views/               실제 페이지 화면 구현
+
+tests/
+  e2e/                 Playwright E2E 테스트
+
+.storybook/            Storybook 설정
+```
+
+## Storybook
+
+주요 공통 컴포넌트와 기능 컴포넌트의 stories를 구성했습니다.
 
 - `Button`
 - `Input`
@@ -226,90 +252,88 @@ MSW 기반 mock API를 구성했습니다.
 - `MetricCard`
 - `CampaignCard`
 - `CampaignFilters`
+- `PrioritySelector`
 
 ## E2E 테스트
 
 Playwright로 핵심 사용자 흐름을 검증합니다.
 
-- 조회 전용 계정의 읽기 전용 접근 확인
-- 관리자 계정의 필터 프리셋 저장/불러오기 및 CSV 다운로드
-- 관리자 계정의 캠페인 상세 상태 변경 / 메모 저장 흐름 확인
-
-## 프로젝트 구조
-
-```text
-src/
-  app/                라우터, provider, query client
-  components/         공통 UI, 차트, 레이아웃, 기능 컴포넌트
-  features/           권한 정책, auth, campaigns, UI store
-  hooks/              공통 hook
-  lib/                API client, formatter, download 유틸
-  mocks/              MSW worker, handlers, mock data
-  pages/              라우트 페이지
-  types/              도메인 타입
-tests/
-  e2e/                Playwright 시나리오
-.storybook/           Storybook 설정
-```
+- 조회 전용 계정의 읽기 전용 접근
+- 관리자 계정의 필터 프리셋 저장 / 불러오기
+- CSV 다운로드
+- 캠페인 상세 상태 변경
+- 운영 메모 저장
 
 ## 실행 방법
 
-### 1. 의존성 설치
+### 의존성 설치
 
 ```bash
 npm install
 ```
 
-### 2. 개발 서버 실행
+### 개발 서버 실행
 
 ```bash
 npm run dev
 ```
 
-### 3. Storybook 실행
-
-```bash
-npm run storybook
-```
-
-### 4. 프로덕션 빌드
+### 프로덕션 빌드
 
 ```bash
 npm run build
 ```
 
-### 5. 린트
+### 프로덕션 서버 실행
+
+```bash
+npm run preview
+```
+
+### 린트
 
 ```bash
 npm run lint
 ```
 
-### 6. E2E 테스트
+### Storybook 실행
+
+```bash
+npm run storybook
+```
+
+### Storybook 빌드
+
+```bash
+npm run storybook:build
+```
+
+### E2E 테스트
 
 ```bash
 npm run test:e2e
 ```
 
-## 검증 완료 항목
+## 검증 완료
 
-현재 기준으로 아래 명령을 통과했습니다.
+현재 구조 기준으로 아래 명령을 통과하도록 관리합니다.
 
-- `npm run build`
 - `npm run lint`
+- `npm run build`
 - `npm run storybook:build`
 - `npm run test:e2e`
 
-## 이 프로젝트에서 보여주고자 한 역량
+## 포트폴리오 포인트
 
-- **React 애플리케이션 구조 설계 능력**
-- **상태 관리 계층 분리 능력**
-- **권한 기반 UI/라우팅 설계 능력**
-- **재사용 가능한 컴포넌트 시스템 구성 능력**
-- **MSW 기반 프론트엔드 독립 개발 환경 구성 능력**
-- **접근성과 UX 품질에 대한 고려**
-- **Storybook / Playwright 기반 품질 보증 경험**
+이 프로젝트는 시각적으로 보기 좋은 관리자 화면뿐 아니라, 실제 프론트엔드 개발에서 중요한 구조적 역량을 함께 보여주기 위해 구성했습니다.
 
----
-
-이 프로젝트는 “예쁘게 보이는 대시보드”보다,  
-**실무형 프론트엔드 개발자가 어떤 방식으로 구조를 나누고, 상태를 관리하고, 품질을 보강하는지**를 보여주는 데 초점을 맞췄습니다.
+- Next.js App Router 기반 화면 구조 설계
+- Route Handler 기반 mock API 설계
+- 서버 상태와 클라이언트 상태 분리
+- 권한 기반 메뉴/액션 제어
+- 재사용 가능한 UI 컴포넌트 설계
+- URL 기반 필터 상태 관리
+- optimistic update 구현
+- 다국어 리소스 분리와 언어 상태 유지
+- 접근성, empty/error/skeleton 상태 고려
+- Storybook과 Playwright 기반 품질 검증
